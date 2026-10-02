@@ -1,0 +1,13 @@
+# Raw and interim data stay local (brief: raw is never committed; hashes are in docs/data_manifest.md).
+data/raw/*
+data/interim/*
+!data/**/.gitkeep
+# data/processed (cleaned tables) IS committed.
+logs/
+.ipynb_checkpoints/
+__pycache__/
+.env
+*.csv.gz
+.venv/
+# Never commit the steamid salt, wherever it ends up.
+.steamid_salt

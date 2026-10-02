@@ -1,0 +1,290 @@
+[
+ {
+  "table": "games",
+  "rule": "Duplicate appid",
+  "action": "drop",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Same game matched by several roguelike tags; one row per game."
+ },
+ {
+  "table": "games",
+  "rule": "No store details / not a game",
+  "action": "drop",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Delisted or non-game apps have no price, genre or release data."
+ },
+ {
+  "table": "games",
+  "rule": "Release date from store API (search date as fallback)",
+  "action": "fix",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "appdetails is the authoritative date; search date only used where the store date is unparseable."
+ },
+ {
+  "table": "games",
+  "rule": "Release outside 2022-2025",
+  "action": "drop",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Scope of the study; store date can differ from the search listing used to build the universe."
+ },
+ {
+  "table": "games",
+  "rule": "launch_date = original launch (Early Access start) where earlier than store date",
+  "action": "fix",
+  "before": 1861,
+  "after": 1861,
+  "affected": 318,
+  "why": "Store date is the 1.0 date for games that left Early Access; launch_date is the true launch."
+ },
+ {
+  "table": "games",
+  "rule": "Early Access launch before 2022 (1.0 inside window)",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 86,
+  "why": "Kept per the store-date scope rule; can be excluded in sensitivity checks."
+ },
+ {
+  "table": "games",
+  "rule": "No price (not purchasable in US store at snapshot)",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Kept: reviews are valid; price-based analyses must exclude or impute these."
+ },
+ {
+  "table": "games",
+  "rule": "Strip whitespace in tag/genre/developer lists",
+  "action": "fix",
+  "before": 1861,
+  "after": 1861,
+  "affected": 56,
+  "why": "Store tag names sometimes carry trailing spaces ('Dystopian ')."
+ },
+ {
+  "table": "games",
+  "rule": "No SteamSpy record",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Owner estimates unavailable; kept."
+ },
+ {
+  "table": "games",
+  "rule": "Review scrape < 99% of Steam total",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 22,
+  "why": "Steam totals include hidden/deleted reviews the API no longer returns; per-game coverage is reported."
+ },
+ {
+  "table": "games",
+  "rule": "Reviews capped (newest 15,000 only)",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 5,
+  "why": "Largest hits capped to finish the scrape on time and stop them dominating review-level models. Their launch period is missing: exclude from launch/refund-window timing and patch before/after analyses, and use the steam_total_* columns (full Steam totals) for their rating."
+ },
+ {
+  "table": "games",
+  "rule": "Review scrape not finished",
+  "action": "flag",
+  "before": 1861,
+  "after": 1861,
+  "affected": 0,
+  "why": "Game still in progress when cleaning ran; its reviews are absent from reviews_clean."
+ },
+ {
+  "table": "news",
+  "rule": "Duplicate news item",
+  "action": "drop",
+  "before": 45183,
+  "after": 45183,
+  "affected": 0,
+  "why": "Same gid listed twice."
+ },
+ {
+  "table": "news",
+  "rule": "Developer announcement (not press coverage)",
+  "action": "flag",
+  "before": 45183,
+  "after": 45183,
+  "affected": 44232,
+  "why": "Only the developer's own Steam announcements are used as event dates."
+ },
+ {
+  "table": "news",
+  "rule": "Patch event",
+  "action": "flag",
+  "before": 45183,
+  "after": 45183,
+  "affected": 28875,
+  "why": "Steam 'patchnotes' tag, or title like patch/hotfix/update/version number, excluding teasers ('coming soon', roadmap), demos, sales, awards and dev blogs."
+ },
+ {
+  "table": "news",
+  "rule": "Sale/discount event",
+  "action": "flag",
+  "before": 45183,
+  "after": 45183,
+  "affected": 1043,
+  "why": "Developer announcement titled sale/discount/deal/% off; used for price-effect analysis."
+ },
+ {
+  "table": "reviews",
+  "rule": "Game not in cleaned game table",
+  "action": "drop",
+  "before": 1652999,
+  "after": 1652999,
+  "affected": 0,
+  "why": "Follows the game-level scope rules above."
+ },
+ {
+  "table": "reviews",
+  "rule": "Duplicate recommendationid",
+  "action": "drop",
+  "before": 1652999,
+  "after": 1652999,
+  "affected": 0,
+  "why": "A page can be saved twice after a crash/resume, or shift when a new review is posted mid-scrape; the latest edit is kept."
+ },
+ {
+  "table": "reviews",
+  "rule": "Empty review text",
+  "action": "drop",
+  "before": 1652999,
+  "after": 1648387,
+  "affected": 4612,
+  "why": "No text to analyse; Steam allows submitting a blank review."
+ },
+ {
+  "table": "reviews",
+  "rule": "Impossible creation timestamp",
+  "action": "drop",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 0,
+  "why": "Before 2015 or in the future."
+ },
+ {
+  "table": "reviews",
+  "rule": "votes_funny overflow -> missing",
+  "action": "fix",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 0,
+  "why": "Known Steam API counter bug."
+ },
+ {
+  "table": "reviews",
+  "rule": "Negative playtime -> missing",
+  "action": "fix",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 0,
+  "why": "Impossible values."
+ },
+ {
+  "table": "reviews",
+  "rule": "weighted_vote_score outside [0,1] -> missing",
+  "action": "fix",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 0,
+  "why": "Score is a probability."
+ },
+ {
+  "table": "reviews",
+  "rule": "Playtime at review above 99.5% quantile (363 h), capped copy added",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 8242,
+  "why": "Steam counts idle/AFK time; raw minutes kept, author_playtime_at_review_capped is the winsorised copy."
+ },
+ {
+  "table": "reviews",
+  "rule": "Zero or missing playtime at review",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 12,
+  "why": "Pre-release keys, family sharing or playtime not recorded."
+ },
+ {
+  "table": "reviews",
+  "rule": "Written before launch (incl. Early Access start)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 30018,
+  "why": "Playtests/early keys; kept but can be excluded from launch-timing analyses."
+ },
+ {
+  "table": "reviews",
+  "rule": "Low content (<3 letters or <2 words; CJK: <4 characters)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 208724,
+  "why": "e.g. 'good', '10/10', '\u597d\u73a9', emoji only: valid votes, little text signal."
+ },
+ {
+  "table": "reviews",
+  "rule": "ASCII art / symbol spam (>50% symbols, 50+ chars)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 4951,
+  "why": "Meme reviews with no analysable text."
+ },
+ {
+  "table": "reviews",
+  "rule": "Copypasta (same 50+ char text >= 10 times)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 2285,
+  "why": "Copied meme/template text or coordinated posting."
+ },
+ {
+  "table": "reviews",
+  "rule": "Same author, same game, >1 review (info only)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 6,
+  "why": "Steam allows one review per account per game; non-zero values would point to scrape problems."
+ },
+ {
+  "table": "reviews",
+  "rule": "Text-mining subset (English, not low-content/ASCII/copypasta)",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 597777,
+  "why": "Steam's language field is the reviewer's chosen language; topic models are run on English only."
+ },
+ {
+  "table": "reviews",
+  "rule": "Received for free",
+  "action": "flag",
+  "before": 1648387,
+  "after": 1648387,
+  "affected": 34394,
+  "why": "Kept; free copies may bias sentiment, so analyses can control for it."
+ }
+]
