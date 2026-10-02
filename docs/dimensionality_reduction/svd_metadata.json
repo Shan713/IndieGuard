@@ -1,0 +1,12 @@
+{
+  "source": "..\\IndieGuard\\data\\processed\\games_clean.parquet",
+  "games": 1861,
+  "original_dimensions": 455,
+  "reduced_dimensions": 154,
+  "variance_retained_percent": 90.09360618888526,
+  "random_state": 42,
+  "n_iter": 10,
+  "method": "Truncated SVD",
+  "representation": "Multi-hot encoding of genres, categories and tags",
+  "selection_rule": "Minimum number of components required to retain at least 90% cumulative explained variance"
+}
