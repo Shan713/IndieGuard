@@ -4,7 +4,8 @@ Closes the work in issue #4. Code: `src/features/`. Rebuild everything and valid
 
 ```bash
 python -m src.features              # about 3 minutes; add --skip-text to skip the text block
-python -m src.features.validate     # 16 checks: completeness, no leakage, fitted on training games only
+python -m src.features.validate     # 21 checks: completeness, targets, no leakage, fitted on training games only
+                                    # (the 2 text checks are skipped until the text matrix has been built)
 ```
 
 It needs only files that are committed (`data/processed/`), not the raw data. The authoritative list of every
@@ -175,8 +176,9 @@ sentiment-like signal for models, but they are **not topics**: topic modelling (
 
 ## 8. Validation
 
-`python -m src.features.validate` runs 16 checks, all passing at the time of writing:
+`python -m src.features.validate` runs 21 checks (19 if the git-ignored text matrix has not been built; it says so), all passing at the time of writing:
 one game row per game and the same games as `game_split.csv`; split and fold copied correctly; no missing values;
+the game-level tiers match an exact-fraction recomputation and every tier appears in train and test;
 no outcome columns among the features; the tag PCA fitted on training games only and reproducible from its saved
 model; review features cover exactly the clean reviews of the fully scraped games with no capped game, no game in
 both train and test, and no post-review column; the label has both classes in train and test; text features have

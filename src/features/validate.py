@@ -77,10 +77,13 @@ def run(check_text: bool = True) -> bool:
     check("review_features: no post-review or outcome columns", not (FORBIDDEN_REVIEW & set(rf.columns)) and not any(c.startswith(("steam_total", "outcome_")) for c in rf.columns))
     check("review_features: label has both classes in train and test", all(rf.loc[rf["split"] == s, "target_is_negative"].nunique() == 2 for s in ("train", "test")))
 
-    if check_text:
-        tf = pd.concat([pd.read_parquet(f, columns=["recommendationid"]) for f in sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))])
+    text_parts = sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))
+    if check_text and not text_parts:
+        print("SKIP  text_svd checks: the text matrix is git-ignored and not built yet (run python -m src.features.text)")
+    elif check_text:
+        tf = pd.concat([pd.read_parquet(f, columns=["recommendationid"]) for f in text_parts])
         check("text_svd: unique review ids, all present in review_features", tf["recommendationid"].is_unique and tf["recommendationid"].isin(rf["recommendationid"]).all(), f"{len(tf):,} reviews")
-        first = pd.read_parquet(sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))[0])
+        first = pd.read_parquet(text_parts[0])
         check("text_svd: no missing values", not first.isna().any().any())
 
     ok = all(r for r, _ in results)
