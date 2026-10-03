@@ -1,3 +1,8 @@
+"""First tag reduction (Truncated SVD, fixed 154 components), fitted on training games only.
+
+Superseded by src/features/tags.py (PCA on filtered columns, k at the variance elbow): see
+docs/feature_engineering.md. Kept for history; its outputs are not used by the feature tables.
+"""
 import json
 from pathlib import Path
 

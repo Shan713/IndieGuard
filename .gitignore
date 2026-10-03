@@ -2,7 +2,9 @@
 data/raw/*
 data/interim/*
 !data/**/.gitkeep
-# data/processed (cleaned tables) IS committed.
+# data/processed (cleaned tables and features) IS committed, except the 233 MB text matrix (regenerate with
+# python -m src.features.text, about 1 minute).
+data/processed/features/text_svd/
 logs/
 .ipynb_checkpoints/
 __pycache__/
