@@ -6,6 +6,7 @@ Exit code 0 = every check passed.
 from __future__ import annotations
 
 import glob
+from fractions import Fraction
 
 import numpy as np
 import pandas as pd
@@ -38,6 +39,22 @@ def run(check_text: bool = True) -> bool:
     check("game_features: no outcome columns among the features", not any(c.startswith(("outcome_", "steam_total", "spy_")) for c in gf.columns))
     check("game_outcomes: same games, outcome_ columns only", set(go["appid"]) == set(gf["appid"]) and all(c.startswith("outcome_") or c in ("appid", "split", "cv_fold") for c in go.columns))
 
+    gt = pd.read_parquet(OUT / "game_targets.parquet")
+    m = gt.merge(go[["appid", "outcome_total_reviews", "outcome_total_negative"]], on="appid", validate="one_to_one")
+    check("game_targets: one row per game, split copied from game_split.csv", gt["appid"].is_unique and set(gt["appid"]) == set(games["appid"]) and
+          (gt["split"] == gt["appid"].map(games.set_index("appid")["split"])).all())
+    check("game_targets: a tier exactly for games with 20+ reviews", (m["tier"].notna() == (m["outcome_total_reviews"] >= 20)).all() and (m["eligible"] == (m["outcome_total_reviews"] >= 20)).all(),
+          f"{int(m['eligible'].sum())} eligible games")
+
+    def exact_tier(total: int, neg: int) -> str:                    # independent re-computation with exact fractions
+        share = Fraction(neg, total)
+        return "Struggling" if share >= Fraction(3, 10) else ("Strong" if share <= Fraction(1, 10) else "Solid")
+
+    e = m[m["eligible"] == 1]
+    check("game_targets: tiers match an exact-fraction recomputation", (e["tier"] == [exact_tier(t, n) for t, n in zip(e["outcome_total_reviews"], e["outcome_total_negative"])]).all())
+    check("game_targets: high_risk is Struggling and nothing else", ((e["high_risk"] == 1) == (e["tier"] == "Struggling")).all())
+    check("game_targets: every tier present in train and test", all(set(e.loc[e["split"] == s_, "tier"]) == {"Struggling", "Solid", "Strong"} for s_ in ("train", "test")))
+
     # tag PCA must have been fitted on training games only
     model = dict(np.load(OUT / "tag_pca_model.npz"))
     train = games[games["split"] == "train"]
@@ -60,10 +77,13 @@ def run(check_text: bool = True) -> bool:
     check("review_features: no post-review or outcome columns", not (FORBIDDEN_REVIEW & set(rf.columns)) and not any(c.startswith(("steam_total", "outcome_")) for c in rf.columns))
     check("review_features: label has both classes in train and test", all(rf.loc[rf["split"] == s, "target_is_negative"].nunique() == 2 for s in ("train", "test")))
 
-    if check_text:
-        tf = pd.concat([pd.read_parquet(f, columns=["recommendationid"]) for f in sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))])
+    text_parts = sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))
+    if check_text and not text_parts:
+        print("SKIP  text_svd checks: the text matrix is git-ignored and not built yet (run python -m src.features.text)")
+    elif check_text:
+        tf = pd.concat([pd.read_parquet(f, columns=["recommendationid"]) for f in text_parts])
         check("text_svd: unique review ids, all present in review_features", tf["recommendationid"].is_unique and tf["recommendationid"].isin(rf["recommendationid"]).all(), f"{len(tf):,} reviews")
-        first = pd.read_parquet(sorted(glob.glob(str(OUT / "text_svd" / "*.parquet")))[0])
+        first = pd.read_parquet(text_parts[0])
         check("text_svd: no missing values", not first.isna().any().any())
 
     ok = all(r for r, _ in results)

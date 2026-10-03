@@ -3,7 +3,7 @@
   python -m src.features              build all + validate
   python -m src.features --skip-text  skip the TF-IDF/SVD text block (the slowest, ~1 minute)
 
-Order matters: tags -> game_features (needs tag components) -> review_features (needs game_features) -> text.
+Order matters: tags -> game_features (needs tag components) -> targets -> review_features (needs game_features) -> text.
 """
 from __future__ import annotations
 
@@ -11,14 +11,14 @@ import argparse
 
 import pandas as pd
 
-from . import game_features, review_features, tags, text, validate
+from . import game_features, review_features, tags, targets, text, validate
 from .common import DOCS, get_logger
 
 log = get_logger("features")
 
 
 def write_catalog() -> None:
-    rows = [r for mod in (game_features, review_features, tags, text) for r in mod.CATALOG]
+    rows = [r for mod in (game_features, review_features, tags, targets, text) for r in mod.CATALOG]
     cat = pd.DataFrame(rows, columns=["table", "feature", "group", "source", "definition"])
     cat = cat.drop_duplicates(["table", "feature"]).sort_values(["table", "group", "feature"])
     DOCS.mkdir(parents=True, exist_ok=True)
@@ -34,6 +34,7 @@ def main() -> None:
 
     tags.build()
     game_features.build()
+    targets.build()
     review_features.build()
     if not args.skip_text:
         text.build()

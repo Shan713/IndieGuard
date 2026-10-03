@@ -7,3 +7,6 @@ scikit-learn
 scipy
 matplotlib
 seaborn
+# modelling (brief: Logistic Regression, Random Forest, XGBoost, SHAP)
+xgboost
+shap
