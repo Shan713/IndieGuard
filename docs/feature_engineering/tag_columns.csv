@@ -1,0 +1,440 @@
+column,kind,train_games,train_prevalence,decision
+category__Co-op,category,149,0.1001,dropped: duplicates a tag
+category__Online Co-op,category,101,0.0678,dropped: duplicates a tag
+category__PvP,category,67,0.045,dropped: duplicates a tag
+category__Family Sharing,category,1489,1.0,dropped: near-constant
+tag__Indie,tag,1476,0.9913,dropped: near-constant
+category__Single-player,category,1470,0.9872,dropped: near-constant
+tag__Racing,tag,14,0.0094,dropped: rare
+tag__Underwater,tag,14,0.0094,dropped: rare
+tag__Military,tag,14,0.0094,dropped: rare
+category__Surround Sound,category,14,0.0094,dropped: rare
+tag__Faith,tag,13,0.0087,dropped: rare
+tag__Precision Platformer,tag,13,0.0087,dropped: rare
+tag__Time Travel,tag,13,0.0087,dropped: rare
+tag__Experimental,tag,13,0.0087,dropped: rare
+tag__Farming Sim,tag,13,0.0087,dropped: rare
+tag__Solitaire,tag,13,0.0087,dropped: rare
+tag__Interactive Fiction,tag,13,0.0087,dropped: rare
+tag__Music,tag,13,0.0087,dropped: rare
+tag__Cinematic,tag,13,0.0087,dropped: rare
+tag__Asynchronous Multiplayer,tag,13,0.0087,dropped: rare
+tag__VR,tag,12,0.0081,dropped: rare
+tag__Hentai,tag,12,0.0081,dropped: rare
+tag__Dice,tag,12,0.0081,dropped: rare
+tag__Massively Multiplayer,tag,12,0.0081,dropped: rare
+tag__Psychological,tag,12,0.0081,dropped: rare
+tag__Memes,tag,12,0.0081,dropped: rare
+tag__CRPG,tag,12,0.0081,dropped: rare
+tag__Great Soundtrack,tag,12,0.0081,dropped: rare
+tag__Typing,tag,12,0.0081,dropped: rare
+tag__Hex Grid,tag,12,0.0081,dropped: rare
+category__#category_playable_at_your_own_pace,category,12,0.0081,dropped: rare
+category__Captions available,category,12,0.0081,dropped: rare
+tag__Destruction,tag,11,0.0074,dropped: rare
+tag__Fishing,tag,11,0.0074,dropped: rare
+tag__Team-Based,tag,11,0.0074,dropped: rare
+tag__Noir,tag,11,0.0074,dropped: rare
+tag__Level Editor,tag,11,0.0074,dropped: rare
+tag__Western,tag,11,0.0074,dropped: rare
+category__VR Only,category,11,0.0074,dropped: rare
+category__Subtitle Options,category,11,0.0074,dropped: rare
+tag__Agriculture,tag,10,0.0067,dropped: rare
+tag__Immersive Sim,tag,10,0.0067,dropped: rare
+tag__Fighting,tag,10,0.0067,dropped: rare
+tag__Education,tag,10,0.0067,dropped: rare
+tag__Time Manipulation,tag,10,0.0067,dropped: rare
+tag__Match 3,tag,10,0.0067,dropped: rare
+tag__Cooking,tag,10,0.0067,dropped: rare
+tag__Open World Survival Craft,tag,10,0.0067,dropped: rare
+tag__Life Sim,tag,10,0.0067,dropped: rare
+tag__Driving,tag,9,0.006,dropped: rare
+tag__3D Fighter,tag,9,0.006,dropped: rare
+tag__Parkour,tag,9,0.006,dropped: rare
+tag__Boss Rush,tag,9,0.006,dropped: rare
+tag__Space Sim,tag,9,0.006,dropped: rare
+tag__Hidden Object,tag,9,0.006,dropped: rare
+tag__Moddable,tag,9,0.006,dropped: rare
+tag__Spectacle fighter,tag,9,0.006,dropped: rare
+tag__Puzzle Platformer,tag,8,0.0054,dropped: rare
+tag__Thriller,tag,8,0.0054,dropped: rare
+tag__Modern,tag,8,0.0054,dropped: rare
+tag__Co-op Campaign,tag,8,0.0054,dropped: rare
+tag__Voxel,tag,8,0.0054,dropped: rare
+tag__Action RTS,tag,8,0.0054,dropped: rare
+tag__Science,tag,8,0.0054,dropped: rare
+tag__Dating Sim,tag,8,0.0054,dropped: rare
+tag__Spaceships,tag,8,0.0054,dropped: rare
+tag__Dinosaurs,tag,8,0.0054,dropped: rare
+tag__Hunting,tag,8,0.0054,dropped: rare
+tag__Programming,tag,7,0.0047,dropped: rare
+tag__Ninja,tag,7,0.0047,dropped: rare
+tag__Walking Simulator,tag,7,0.0047,dropped: rare
+tag__Pirates,tag,7,0.0047,dropped: rare
+tag__Competitive,tag,7,0.0047,dropped: rare
+tag__Hero Shooter,tag,7,0.0047,dropped: rare
+tag__Real-Time,tag,7,0.0047,dropped: rare
+tag__Trading,tag,7,0.0047,dropped: rare
+tag__Dialogue Heavy,tag,7,0.0047,dropped: rare
+tag__Spelling,tag,7,0.0047,dropped: rare
+tag__God Game,tag,7,0.0047,dropped: rare
+tag__Villain Protagonist,tag,7,0.0047,dropped: rare
+category__Tracked Controller Support,category,7,0.0047,dropped: rare
+category__MMO,category,7,0.0047,dropped: rare
+tag__Archery,tag,6,0.004,dropped: rare
+tag__Hacking,tag,6,0.004,dropped: rare
+tag__Music-Based Procedural Generation,tag,6,0.004,dropped: rare
+tag__LGBTQ+,tag,6,0.004,dropped: rare
+tag__Emotional,tag,6,0.004,dropped: rare
+tag__Colony Sim,tag,6,0.004,dropped: rare
+tag__Sailing,tag,6,0.004,dropped: rare
+tag__Crime,tag,6,0.004,dropped: rare
+tag__Satire,tag,6,0.004,dropped: rare
+tag__Parody,tag,6,0.004,dropped: rare
+tag__Superhero,tag,6,0.004,dropped: rare
+tag__Trains,tag,6,0.004,dropped: rare
+tag__Extraction Shooter,tag,5,0.0034,dropped: rare
+tag__Combat Racing,tag,5,0.0034,dropped: rare
+tag__Wholesome,tag,5,0.0034,dropped: rare
+tag__Grand Strategy,tag,5,0.0034,dropped: rare
+tag__Short,tag,5,0.0034,dropped: rare
+tag__Dynamic Narration,tag,5,0.0034,dropped: rare
+tag__MOBA,tag,5,0.0034,dropped: rare
+tag__Dwarves,tag,5,0.0034,dropped: rare
+tag__Naval Combat,tag,5,0.0034,dropped: rare
+tag__Character Action Game,tag,5,0.0034,dropped: rare
+tag__Farming,tag,5,0.0034,dropped: rare
+tag__Pinball,tag,5,0.0034,dropped: rare
+tag__Dogs,tag,5,0.0034,dropped: rare
+tag__Real-Time with Pause,tag,5,0.0034,dropped: rare
+tag__MMORPG,tag,5,0.0034,dropped: rare
+category__Remote Play on Tablet,category,5,0.0034,dropped: rare
+tag__Investigation,tag,4,0.0027,dropped: rare
+tag__Split Screen,tag,4,0.0027,dropped: rare
+tag__On-Rails Shooter,tag,4,0.0027,dropped: rare
+tag__Nostalgia,tag,4,0.0027,dropped: rare
+tag__Remake,tag,4,0.0027,dropped: rare
+tag__Detective,tag,4,0.0027,dropped: rare
+tag__Minigames,tag,4,0.0027,dropped: rare
+tag__Mahjong,tag,4,0.0027,dropped: rare
+tag__Naval,tag,4,0.0027,dropped: rare
+tag__6DOF,tag,4,0.0027,dropped: rare
+tag__Xianxia,tag,4,0.0027,dropped: rare
+tag__Party Game,tag,4,0.0027,dropped: rare
+tag__Philosophical,tag,4,0.0027,dropped: rare
+category__Remote Play on Phone,category,4,0.0027,dropped: rare
+tag__Mars,tag,3,0.002,dropped: rare
+tag__Snow,tag,3,0.002,dropped: rare
+tag__World War II,tag,3,0.002,dropped: rare
+tag__Billiards,tag,3,0.002,dropped: rare
+tag__Automobile Sim,tag,3,0.002,dropped: rare
+tag__Social Deduction,tag,3,0.002,dropped: rare
+tag__Conspiracy,tag,3,0.002,dropped: rare
+tag__Transportation,tag,3,0.002,dropped: rare
+tag__Touch-Friendly,tag,3,0.002,dropped: rare
+tag__Political Sim,tag,3,0.002,dropped: rare
+tag__Poker,tag,3,0.002,dropped: rare
+tag__eSports,tag,3,0.002,dropped: rare
+tag__4X,tag,3,0.002,dropped: rare
+tag__Heist,tag,3,0.002,dropped: rare
+category__Includes Source SDK,category,3,0.002,dropped: rare
+category__LAN PvP,category,3,0.002,dropped: rare
+tag__Vikings,tag,2,0.0013,dropped: rare
+tag__Boxing,tag,2,0.0013,dropped: rare
+tag__Shop Keeper,tag,2,0.0013,dropped: rare
+tag__Based On A Novel,tag,2,0.0013,dropped: rare
+tag__Basketball,tag,2,0.0013,dropped: rare
+tag__Battle Royale,tag,2,0.0013,dropped: rare
+tag__Offroad,tag,2,0.0013,dropped: rare
+tag__Submarine,tag,2,0.0013,dropped: rare
+tag__Tanks,tag,2,0.0013,dropped: rare
+tag__Chess,tag,2,0.0013,dropped: rare
+tag__Addictive,tag,2,0.0013,dropped: rare
+tag__Escape Room,tag,2,0.0013,dropped: rare
+tag__FMV,tag,2,0.0013,dropped: rare
+tag__Design & Illustration,tag,2,0.0013,dropped: rare
+tag__Animals,tag,2,0.0013,dropped: rare
+tag__Skating,tag,2,0.0013,dropped: rare
+tag__Foxes,tag,2,0.0013,dropped: rare
+tag__Gaming,tag,2,0.0013,dropped: rare
+tag__Sokoban,tag,2,0.0013,dropped: rare
+tag__Transhumanism,tag,2,0.0013,dropped: rare
+tag__Skiing,tag,2,0.0013,dropped: rare
+tag__Musou,tag,2,0.0013,dropped: rare
+tag__Immersive,tag,2,0.0013,dropped: rare
+tag__Cult,tag,2,0.0013,dropped: rare
+tag__Romance,tag,2,0.0013,dropped: rare
+tag__Sniper,tag,2,0.0013,dropped: rare
+tag__Skateboarding,tag,2,0.0013,dropped: rare
+tag__Desktop Companion,tag,2,0.0013,dropped: rare
+category__VR Supported,category,2,0.0013,dropped: rare
+category__Steam Timeline,category,2,0.0013,dropped: rare
+category__HDR available,category,2,0.0013,dropped: rare
+category__Commentary available,category,2,0.0013,dropped: rare
+tag__Game Development,tag,1,0.0007,dropped: rare
+tag__Time Attack,tag,1,0.0007,dropped: rare
+tag__Electronic Music,tag,1,0.0007,dropped: rare
+tag__Trivia,tag,1,0.0007,dropped: rare
+tag__Hockey,tag,1,0.0007,dropped: rare
+tag__Baseball,tag,1,0.0007,dropped: rare
+tag__Rome,tag,1,0.0007,dropped: rare
+tag__Werewolves,tag,1,0.0007,dropped: rare
+tag__Language Learning,tag,1,0.0007,dropped: rare
+tag__Silent Protagonist,tag,1,0.0007,dropped: rare
+tag__Zoo,tag,1,0.0007,dropped: rare
+tag__Wolves,tag,1,0.0007,dropped: rare
+tag__Outbreak Sim,tag,1,0.0007,dropped: rare
+tag__Software,tag,1,0.0007,dropped: rare
+tag__8-bit Music,tag,1,0.0007,dropped: rare
+tag__Jump Scare,tag,1,0.0007,dropped: rare
+tag__Hardware,tag,1,0.0007,dropped: rare
+tag__Tennis,tag,1,0.0007,dropped: rare
+tag__Horses,tag,1,0.0007,dropped: rare
+tag__Football (Soccer),tag,1,0.0007,dropped: rare
+tag__Assassins,tag,1,0.0007,dropped: rare
+tag__Bowling,tag,1,0.0007,dropped: rare
+tag__Rock Music,tag,1,0.0007,dropped: rare
+tag__Narrative,tag,1,0.0007,dropped: rare
+tag__Asymmetric VR,tag,1,0.0007,dropped: rare
+tag__Falling Blocks,tag,1,0.0007,dropped: rare
+tag__Samurai,tag,1,0.0007,dropped: rare
+tag__Diplomacy,tag,1,0.0007,dropped: rare
+tag__Job Simulator,tag,1,0.0007,dropped: rare
+tag__Utilities,tag,1,0.0007,dropped: rare
+tag__Wuxia,tag,1,0.0007,dropped: rare
+category__Narrated Game Menus,category,1,0.0007,dropped: rare
+category__#category_contrast_controls,category,1,0.0007,dropped: rare
+tag__Singleplayer,tag,1355,0.91,kept
+tag__Roguelike,tag,1047,0.7032,kept
+category__Steam Achievements,category,997,0.6696,kept
+tag__Roguelite,tag,985,0.6615,kept
+tag__Action,tag,875,0.5876,kept
+tag__2D,tag,835,0.5608,kept
+category__Steam Cloud,category,771,0.5178,kept
+tag__Action Roguelike,tag,715,0.4802,kept
+category__Full controller support,category,570,0.3828,kept
+tag__Strategy,tag,555,0.3727,kept
+tag__Pixel Graphics,tag,554,0.3721,kept
+tag__Casual,tag,554,0.3721,kept
+tag__RPG,tag,499,0.3351,kept
+tag__Fantasy,tag,481,0.323,kept
+tag__Adventure,tag,457,0.3069,kept
+tag__Combat,tag,451,0.3029,kept
+tag__Top-Down,tag,348,0.2337,kept
+tag__Bullet Hell,tag,335,0.225,kept
+tag__Procedural Generation,tag,323,0.2169,kept
+tag__3D,tag,323,0.2169,kept
+category__DualShock Controller Support,category,311,0.2089,kept
+tag__Deckbuilding,tag,290,0.1948,kept
+tag__Early Access,tag,274,0.184,kept
+category__DualSense Controller Support,category,274,0.184,kept
+tag__PvE,tag,259,0.1739,kept
+tag__Arcade,tag,253,0.1699,kept
+tag__Colorful,tag,248,0.1666,kept
+tag__Controller,tag,232,0.1558,kept
+tag__Cute,tag,221,0.1484,kept
+tag__Card Game,tag,220,0.1478,kept
+tag__Shooter,tag,213,0.143,kept
+tag__Survival,tag,210,0.141,kept
+tag__Retro,tag,206,0.1383,kept
+tag__Dungeon Crawler,tag,201,0.135,kept
+tag__Hack and Slash,tag,200,0.1343,kept
+tag__Turn-Based Combat,tag,196,0.1316,kept
+tag__Difficult,tag,196,0.1316,kept
+tag__Perma Death,tag,193,0.1296,kept
+tag__Magic,tag,193,0.1296,kept
+tag__Free to Play,tag,191,0.1283,kept
+category__Custom Volume Controls,category,191,0.1283,kept
+category__Multi-player,category,190,0.1276,kept
+tag__Turn-Based Strategy,tag,177,0.1189,kept
+tag__Sci-fi,tag,174,0.1169,kept
+tag__Replay Value,tag,174,0.1169,kept
+tag__Card Battler,tag,169,0.1135,kept
+tag__Roguelike Deckbuilder,tag,168,0.1128,kept
+tag__Stylized,tag,166,0.1115,kept
+tag__Action RPG,tag,166,0.1115,kept
+tag__Simulation,tag,164,0.1101,kept
+category__Partial Controller Support,category,163,0.1095,kept
+tag__Atmospheric,tag,162,0.1088,kept
+tag__Dark Fantasy,tag,160,0.1075,kept
+tag__Turn-Based Tactics,tag,160,0.1075,kept
+category__Steam Leaderboards,category,158,0.1061,kept
+tag__Top-Down Shooter,tag,148,0.0994,kept
+category__Playable without Timed Input,category,148,0.0994,kept
+tag__Medieval,tag,146,0.0981,kept
+tag__Female Protagonist,tag,144,0.0967,kept
+tag__Tactical,tag,143,0.096,kept
+tag__Funny,tag,142,0.0954,kept
+tag__Anime,tag,139,0.0934,kept
+tag__Choices Matter,tag,139,0.0934,kept
+tag__Exploration,tag,133,0.0893,kept
+tag__Multiplayer,tag,132,0.0887,kept
+tag__Action-Adventure,tag,131,0.088,kept
+tag__Auto Battler,tag,117,0.0786,kept
+tag__Shoot 'Em Up,tag,115,0.0772,kept
+tag__Cartoony,tag,107,0.0719,kept
+tag__First-Person,tag,104,0.0698,kept
+tag__Tower Defense,tag,104,0.0698,kept
+category__Steam Trading Cards,category,104,0.0698,kept
+tag__Relaxing,tag,103,0.0692,kept
+tag__Hand-drawn,tag,102,0.0685,kept
+tag__Story Rich,tag,100,0.0672,kept
+tag__Character Customization,tag,99,0.0665,kept
+tag__Dark,tag,97,0.0651,kept
+tag__Turn-Based,tag,97,0.0651,kept
+tag__Co-op,tag,97,0.0651,kept
+tag__Third Person,tag,96,0.0645,kept
+tag__Score Attack,tag,94,0.0631,kept
+tag__Resource Management,tag,93,0.0625,kept
+tag__Loot,tag,91,0.0611,kept
+tag__Space,tag,91,0.0611,kept
+tag__2D Platformer,tag,91,0.0611,kept
+category__Mouse Only Option,category,91,0.0611,kept
+category__Adjustable Difficulty,category,91,0.0611,kept
+tag__Horror,tag,85,0.0571,kept
+category__Stats,category,84,0.0564,kept
+tag__Minimalist,tag,83,0.0557,kept
+category__Save Anytime,category,83,0.0557,kept
+category__Camera Comfort,category,83,0.0557,kept
+tag__Isometric,tag,82,0.0551,kept
+tag__Strategy RPG,tag,81,0.0544,kept
+category__Gamepad Recommended,category,80,0.0537,kept
+tag__Online Co-Op,tag,78,0.0524,kept
+tag__Cartoon,tag,78,0.0524,kept
+category__Remote Play Together,category,78,0.0524,kept
+tag__Futuristic,tag,76,0.051,kept
+tag__Puzzle,tag,76,0.051,kept
+tag__Platformer,tag,76,0.051,kept
+tag__Zombies,tag,73,0.049,kept
+tag__Post-apocalyptic,tag,71,0.0477,kept
+category__Shared/Split Screen,category,71,0.0477,kept
+tag__Arena Shooter,tag,70,0.047,kept
+category__Stereo Sound,category,70,0.047,kept
+tag__Comedy,tag,69,0.0463,kept
+tag__Bullet Heaven,tag,69,0.0463,kept
+tag__Twin Stick Shooter,tag,67,0.045,kept
+tag__Crafting,tag,66,0.0443,kept
+tag__Management,tag,66,0.0443,kept
+tag__Base Building,tag,63,0.0423,kept
+tag__Multiple Endings,tag,61,0.041,kept
+tag__Building,tag,61,0.041,kept
+tag__2.5D,tag,60,0.0403,kept
+tag__Mythology,tag,58,0.039,kept
+tag__Old School,tag,57,0.0383,kept
+category__Shared/Split Screen Co-op,category,56,0.0376,kept
+tag__Cyberpunk,tag,54,0.0363,kept
+tag__Violent,tag,54,0.0363,kept
+tag__Physics,tag,53,0.0356,kept
+tag__Linear,tag,53,0.0356,kept
+tag__Family Friendly,tag,52,0.0349,kept
+tag__Open World,tag,52,0.0349,kept
+tag__FPS,tag,51,0.0343,kept
+tag__Demons,tag,51,0.0343,kept
+tag__Gore,tag,50,0.0336,kept
+tag__RTS,tag,49,0.0329,kept
+category__Online PvP,category,49,0.0329,kept
+tag__Class-Based,tag,48,0.0322,kept
+tag__Incremental,tag,48,0.0322,kept
+tag__PvP,tag,48,0.0322,kept
+category__Keyboard Only Option,category,48,0.0322,kept
+tag__Souls-like,tag,47,0.0316,kept
+tag__Aliens,tag,46,0.0309,kept
+tag__Side Scroller,tag,45,0.0302,kept
+tag__Fast-Paced,tag,45,0.0302,kept
+tag__Psychological Horror,tag,44,0.0296,kept
+tag__Robots,tag,43,0.0289,kept
+tag__Real Time Tactics,tag,43,0.0289,kept
+tag__Idler,tag,43,0.0289,kept
+tag__Inventory Management,tag,43,0.0289,kept
+tag__Tactical RPG,tag,42,0.0282,kept
+tag__Local Co-Op,tag,42,0.0282,kept
+tag__Beat 'em up,tag,41,0.0275,kept
+tag__Surreal,tag,40,0.0269,kept
+category__Steam Workshop,category,40,0.0269,kept
+tag__Dark Humor,tag,39,0.0262,kept
+tag__1990's,tag,38,0.0255,kept
+tag__Survival Horror,tag,38,0.0255,kept
+tag__Nature,tag,38,0.0255,kept
+tag__1980s,tag,37,0.0248,kept
+tag__Looter Shooter,tag,37,0.0248,kept
+tag__Traditional Roguelike,tag,36,0.0242,kept
+category__Color Alternatives,category,36,0.0242,kept
+tag__Sexual Content,tag,35,0.0235,kept
+tag__Board Game,tag,35,0.0235,kept
+tag__Grid-Based Movement,tag,35,0.0235,kept
+tag__Mystery,tag,33,0.0222,kept
+tag__Sandbox,tag,32,0.0215,kept
+tag__Party-Based RPG,tag,31,0.0208,kept
+tag__Tabletop,tag,31,0.0208,kept
+tag__Gun Customization,tag,30,0.0201,kept
+tag__Tutorial,tag,29,0.0195,kept
+tag__Bullet Time,tag,29,0.0195,kept
+tag__Vampires,tag,29,0.0195,kept
+category__Steam Input API Support,category,29,0.0195,kept
+tag__JRPG,tag,28,0.0188,kept
+tag__Comic Book,tag,28,0.0188,kept
+tag__Local Multiplayer,tag,28,0.0188,kept
+tag__War,tag,27,0.0181,kept
+tag__Choose Your Own Adventure,tag,27,0.0181,kept
+tag__Text-Based,tag,27,0.0181,kept
+tag__Psychedelic,tag,26,0.0175,kept
+tag__Logic,tag,26,0.0175,kept
+tag__Third-Person Shooter,tag,26,0.0175,kept
+tag__3D Platformer,tag,25,0.0168,kept
+tag__Time Management,tag,25,0.0168,kept
+tag__Automation,tag,25,0.0168,kept
+tag__Metroidvania,tag,25,0.0168,kept
+tag__Mystery Dungeon,tag,25,0.0168,kept
+category__In-App Purchases,category,25,0.0168,kept
+tag__Lore-Rich,tag,24,0.0161,kept
+tag__Supernatural,tag,24,0.0161,kept
+category__Cross-Platform Multiplayer,category,24,0.0161,kept
+tag__Historical,tag,23,0.0154,kept
+tag__Creature Collector,tag,23,0.0154,kept
+category__Touch Only Option,category,23,0.0154,kept
+category__Shared/Split Screen PvP,category,23,0.0154,kept
+tag__Lovecraftian,tag,22,0.0148,kept
+tag__Realistic,tag,22,0.0148,kept
+tag__Nudity,tag,22,0.0148,kept
+tag__Stealth,tag,22,0.0148,kept
+tag__Martial Arts,tag,22,0.0148,kept
+category__Remote Play on TV,category,22,0.0148,kept
+tag__Runner,tag,21,0.0141,kept
+tag__City Builder,tag,21,0.0141,kept
+tag__Rhythm,tag,20,0.0134,kept
+tag__Abstract,tag,20,0.0134,kept
+tag__Sports,tag,20,0.0134,kept
+tag__Point & Click,tag,20,0.0134,kept
+tag__Cats,tag,20,0.0134,kept
+tag__Collectathon,tag,20,0.0134,kept
+tag__Soundtrack,tag,20,0.0134,kept
+tag__Word Game,tag,20,0.0134,kept
+tag__Visual Novel,tag,20,0.0134,kept
+tag__Mechs,tag,19,0.0128,kept
+tag__Dragons,tag,19,0.0128,kept
+tag__Trading Card Game,tag,19,0.0128,kept
+tag__Swordplay,tag,19,0.0128,kept
+tag__Gambling,tag,19,0.0128,kept
+tag__Mouse Only,tag,19,0.0128,kept
+category__Adjustable Text Size,category,19,0.0128,kept
+tag__Vehicular Combat,tag,18,0.0121,kept
+tag__Alternate History,tag,18,0.0121,kept
+tag__Underground,tag,18,0.0121,kept
+tag__Economy,tag,18,0.0121,kept
+tag__Capitalism,tag,18,0.0121,kept
+tag__Dystopian,tag,17,0.0114,kept
+tag__Flight,tag,17,0.0114,kept
+tag__Artificial Intelligence,tag,17,0.0114,kept
+tag__Wargame,tag,17,0.0114,kept
+tag__Boomer Shooter,tag,17,0.0114,kept
+category__LAN Co-op,category,17,0.0114,kept
+category__Includes level editor,category,17,0.0114,kept
+tag__Mining,tag,16,0.0107,kept
+tag__2D Fighter,tag,16,0.0107,kept
+tag__Cozy,tag,15,0.0101,kept
+tag__Quick-Time Events,tag,15,0.0101,kept
+tag__Nonlinear,tag,15,0.0101,kept
+tag__Dark Comedy,tag,15,0.0101,kept
+tag__4 Player Local,tag,15,0.0101,kept
+tag__Steampunk,tag,15,0.0101,kept
+tag__Gothic,tag,15,0.0101,kept
