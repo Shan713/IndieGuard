@@ -57,7 +57,10 @@ def build_vocabulary(train: pd.DataFrame) -> pd.DataFrame:
                 decision = "kept"
             rows.append({"column": f"{kind}__{name}", "kind": kind, "train_games": int(c),
                          "train_prevalence": round(prev, 4), "decision": decision})
-    return pd.DataFrame(rows).sort_values(["decision", "train_games"], ascending=[True, False]).reset_index(drop=True)
+    # Full sort (ties broken by name): the column order must not depend on set iteration order, which changes
+    # with the per-process hash seed and would change the PCA from run to run.
+    return (pd.DataFrame(rows).sort_values(["decision", "train_games", "column"], ascending=[True, False, True])
+            .reset_index(drop=True))
 
 
 def multi_hot(games: pd.DataFrame, columns: list[str]) -> np.ndarray:
