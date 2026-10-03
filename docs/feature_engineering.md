@@ -16,6 +16,7 @@ feature, with its source, group and definition, is `docs/feature_engineering/fea
 | --- | ---: | ---: | --- | --- |
 | `game_features` | 1,861 games | 90 (68 tag components) | `data/processed/features/game_features.parquet` | Game-level success-tier model, association rules |
 | `game_outcomes` | 1,861 games | 10 (all `outcome_*`) | `.../game_outcomes.parquet` | Targets for the game-level model. Never inputs |
+| `game_targets` | 1,861 games (1,490 with a tier) | 7 | `.../game_targets.parquet` | The game-level label (`tier`, `tier_code`, `high_risk`); see `docs/game_target.md` |
 | `review_features` | 1,573,436 reviews | 29 | `.../review_features/` (5 parquet parts) | Review-level "is it negative?" model |
 | `tag_components` | 1,861 games | 70 | `.../tag_components.parquet` | The tag PCA scores on their own |
 | `tag_pca_model.npz` | | | `.../tag_pca_model.npz` | Vocabulary, mean and loadings to score a new game |
@@ -101,8 +102,8 @@ $10-20, $20+), not quantiles, so nothing is fitted.
 Windows support is true for every game and is omitted. DLC and achievement counts are as of the store snapshot,
 so they can include post-launch additions.
 
-**The success-tier target is not defined here**: it belongs to M4. `game_outcomes` has what is needed
-(`outcome_total_reviews`, `outcome_neg_ratio`, `outcome_pct_positive`, `outcome_review_score`).
+**The game-level target is defined separately**: three success tiers in `game_targets` (see `docs/game_target.md`), built from
+`game_outcomes`. Rules for using these tables in models are in `docs/modelling_protocol.md`.
 
 ## 5. Review-level features
 

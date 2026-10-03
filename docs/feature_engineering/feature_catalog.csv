@@ -21,6 +21,9 @@ game_features,patches_first_30d,post_launch,events,Developer patch announcements
 game_features,patches_first_90d,post_launch,events,Developer patch announcements in the first 90 days after launch_date
 game_features,sales_first_90d,post_launch,events,Developer sale announcements in the first 90 days after launch_date
 game_outcomes,outcome_total_reviews .. outcome_review_score_desc,outcome,games.steam_total_*,"Steam's own totals and rating band: targets and descriptions, NEVER predictors"
+game_targets,"eligible, appid, split, cv_fold",key,"game_outcomes, game_split.csv",Has 20+ reviews (gets a tier); key and shared split
+game_targets,high_risk,target,game_outcomes,Binary version: Struggling vs the rest (same games as tier)
+game_targets,"tier, tier_code",target,game_outcomes,"Success tier for games with 20+ reviews: Struggling (30%+ negative, 0), Solid (1), Strong (10%- negative, 2); missing below 20 reviews"
 review_features,"author_num_games_owned_log1p, author_num_reviews_log1p",at_review,reviews_clean,log(1 + reviewer's library size / number of reviews)
 review_features,days_since_last_patch,at_review,events,Days since the developer's latest patch announcement at the time of the review; missing before the first patch
 review_features,days_since_last_sale,at_review,events,Days since the latest sale announcement; missing before the first one

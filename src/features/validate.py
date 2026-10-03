@@ -6,6 +6,7 @@ Exit code 0 = every check passed.
 from __future__ import annotations
 
 import glob
+from fractions import Fraction
 
 import numpy as np
 import pandas as pd
@@ -37,6 +38,22 @@ def run(check_text: bool = True) -> bool:
     check("game_features: no missing values", not num.isna().any().any())
     check("game_features: no outcome columns among the features", not any(c.startswith(("outcome_", "steam_total", "spy_")) for c in gf.columns))
     check("game_outcomes: same games, outcome_ columns only", set(go["appid"]) == set(gf["appid"]) and all(c.startswith("outcome_") or c in ("appid", "split", "cv_fold") for c in go.columns))
+
+    gt = pd.read_parquet(OUT / "game_targets.parquet")
+    m = gt.merge(go[["appid", "outcome_total_reviews", "outcome_total_negative"]], on="appid", validate="one_to_one")
+    check("game_targets: one row per game, split copied from game_split.csv", gt["appid"].is_unique and set(gt["appid"]) == set(games["appid"]) and
+          (gt["split"] == gt["appid"].map(games.set_index("appid")["split"])).all())
+    check("game_targets: a tier exactly for games with 20+ reviews", (m["tier"].notna() == (m["outcome_total_reviews"] >= 20)).all() and (m["eligible"] == (m["outcome_total_reviews"] >= 20)).all(),
+          f"{int(m['eligible'].sum())} eligible games")
+
+    def exact_tier(total: int, neg: int) -> str:                    # independent re-computation with exact fractions
+        share = Fraction(neg, total)
+        return "Struggling" if share >= Fraction(3, 10) else ("Strong" if share <= Fraction(1, 10) else "Solid")
+
+    e = m[m["eligible"] == 1]
+    check("game_targets: tiers match an exact-fraction recomputation", (e["tier"] == [exact_tier(t, n) for t, n in zip(e["outcome_total_reviews"], e["outcome_total_negative"])]).all())
+    check("game_targets: high_risk is Struggling and nothing else", ((e["high_risk"] == 1) == (e["tier"] == "Struggling")).all())
+    check("game_targets: every tier present in train and test", all(set(e.loc[e["split"] == s_, "tier"]) == {"Struggling", "Solid", "Strong"} for s_ in ("train", "test")))
 
     # tag PCA must have been fitted on training games only
     model = dict(np.load(OUT / "tag_pca_model.npz"))
