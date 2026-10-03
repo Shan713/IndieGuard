@@ -1,0 +1,9 @@
+# Packages used by the pipelines on main (collect, clean, splits, features) and the EDA notebook.
+requests
+pandas
+numpy
+pyarrow
+scikit-learn
+scipy
+matplotlib
+seaborn

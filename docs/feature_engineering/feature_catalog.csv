@@ -1,0 +1,43 @@
+table,feature,group,source,definition
+game_features,"appid, split, cv_fold, reviews_capped",key,game_split.csv,"Key, shared train/test split, cv fold (-1 = test) and the capped-games flag"
+game_features,controller_support_level,launch_time,games.controller_support,"0 none listed, 1 partial, 2 full"
+game_features,has_achievements,launch_time,games.n_achievements,At least one achievement
+game_features,is_free,launch_time,games.is_free,Free to play
+game_features,launch_before_window,launch_time,games.launch_before_window,Early Access launch before 2022 though 1.0 is in 2022 to 2025
+game_features,launch_quarter,launch_time,games.launch_date,Quarter of the launch (1 to 4)
+game_features,launch_year,launch_time,games.launch_date,Year of the original launch (Early Access start if any)
+game_features,launched_in_early_access,launch_time,"release_date, launch_date",Store release (1.0) date is more than 7 days after the original launch
+game_features,n_achievements,launch_time,games.n_achievements,Achievements; missing (none listed) set to 0
+game_features,n_dlc,launch_time,games.n_dlc,"Number of DLCs on the store page (snapshot date, may include post-launch DLC)"
+game_features,n_supported_languages,launch_time,games.n_supported_languages,Interface languages
+game_features,pc_01 .. pc_68,launch_time,"tags, categories",Principal components of the multi-hot tag/category block (src/features/tags.py)
+game_features,pc_01 .. pc_NN,launch_time,"tags, categories","Principal components of the multi-hot tag/category block, fitted on training games (k at the variance elbow)"
+game_features,platform_linux,launch_time,games.platform_linux,Linux supported
+game_features,platform_mac,launch_time,games.platform_mac,Mac supported (Windows is true for all games and omitted)
+game_features,price_tier,launch_time,"price_usd, is_free","0 free, 1 under $5, 2 $5-10, 3 $10-20, 4 $20+ (fixed cut-offs)"
+game_features,price_usd,launch_time,games.price_usd,Regular (undiscounted) US price in USD; 0 for free games
+game_features,self_published,launch_time,"developers, publishers",Developer and publisher share a name
+game_features,patches_first_30d,post_launch,events,Developer patch announcements in the first 30 days after launch_date
+game_features,patches_first_90d,post_launch,events,Developer patch announcements in the first 90 days after launch_date
+game_features,sales_first_90d,post_launch,events,Developer sale announcements in the first 90 days after launch_date
+game_outcomes,outcome_total_reviews .. outcome_review_score_desc,outcome,games.steam_total_*,"Steam's own totals and rating band: targets and descriptions, NEVER predictors"
+review_features,"author_num_games_owned_log1p, author_num_reviews_log1p",at_review,reviews_clean,log(1 + reviewer's library size / number of reviews)
+review_features,days_since_last_patch,at_review,events,Days since the developer's latest patch announcement at the time of the review; missing before the first patch
+review_features,days_since_last_sale,at_review,events,Days since the latest sale announcement; missing before the first one
+review_features,days_since_launch,at_review,"created, games.launch_date",Days from the original launch (Early Access start if any) to the review; negative = before launch
+review_features,has_prior_patch,at_review,events,At least one patch announcement before the review
+review_features,in_refund_window,at_review,author_playtime_at_review,Played under 2 hours (inside Steam's refund policy); unknown playtime counts as 0
+review_features,is_prerelease,at_review,days_since_launch,Written before launch
+review_features,"language, is_english",at_review,language,Reviewer's chosen language and an English flag
+review_features,launch_week,at_review,days_since_launch,Written in the first 7 days after launch
+review_features,n_patches_before,at_review,events,Patch announcements published before the review
+review_features,n_sales_before,at_review,events,Sale announcements published before the review
+review_features,playtime_at_review_min_capped,at_review,author_playtime_at_review_capped,"Minutes played when the review was written, winsorised at the 99.5% quantile"
+review_features,playtime_bucket,at_review,author_playtime_at_review,"0 under 2 h, 1 2-10 h, 2 10-50 h, 3 50 h+; -1 unknown (12 reviews)"
+review_features,"price_usd, price_tier, is_free",at_review,games,"The game's regular price, tier and free flag"
+review_features,"review_n_chars, review_n_words",at_review,review,Length of the review text (words are unreliable for Chinese/Japanese)
+review_features,"steam_purchase, received_for_free, written_during_early_access, primarily_steam_deck",at_review,reviews_clean,Flags as scraped (0/1)
+review_features,"recommendationid, appid, split, cv_fold",key,game_split.csv,"Review key, game, shared split and cv fold (-1 = test)"
+review_features,target_is_negative,target,voted_up,1 if the review does not recommend the game (the label)
+text_svd,t_01 .. t_NN,at_review,"review (English, text_mining_ok, language-filtered)","TF-IDF (1-2 grams) then Truncated SVD, fitted on training games; k at the variance elbow. Git-ignored: regenerate with python -m src.features.text"
+text_svd,"recommendationid, appid",key,reviews_clean,Key columns; join to review_features on recommendationid
