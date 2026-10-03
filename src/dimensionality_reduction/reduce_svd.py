@@ -6,10 +6,12 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-SOURCE = Path(r"..\IndieGuard\data\processed\games_clean.parquet")
-SPLIT_SOURCE = Path("data/processed/splits/game_split.csv")
-OUTPUT_DIR = Path("data/processed/dimensionality_reduction")
-DOCS_DIR = Path("docs/dimensionality_reduction")
+ROOT = Path(__file__).resolve().parents[2]
+
+SOURCE = ROOT / "data/processed/games_clean.parquet"
+SPLIT_SOURCE = ROOT / "data/processed/splits/game_split.csv"
+OUTPUT_DIR = ROOT / "data/processed/dimensionality_reduction"
+DOCS_DIR = ROOT / "docs/dimensionality_reduction"
 
 N_COMPONENTS = 154
 RANDOM_STATE = 42
@@ -236,8 +238,8 @@ def main():
     # ---------------------------------------------------------
 
     metadata = {
-        "source": str(SOURCE),
-        "split_source": str(SPLIT_SOURCE),
+        "source": "data/processed/games_clean.parquet",
+        "split_source": "data/processed/splits/game_split.csv",
         "total_games": int(len(df)),
         "training_games": int(len(train_df)),
         "test_games": int(len(test_df)),
