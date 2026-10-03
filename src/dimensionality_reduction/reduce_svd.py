@@ -7,8 +7,9 @@ from sklearn.preprocessing import MultiLabelBinarizer
 
 
 SOURCE = Path(r"..\IndieGuard\data\processed\games_clean.parquet")
-OUTPUT_DIR = Path("dimensionality_reduction_output")
-OUTPUT_DIR.mkdir(exist_ok=True)
+SPLIT_SOURCE = Path("data/processed/splits/game_split.csv")
+OUTPUT_DIR = Path("data/processed/dimensionality_reduction")
+DOCS_DIR = Path("docs/dimensionality_reduction")
 
 N_COMPONENTS = 154
 RANDOM_STATE = 42
@@ -47,22 +48,86 @@ def main():
     print("Loading cleaned dataset...")
     df = pd.read_parquet(SOURCE)
 
-    print(f"Games: {len(df)}")
+    print("Loading train/test split...")
+    split_df = pd.read_csv(SPLIT_SOURCE)
 
-    feature_lists = build_feature_lists(df)
+    # ---------------------------------------------------------
+    # Validate split
+    # ---------------------------------------------------------
 
-    mlb = MultiLabelBinarizer(sparse_output=True)
-    X = mlb.fit_transform(feature_lists)
+    if split_df["appid"].duplicated().any():
+        raise ValueError("Duplicate AppIDs found in game_split.csv.")
 
-    print(f"Original dimensions: {X.shape[1]}")
-    print(f"Matrix shape: {X.shape}")
-    print(f"Non-zero values: {X.nnz}")
-    print(
-        f"Sparsity: "
-        f"{(1 - X.nnz / (X.shape[0] * X.shape[1])) * 100:.2f}%"
+    if not df["appid"].isin(split_df["appid"]).all():
+        missing = (~df["appid"].isin(split_df["appid"])).sum()
+        raise ValueError(
+            f"{missing} games from games_clean.parquet "
+            "are missing from game_split.csv."
+        )
+
+    if not split_df["appid"].isin(df["appid"]).all():
+        extra = (~split_df["appid"].isin(df["appid"])).sum()
+        raise ValueError(
+            f"{extra} AppIDs in game_split.csv "
+            "are missing from games_clean.parquet."
+        )
+
+    # Keep split information aligned with games_clean
+    df = df.merge(
+        split_df[["appid", "split", "cv_fold"]],
+        on="appid",
+        how="left",
+        validate="one_to_one",
     )
 
-    print(f"\nRunning Truncated SVD with {N_COMPONENTS} components...")
+    if df["split"].isna().any():
+        raise ValueError("Some games do not have a train/test assignment.")
+
+    train_df = df[df["split"] == "train"].copy()
+    test_df = df[df["split"] == "test"].copy()
+
+    print(f"Total games: {len(df)}")
+    print(f"Training games: {len(train_df)}")
+    print(f"Test games: {len(test_df)}")
+
+    # ---------------------------------------------------------
+    # Build feature representation
+    # ---------------------------------------------------------
+
+    train_feature_lists = build_feature_lists(train_df)
+    test_feature_lists = build_feature_lists(test_df)
+
+    # Fit the encoder ONLY on training data
+    mlb = MultiLabelBinarizer(sparse_output=True)
+
+    X_train = mlb.fit_transform(train_feature_lists)
+    X_test = mlb.transform(test_feature_lists)
+
+    print(f"\nOriginal dimensions: {X_train.shape[1]}")
+    print(f"Training matrix shape: {X_train.shape}")
+    print(f"Test matrix shape: {X_test.shape}")
+
+    print(f"Training non-zero values: {X_train.nnz}")
+    print(f"Test non-zero values: {X_test.nnz}")
+
+    print(
+        f"Training sparsity: "
+        f"{(1 - X_train.nnz / (X_train.shape[0] * X_train.shape[1])) * 100:.2f}%"
+    )
+
+    print(
+        f"Test sparsity: "
+        f"{(1 - X_test.nnz / (X_test.shape[0] * X_test.shape[1])) * 100:.2f}%"
+    )
+
+    # ---------------------------------------------------------
+    # Fit SVD ONLY on training data
+    # ---------------------------------------------------------
+
+    print(
+        f"\nFitting Truncated SVD with "
+        f"{N_COMPONENTS} components on TRAINING data..."
+    )
 
     svd = TruncatedSVD(
         n_components=N_COMPONENTS,
@@ -70,34 +135,74 @@ def main():
         random_state=RANDOM_STATE,
     )
 
-    X_reduced = svd.fit_transform(X)
+    X_train_reduced = svd.fit_transform(X_train)
+
+    # Apply the already-fitted SVD to test data
+    X_test_reduced = svd.transform(X_test)
 
     explained = svd.explained_variance_ratio_
     cumulative = explained.cumsum()
 
     print(
-        f"Variance retained: "
+        f"Training variance retained: "
         f"{cumulative[-1] * 100:.2f}%"
     )
 
-    # Reduced dataset
+    # ---------------------------------------------------------
+    # Component names
+    # ---------------------------------------------------------
+
     component_columns = [
         f"svd_component_{i:03d}"
         for i in range(1, N_COMPONENTS + 1)
     ]
 
-    reduced_df = pd.DataFrame(
-        X_reduced,
+    # ---------------------------------------------------------
+    # Save reduced TRAIN dataset
+    # ---------------------------------------------------------
+
+    train_reduced_df = pd.DataFrame(
+        X_train_reduced,
         columns=component_columns,
     )
 
-    reduced_df.insert(0, "name", df["name"].values)
-    reduced_df.insert(0, "appid", df["appid"].values)
+    train_reduced_df.insert(0, "name", train_df["name"].values)
+    train_reduced_df.insert(0, "appid", train_df["appid"].values)
 
-    reduced_path = OUTPUT_DIR / "games_svd_154.parquet"
-    reduced_df.to_parquet(reduced_path, index=False)
+    train_reduced_path = (
+        OUTPUT_DIR / "games_svd_train_154.parquet"
+    )
 
-    # Explained variance table
+    train_reduced_df.to_parquet(
+        train_reduced_path,
+        index=False,
+    )
+
+    # ---------------------------------------------------------
+    # Save reduced TEST dataset
+    # ---------------------------------------------------------
+
+    test_reduced_df = pd.DataFrame(
+        X_test_reduced,
+        columns=component_columns,
+    )
+
+    test_reduced_df.insert(0, "name", test_df["name"].values)
+    test_reduced_df.insert(0, "appid", test_df["appid"].values)
+
+    test_reduced_path = (
+        OUTPUT_DIR / "games_svd_test_154.parquet"
+    )
+
+    test_reduced_df.to_parquet(
+        test_reduced_path,
+        index=False,
+    )
+
+    # ---------------------------------------------------------
+    # Explained variance
+    # ---------------------------------------------------------
+
     variance_df = pd.DataFrame(
         {
             "component": range(1, N_COMPONENTS + 1),
@@ -108,10 +213,13 @@ def main():
         }
     )
 
-    variance_path = OUTPUT_DIR / "svd_variance.csv"
+    variance_path = DOCS_DIR / "svd_variance.csv"
     variance_df.to_csv(variance_path, index=False)
 
+    # ---------------------------------------------------------
     # Feature-to-component loadings
+    # ---------------------------------------------------------
+
     loadings_df = pd.DataFrame(
         svd.components_.T,
         index=mlb.classes_,
@@ -120,49 +228,68 @@ def main():
 
     loadings_df.index.name = "original_feature"
 
-    loadings_path = OUTPUT_DIR / "svd_feature_loadings.csv"
+    loadings_path = DOCS_DIR / "svd_feature_loadings.csv"
     loadings_df.to_csv(loadings_path)
 
-    # Metadata for reproducibility
+    # ---------------------------------------------------------
+    # Metadata
+    # ---------------------------------------------------------
+
     metadata = {
         "source": str(SOURCE),
-        "games": int(X.shape[0]),
-        "original_dimensions": int(X.shape[1]),
+        "split_source": str(SPLIT_SOURCE),
+        "total_games": int(len(df)),
+        "training_games": int(len(train_df)),
+        "test_games": int(len(test_df)),
+        "original_dimensions": int(X_train.shape[1]),
         "reduced_dimensions": N_COMPONENTS,
-        "variance_retained_percent": float(cumulative[-1] * 100),
+        "training_variance_retained_percent": float(
+            cumulative[-1] * 100
+        ),
         "random_state": RANDOM_STATE,
         "n_iter": 10,
         "method": "Truncated SVD",
-        "representation": "Multi-hot encoding of genres, categories and tags",
+        "representation": (
+            "Multi-hot encoding of genres, categories and tags"
+        ),
+        "fit_strategy": (
+            "MultiLabelBinarizer and TruncatedSVD fitted only "
+            "on training games; test games transformed using "
+            "the fitted objects"
+        ),
         "selection_rule": (
-            "Minimum number of components required to retain "
-            "at least 90% cumulative explained variance"
+            "154 components retained to remain consistent with "
+            "the original dimensionality reduction implementation"
         ),
     }
 
-    metadata_path = OUTPUT_DIR / "svd_metadata.json"
+    metadata_path = DOCS_DIR / "svd_metadata.json"
 
     with open(metadata_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
 
+    # ---------------------------------------------------------
+    # Final summary
+    # ---------------------------------------------------------
+
     print("\nSUCCESS")
     print("=" * 50)
-    print(f"Original dimensions : {X.shape[1]}")
-    print(f"Reduced dimensions  : {N_COMPONENTS}")
+    print(f"Total games        : {len(df)}")
+    print(f"Training games     : {len(train_df)}")
+    print(f"Test games         : {len(test_df)}")
+    print(f"Original dimensions: {X_train.shape[1]}")
+    print(f"Reduced dimensions : {N_COMPONENTS}")
     print(
-        f"Variance retained   : "
+        f"Train variance     : "
         f"{cumulative[-1] * 100:.2f}%"
     )
-    print(f"\nOutput folder: {OUTPUT_DIR.resolve()}")
-    print("\nCreated files:")
 
-    for path in [
-        reduced_path,
-        variance_path,
-        loadings_path,
-        metadata_path,
-    ]:
-        print(f"  - {path}")
+    print("\nCreated files:")
+    print(f"  - {train_reduced_path}")
+    print(f"  - {test_reduced_path}")
+    print(f"  - {variance_path}")
+    print(f"  - {loadings_path}")
+    print(f"  - {metadata_path}")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,16 @@
 {
   "source": "..\\IndieGuard\\data\\processed\\games_clean.parquet",
-  "games": 1861,
-  "original_dimensions": 455,
+  "split_source": "data\\processed\\splits\\game_split.csv",
+  "total_games": 1861,
+  "training_games": 1489,
+  "test_games": 372,
+  "original_dimensions": 451,
   "reduced_dimensions": 154,
-  "variance_retained_percent": 90.09360618888526,
+  "training_variance_retained_percent": 90.42183371296474,
   "random_state": 42,
   "n_iter": 10,
   "method": "Truncated SVD",
   "representation": "Multi-hot encoding of genres, categories and tags",
-  "selection_rule": "Minimum number of components required to retain at least 90% cumulative explained variance"
+  "fit_strategy": "MultiLabelBinarizer and TruncatedSVD fitted only on training games; test games transformed using the fitted objects",
+  "selection_rule": "154 components retained to remain consistent with the original dimensionality reduction implementation"
 }
