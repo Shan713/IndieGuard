@@ -163,6 +163,13 @@ sentiment-like signal for models, but they are **not topics**: topic modelling (
   review counts; report per-game as well as pooled metrics (see `docs/train_test_split.md`).
 - **Cross-validation inside train.** The tag and text components were fitted on all training games, including each
   validation fold. This is a small, unsupervised leak; mention it in the report. For a stricter check, refit per fold.
+- **Reviewer counts are measured at collection time.** `author_num_games_owned` and `author_num_reviews` include the
+  reviewer's activity after the review was written. A weak signal (about 0.58 AUC on its own) and unrelated to the
+  outcome, so the leak risk is low, but mention it in the report or drop the two columns for a strict version.
+- **Sanity check before modelling** (throwaway baselines, not committed): a gradient-boosted review-level model
+  reaches a test AUC of about 0.73 (PR-AUC 0.27 against a base rate of 0.11; within-game AUC 0.73), and a random
+  forest on launch-time game features reaches about 0.65 AUC for "high-risk game" (negative ratio of 30% or more).
+  No single feature is above 0.66 AUC alone, which is what we expect when nothing leaks.
 - **Tag components use top-20 user tags**, which is all the store page shows. Games with few votes have noisier tags.
 
 ## 8. Validation
