@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+LightGBM,game,"launch-risk (launch_time features only, 83 cols, mode=all)",0.4474 +/- 0.0187,0.4213,"macro-F1; bal-acc CV 0.459+/-0.018; CV PR-AUC Struggling 0.232; test bal-acc 0.444; recall Str/Sol/Stg 0.45/0.37/0.51; OvR AUC Str 0.648 Stg 0.644; PR-AUC Str 0.290 (prevalence 0.171); boot 95% [0.359, 0.478]; tuned class scales [1.0, 1.0, 1.0]: test macro-F1 0.421, Struggling recall 0.45; 116 rounds, refit on full train; seed 42; tuned {""num_leaves"": 4, ""min_child_samples"": 20}"

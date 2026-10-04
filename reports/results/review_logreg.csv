@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+Logistic Regression,review,review_features + one-hot language (33 cols),0.2084 +/- 0.0243,0.1940,"base rate 0.108; ROC-AUC CV 0.695+/-0.019; per-game median ROC-AUC CV 0.691; test ROC-AUC 0.663; test per-game ROC-AUC 0.684; PR-AUC lift x1.82; threshold 0.559 (max-F1 on OOF): precision 0.201, recall 0.430, F1 0.274; seed 42; tuned {""C"": 0.01}"

@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+Logistic Regression,game,"launch-risk (launch_time features only, 83 cols, mode=all)",0.4224 +/- 0.0330,0.4233,"macro-F1; bal-acc CV 0.450+/-0.027; CV PR-AUC Struggling 0.260; test bal-acc 0.439; recall Str/Sol/Stg 0.39/0.40/0.52; OvR AUC Str 0.644 Stg 0.685; PR-AUC Str 0.279 (prevalence 0.171); boot 95% [0.365, 0.477]; tuned class scales [1.0, 1.0, 0.75]: test macro-F1 0.440, Struggling recall 0.45; seed 42; tuned {""C"": 0.01}"

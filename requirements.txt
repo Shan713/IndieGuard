@@ -9,4 +9,5 @@ matplotlib
 seaborn
 # modelling (brief: Logistic Regression, Random Forest, XGBoost, SHAP)
 xgboost
+lightgbm
 shap
