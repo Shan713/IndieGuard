@@ -16,7 +16,8 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Features and dimensionality reduction | Done: `docs/feature_engineering.md` |
 | Game-level target | Defined, awaiting team agreement: `docs/game_target.md` |
 | EDA | Done: `notebooks/02_EDA_Visualizations.ipynb` |
-| **Models** | **Next: this is what you are about to do. Read "Building a model" below first** |
+| Models | Done for Review 1: Dummy baseline, Logistic Regression, Random Forest, LightGBM and XGBoost on both tasks: `docs/model_comparison.md` |
+| **Next** | **Interpretation and business findings, the Review 1 notebook and slides. See "Building a model" for anything new you add** |
 
 ## Getting started (about 5 minutes)
 
@@ -88,6 +89,7 @@ docs/                  documentation: start with the list below       figures/, 
 | File | What it explains |
 | --- | --- |
 | `docs/modelling_protocol.md` | **Rules for model development, metrics, reference baselines** |
+| `docs/model_comparison.md` | Results of all five models on both tasks, with how to read them |
 | `docs/game_target.md` | The three success tiers and why |
 | `docs/feature_engineering.md` | Every feature table, how it was built, limitations |
 | `docs/train_test_split.md` | The shared split and fold balance |

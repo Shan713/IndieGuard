@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+Dummy (prior),game,"launch-risk (launch_time features only, 83 cols, mode=all)",0.2245 +/- 0.0031,0.2197,"macro-F1; bal-acc CV 0.333+/-0.000; CV PR-AUC Struggling 0.139; test bal-acc 0.333; recall Str/Sol/Stg 0.00/1.00/0.00; OvR AUC Str 0.500 Stg 0.500; PR-AUC Str 0.171 (prevalence 0.171); boot 95% [0.201, 0.236]; tuned class scales [1.0, 1.0, 1.0]: test macro-F1 0.220, Struggling recall 0.00; seed 42; default {}"

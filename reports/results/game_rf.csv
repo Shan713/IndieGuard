@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+Random Forest,game,"launch-risk (launch_time features only, 83 cols, mode=all)",0.4214 +/- 0.0379,0.4037,"macro-F1; bal-acc CV 0.423+/-0.031; CV PR-AUC Struggling 0.235; test bal-acc 0.405; recall Str/Sol/Stg 0.14/0.57/0.50; OvR AUC Str 0.682 Stg 0.625; PR-AUC Str 0.322 (prevalence 0.171); boot 95% [0.342, 0.464]; tuned class scales [1.25, 1.0, 1.0]: test macro-F1 0.417, Struggling recall 0.24; seed 42; tuned {""min_samples_leaf"": 10, ""max_features"": 0.3}"

@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+Random Forest,review,review_features + one-hot language (33 cols),0.2847 +/- 0.0396,0.2754,"base rate 0.108; ROC-AUC CV 0.754+/-0.016; per-game median ROC-AUC CV 0.741; test ROC-AUC 0.721; test per-game ROC-AUC 0.745; PR-AUC lift x2.59; threshold 0.502 (max-F1 on OOF): precision 0.225, recall 0.502, F1 0.311; seed 42; tuned {""min_samples_leaf"": 10, ""max_features"": ""sqrt""}"

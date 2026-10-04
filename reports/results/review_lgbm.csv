@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+LightGBM,review,review_features + one-hot language (33 cols),0.2851 +/- 0.0336,0.2652,"base rate 0.108; ROC-AUC CV 0.754+/-0.014; per-game median ROC-AUC CV 0.745; test ROC-AUC 0.729; test per-game ROC-AUC 0.744; PR-AUC lift x2.49; threshold 0.634 (max-F1 on OOF): precision 0.225, recall 0.528, F1 0.315; 90 rounds, refit on full train; seed 42; tuned {""num_leaves"": 63, ""min_child_samples"": 20}"
