@@ -1,0 +1,5 @@
+Model,CV mean,CV sd,Test,Tuned,Test ROC-AUC,Per-game ROC-AUC,Precision,Recall,F1
+Dummy (prior),0.1006,0.0179,0.1151,default settings,0.5,0.5,0.115,1.0,0.207
+"LightGBM, metadata only",0.3323,0.0258,0.3597,default settings,0.758,0.793,0.343,0.472,0.397
+"LightGBM, metadata + text components",0.5739,0.026,0.5813,default settings,0.892,0.898,0.526,0.592,0.557
+"Logistic Regression, full text + metadata",0.7572,0.0248,0.7849,tuned,0.955,0.958,0.719,0.724,0.721

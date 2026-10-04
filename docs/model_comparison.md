@@ -26,13 +26,31 @@ The Dummy row is the baseline to beat.
 | LightGBM | tuned | 0.447 ± 0.019 | 0.421 [0.36, 0.48] | 0.444 | 0.45 / 0.37 / 0.51 | 0.648 | 0.421 / 0.45 |
 | XGBoost | default settings | 0.418 ± 0.044 | 0.388 [0.33, 0.45] | 0.390 | 0.14 / 0.56 / 0.48 | 0.629 | 0.404 / 0.22 |
 
+## Review level with the review text (English reviews: 436,715 training / 120,487 test)
+
+Same task on the English reviews that have text features. The metadata-only row is the like-for-like reference on exactly these reviews (they are negative a little more often than the rest, 11.5% in this test set, so the numbers differ from the first table). Run `python -m src.models.review_text_models` (it needs `python -m src.features.text` first).
+
+| Model | CV PR-AUC (mean ± sd) | Test PR-AUC | Test ROC-AUC | Per-game ROC-AUC | Precision / recall / F1 at the CV threshold |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Dummy (prior) | 0.101 ± 0.018 | 0.115 | 0.500 | 0.500 | 0.12 / 1.00 / 0.21 |
+| LightGBM, metadata only | 0.332 ± 0.026 | 0.360 | 0.758 | 0.793 | 0.34 / 0.47 / 0.40 |
+| LightGBM, metadata + text components | 0.574 ± 0.026 | 0.581 | 0.892 | 0.898 | 0.53 / 0.59 / 0.56 |
+| Logistic Regression, full text + metadata | 0.757 ± 0.025 | 0.785 | 0.955 | 0.958 | 0.72 / 0.72 / 0.72 |
+
 ## How to read these results
 
 - **Review level.** The three tree-based models are about equal: test PR-AUC 0.265 to 0.283 and ROC-AUC 0.72 to 0.73, about 2.5 times the 0.106 you get by guessing. The differences between them are smaller than the fold-to-fold spread (sd 0.03 to 0.04), so none of them can be called the best. **Logistic Regression is clearly weaker** (0.194), which says negativity depends on non-linear patterns, for example review length together with playtime. Every model beats the Dummy baseline.
 - **Game level.** All four real models beat the Dummy baseline (macro-F1 0.22) by 0.17 to 0.20, and **the simple models do at least as well as the boosted ones**: Logistic Regression 0.423, LightGBM 0.421, Random Forest 0.404, XGBoost 0.388. The test intervals overlap completely (299 test games, only 51 of them Struggling), so again no winner. With about 1,200 training games, extra model complexity does not help.
 - **Struggling games are the hard part, and the models trade off differently.** At the default decision rule, Random Forest and XGBoost find only 14% of Struggling games but 56 to 57% of Solid ones. Logistic Regression and LightGBM, which weight rare classes more, find 39 to 45% of Struggling games and give up Solid recall (37 to 40%). Which is better is a business choice: missing a struggling launch is probably costlier than a false alarm.
 
+- **Reading the review text is the biggest improvement of all.** On the same English reviews, metadata alone reaches a test PR-AUC of 0.360. Adding our 78 compressed text components gives **0.581**, and a plain logistic regression on the full TF-IDF text plus metadata gives **0.785** (ROC-AUC 0.955; 6.8 times the baseline). The metadata-only models above are therefore low because they cannot see what the reviewer wrote, not because the data or the other features are poor.
+- **What the text models are for.** Predicting a review's negativity from its own text is detection, not forecasting: it is useful for flagging complaints as they arrive and for finding what players complain about (Review 2's text mining), but it does not tell a studio in advance which game will be criticised. Report the two kinds of model separately.
+- **The compressed text components lose a lot** (0.581 against 0.785 for the full text), because rare complaint words are squeezed out by the SVD. Use the full sparse text, or many more components, when the text is the point.
+
 ## Caveats
+
+- **The text models cover English reviews only** (557,202 of 1,573,436, about 35%), on a different test subset from the metadata-only tables above, so compare them only with their own metadata-only row.
+- **The best regularisation setting for the text model sits at the edge of the grid** (C = 3.0 of 0.3, 1, 3). A larger value might add a little; it was not explored.
 
 - **XGBoost uses its default settings** and was run by M4 in an earlier environment. The other models were tuned on cross-validation (a small grid; for the review level on a 25% sample of training games). Tuning did not clearly help: untuned LightGBM scored 0.277 on the review test set against 0.265 tuned. Running `python -m src.models.review_xgboost --tune 10` and `python -m src.models.game_xgboost --tune 20` would put XGBoost on the same footing.
 - **Cross-validation is slightly optimistic** (early stopping and tuning choose settings on the validation folds), for example LightGBM at game level: 0.447 in cross-validation against 0.421 on test. Quote the test numbers and their intervals.

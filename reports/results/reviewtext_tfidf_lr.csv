@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+"Logistic Regression, full TF-IDF text + metadata","review (English, text)","full TF-IDF (42k terms) + scaled metadata, English reviews",0.7572 +/- 0.0248,0.7849,"base rate 0.101; ROC-AUC CV 0.952+/-0.007; per-game median ROC-AUC CV 0.950; test ROC-AUC 0.955; test per-game ROC-AUC 0.958; PR-AUC lift x6.82; threshold 0.788 (max-F1 on OOF): precision 0.719, recall 0.724, F1 0.721; seed 42; tuned {""C"": 3.0}"

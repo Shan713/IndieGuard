@@ -4,7 +4,7 @@
 
 Reads reports/results/{review,game}_<model>.csv (protocol table format, written by review_xgboost.py,
 game_xgboost.py, review_models.py and game_models.py) and writes:
-  reports/results/comparison_review.csv, comparison_game.csv
+  reports/results/comparison_review.csv, comparison_game.csv, comparison_review_text.csv
   figures/models/model_comparison.png
   docs/model_comparison.md
 """
@@ -24,6 +24,10 @@ ROOT = Path(__file__).resolve().parents[2]
 RESULTS, FIGURES, DOCS = ROOT / "reports" / "results", ROOT / "figures" / "models", ROOT / "docs"
 ORDER = ["dummy", "logreg", "rf", "lgbm", "xgboost"]
 NAMES = {"dummy": "Dummy (prior)", "logreg": "Logistic Regression", "rf": "Random Forest", "lgbm": "LightGBM", "xgboost": "XGBoost"}
+TEXT_ORDER = ["dummy", "meta", "meta_svd", "tfidf_lr"]
+TEXT_FIG_LABELS = {"dummy": "Dummy\n(prior)", "meta": "LightGBM\nmetadata", "meta_svd": "LightGBM\n+ text SVD", "tfidf_lr": "Logistic Reg.\nfull text"}
+TEXT_NAMES = {"dummy": "Dummy (prior)", "meta": "LightGBM, metadata only", "meta_svd": "LightGBM, metadata + text components",
+              "tfidf_lr": "Logistic Regression, full text + metadata"}
 
 # Written by hand after reading the numbers; keep it in step with the tables.
 NOTES = Path(ROOT / "docs" / "model_comparison_notes.md")
@@ -39,15 +43,15 @@ def cv_parts(s: str) -> tuple[float, float]:
     return (float(m.group(1)), float(m.group(2))) if m else (float("nan"), float("nan"))
 
 
-def load(task: str) -> pd.DataFrame:
+def load(task: str, pattern: str | None = None, keys: list[str] = ORDER, names: dict[str, str] = NAMES) -> pd.DataFrame:
     rows = []
-    for key in ORDER:
-        path = RESULTS / f"{task}_{key}.csv"
+    for key in keys:
+        path = RESULTS / (pattern.format(key=key) if pattern else f"{task}_{key}.csv")
         if not path.exists():
             continue
         r = pd.read_csv(path).iloc[0]
         notes, (cv, sd) = str(r["notes"]), cv_parts(r["cv_mean"])
-        row = {"key": key, "Model": NAMES[key], "CV mean": cv, "CV sd": sd, "Test": float(r["test"]),
+        row = {"key": key, "Model": names[key], "CV mean": cv, "CV sd": sd, "Test": float(r["test"]),
                "Tuned": "tuned" if "tuned {" in notes.split("seed")[-1] else "default settings"}
         if task == "review":
             row |= {"Test ROC-AUC": num(r"test ROC-AUC ([\d.]+)", notes), "Per-game ROC-AUC": num(r"test per-game ROC-AUC ([\d.]+)", notes),
@@ -73,14 +77,17 @@ def table(df: pd.DataFrame, spec: list[tuple[str, callable]]) -> str:
     return "\n".join(out)
 
 
-def figure(rev: pd.DataFrame, gm: pd.DataFrame) -> None:
+def figure(rev: pd.DataFrame, gm: pd.DataFrame, txt: pd.DataFrame) -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 4.9), gridspec_kw={"width_ratios": [1, 1, 0.9]})
     colors = ["#8C8C8C", "#4C72B0", "#55A868", "#DD8452", "#C44E52"]
-    for ax, df, title, ylabel in ((axes[0], rev, "Review level: will the review be negative?", "PR-AUC (higher is better)"),
-                                  (axes[1], gm, "Game level: success tier (3 classes)", "macro-F1 (higher is better)")):
+    text_colors = ["#8C8C8C", "#4C72B0", "#55A868", "#8172B3"]
+    panels = ((axes[0], rev, ORDER, colors, "Review level, metadata only", "PR-AUC (higher is better)"),
+              (axes[1], gm, ORDER, colors, "Game level: success tier (3 classes)", "macro-F1 (higher is better)"),
+              (axes[2], txt, TEXT_ORDER, text_colors, "Review level, English reviews: adding the text", "PR-AUC (higher is better)"))
+    for ax, df, order, pal, title, ylabel in panels:
         x = np.arange(len(df))
-        ax.bar(x, df["Test"], color=[colors[ORDER.index(k)] for k in df["key"]], width=0.62, label="test (scored once)")
+        ax.bar(x, df["Test"], color=[pal[order.index(k)] for k in df["key"]], width=0.62, label="test (scored once)")
         ax.errorbar(x, df["CV mean"], yerr=df["CV sd"], fmt="D", color="black", capsize=4, ms=5, label="cross-validation mean ± sd")
         if "CI low" in df:
             ax.errorbar(x + 0.22, df["Test"], yerr=[df["Test"] - df["CI low"], df["CI high"] - df["Test"]], fmt="none", ecolor="#333333",
@@ -88,17 +95,25 @@ def figure(rev: pd.DataFrame, gm: pd.DataFrame) -> None:
         for xi, v in zip(x, df["Test"]):
             ax.text(xi, 0.008, f"{v:.3f}", ha="center", va="bottom", fontsize=9, color="white", fontweight="bold")
         ax.set_ylim(0, float(max(df["Test"].max(), (df["CV mean"] + df["CV sd"]).max(), df.get("CI high", df["Test"]).max())) * 1.32)
-        ax.set_xticks(x); ax.set_xticklabels([n.replace(" ", "\n", 1) for n in df["Model"]], fontsize=9)
-        ax.set_title(title, fontsize=11, fontweight="bold"); ax.set_ylabel(ylabel); ax.grid(axis="y", alpha=0.3)
+        ax.set_xticks(x)
+        ax.set_xticklabels([TEXT_FIG_LABELS[k] for k in df["key"]] if order is TEXT_ORDER
+                           else [n.replace(" ", "\n", 1) for n in df["Model"]], fontsize=8)
+        ax.set_title(title, fontsize=10.5, fontweight="bold")
+        ax.set_ylabel(ylabel)
+        ax.grid(axis="y", alpha=0.3)
         ax.legend(fontsize=8, loc="upper left")
     fig.suptitle("Model comparison on the shared train/test split (the Dummy bar is the baseline to beat)", fontsize=12)
-    fig.tight_layout(); fig.savefig(FIGURES / "model_comparison.png", dpi=150); plt.close(fig)
+    fig.tight_layout()
+    fig.savefig(FIGURES / "model_comparison.png", dpi=150)
+    plt.close(fig)
 
 
 def main() -> None:
     rev, gm = load("review"), load("game")
+    txt = load("review", "reviewtext_{key}.csv", TEXT_ORDER, TEXT_NAMES)
     rev.drop(columns="key").to_csv(RESULTS / "comparison_review.csv", index=False)
     gm.drop(columns="key").to_csv(RESULTS / "comparison_game.csv", index=False)
+    txt.drop(columns="key").to_csv(RESULTS / "comparison_review_text.csv", index=False)
     f3 = lambda c: (lambda r: f"{r[c]:.3f}")
     rev_t = table(rev, [("Model", lambda r: r["Model"]), ("Settings", lambda r: r["Tuned"]),
                         ("CV PR-AUC (mean ± sd)", lambda r: f"{r['CV mean']:.3f} ± {r['CV sd']:.3f}"), ("Test PR-AUC", f3("Test")),
@@ -111,7 +126,10 @@ def main() -> None:
                       ("Recall: Struggling / Solid / Strong", lambda r: f"{r['Recall Struggling']:.2f} / {r['Recall Solid']:.2f} / {r['Recall Strong']:.2f}"),
                       ("AUC Struggling vs rest", f3("OvR AUC Struggling")),
                       ("With tuned class scales: macro-F1 / Struggling recall", lambda r: f"{r['Tuned-scale macro-F1']:.3f} / {r['Tuned-scale Struggling recall']:.2f}")])
-    figure(rev, gm)
+    txt_t = table(txt, [("Model", lambda r: r["Model"]), ("CV PR-AUC (mean ± sd)", lambda r: f"{r['CV mean']:.3f} ± {r['CV sd']:.3f}"),
+                        ("Test PR-AUC", f3("Test")), ("Test ROC-AUC", f3("Test ROC-AUC")), ("Per-game ROC-AUC", f3("Per-game ROC-AUC")),
+                        ("Precision / recall / F1 at the CV threshold", lambda r: f"{r['Precision']:.2f} / {r['Recall']:.2f} / {r['F1']:.2f}")])
+    figure(rev, gm, txt)
     notes = NOTES.read_text(encoding="utf-8") if NOTES.exists() else ""
     DOCS.joinpath("model_comparison.md").write_text(
         "# Model comparison\n\n"
@@ -120,7 +138,12 @@ def main() -> None:
         "The Dummy row is the baseline to beat.\n\n"
         "![Model comparison](../figures/models/model_comparison.png)\n\n"
         "## Review level: will the review be negative? (1,257,095 training / 316,341 test reviews)\n\n" + rev_t + "\n\n"
-        "## Game level: success tier (1,191 training / 299 test games)\n\n" + gm_t + "\n\n" + notes, encoding="utf-8")
+        "## Game level: success tier (1,191 training / 299 test games)\n\n" + gm_t + "\n\n"
+        "## Review level with the review text (English reviews: 436,715 training / 120,487 test)\n\n"
+        "Same task on the English reviews that have text features. The metadata-only row is the like-for-like reference on exactly these "
+        "reviews (they are negative a little more often than the rest, 11.5% in this test set, so the numbers differ from the first table). "
+        "Run `python -m src.models.review_text_models` (it needs `python -m src.features.text` first).\n\n" + txt_t + "\n\n" + notes,
+        encoding="utf-8")
     print(rev_t); print(); print(gm_t)
 
 
