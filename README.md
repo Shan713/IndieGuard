@@ -16,8 +16,11 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Features and dimensionality reduction | Done: `docs/feature_engineering.md` |
 | Game-level target | Defined, awaiting team agreement: `docs/game_target.md` |
 | EDA | Done: `notebooks/02_EDA_Visualizations.ipynb` |
-| Models | Done for Review 1: Dummy baseline, Logistic Regression, Random Forest, LightGBM and XGBoost on both tasks: `docs/model_comparison.md` |
-| **Next** | **Interpretation and business findings, the Review 1 notebook and slides. See "Building a model" for anything new you add** |
+| Models | Done for Review 1: Dummy baseline, Logistic Regression, Random Forest, LightGBM and XGBoost on both tasks, plus text-based review models: `docs/model_comparison.md` |
+| Business findings | First version done: `docs/business_findings.md` |
+| Problem statement | Done: `docs/problem_statement.md` |
+| Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs in about a minute from the committed results) |
+| **Next** | **Review 1 slides and rehearsal, contribution summaries, and the team's agreement on the game-level tiers. Then Review 2: association rules, topic modelling, patch-impact analysis and the dashboard** |
 
 ## Getting started (about 5 minutes)
 
@@ -89,7 +92,9 @@ docs/                  documentation: start with the list below       figures/, 
 | File | What it explains |
 | --- | --- |
 | `docs/modelling_protocol.md` | **Rules for model development, metrics, reference baselines** |
-| `docs/model_comparison.md` | Results of all five models on both tasks, with how to read them |
+| `docs/model_comparison.md` | Results of all five models on both tasks, plus the text-based review models, with how to read them |
+| `docs/business_findings.md` | First business findings for a studio: refund window, complaint themes, what goes with struggling games |
+| `docs/problem_statement.md` | The business problem, objective, questions, scope, success measures and hypotheses |
 | `docs/game_target.md` | The three success tiers and why |
 | `docs/feature_engineering.md` | Every feature table, how it was built, limitations |
 | `docs/train_test_split.md` | The shared split and fold balance |
