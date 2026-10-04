@@ -1,0 +1,2 @@
+model,task,feature_set,cv_mean,test,notes
+"LightGBM, metadata only","review (English, text)","metadata only (33 cols), English reviews with text features",0.3323 +/- 0.0258,0.3597,"base rate 0.101; ROC-AUC CV 0.779+/-0.018; per-game median ROC-AUC CV 0.770; test ROC-AUC 0.758; test per-game ROC-AUC 0.793; PR-AUC lift x3.12; threshold 0.693 (max-F1 on OOF): precision 0.343, recall 0.472, F1 0.397; 149 rounds, refit on full train; seed 42; default {""num_leaves"": 31, ""min_child_samples"": 100}"

@@ -11,3 +11,7 @@ seaborn
 xgboost
 lightgbm
 shap
+# executing the Review 1 notebook
+nbformat
+nbconvert
+ipykernel
