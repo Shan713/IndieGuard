@@ -19,7 +19,7 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Models | Done for Review 1: Dummy baseline, Logistic Regression, Random Forest, LightGBM and XGBoost on both tasks, plus text-based review models: `docs/model_comparison.md` |
 | Business findings | First version done: `docs/business_findings.md` |
 | Problem statement | Done: `docs/problem_statement.md` |
-| Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs in about a minute from the committed results) |
+| Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs the analysis and models live, about 6 minutes) |
 | **Next** | **Review 1 slides and rehearsal, contribution summaries, and the team's agreement on the game-level tiers. Then Review 2: association rules, topic modelling, patch-impact analysis and the dashboard** |
 
 ## Getting started (about 5 minutes)
