@@ -125,23 +125,37 @@ def main():
     )
     reviews["voted_up"] = reviews["voted_up"].astype(bool)
 
-    # Index reviews by game to avoid repeatedly filtering the full dataset.
+    patches = patches.dropna(
+        subset=["appid", "date", "gid"]
+    )
+
+    # Sort reviews and index them by game.
     reviews = reviews.sort_values(["appid", "created"])
     reviews_by_game = {
         appid: group.reset_index(drop=True)
         for appid, group in reviews.groupby("appid", sort=False)
     }
 
+    # Process patch events chronologically within each game.
+    patches = patches.sort_values(
+        ["appid", "date", "gid"]
+    ).reset_index(drop=True)
+
     print(f"Reviews after exclusions: {len(reviews):,}")
     print(f"Patch announcements: {len(patches):,}")
     print(f"Capped games excluded: {len(capped_ids):,}")
 
     results = []
+    last_window_end = {}
+    overlap_skipped = 0
+    insufficient_reviews = 0
+    games_without_reviews = 0
 
     for patch in patches.itertuples(index=False):
         game_reviews = reviews_by_game.get(patch.appid)
 
         if game_reviews is None:
+            games_without_reviews += 1
             continue
 
         patch_date = patch.date
@@ -152,6 +166,18 @@ def main():
             days=WINDOW_DAYS
         )
 
+        # Skip this patch if its comparison window overlaps
+        # the last accepted window for the same game.
+        previous_end = last_window_end.get(patch.appid)
+
+        if (
+            previous_end is not None
+            and before_start < previous_end
+        ):
+            overlap_skipped += 1
+            continue
+
+        # Evaluate reviews before and after the patch.
         before = game_reviews.loc[
             (game_reviews["created"] >= before_start)
             & (game_reviews["created"] < patch_date)
@@ -162,12 +188,16 @@ def main():
             & (game_reviews["created"] < after_end)
         ]
 
-        # Require sufficient reviews in both windows.
+                # Require sufficient reviews before reserving this window.
         if (
             len(before) < MIN_REVIEWS
             or len(after) < MIN_REVIEWS
         ):
+            insufficient_reviews += 1
             continue
+
+        # Only accepted comparisons reserve a window.
+        last_window_end[patch.appid] = after_end
 
         before_positive = before["voted_up"].mean() * 100
         after_positive = after["voted_up"].mean() * 100
@@ -246,21 +276,28 @@ def main():
     summary_file = OUTPUT / "patch_impact_summary.csv"
     summary.to_csv(summary_file, index=False)
 
-    print(f"\nEligible patch events: {len(results_df):,}")
+    print(f"\nEligible non-overlapping patch events: {len(results_df):,}")
+    print(f"Games covered: {results_df['appid'].nunique():,}")
+    print(f"Overlapping patch windows skipped: {overlap_skipped:,}")
+    print(f"Insufficient-review windows: {insufficient_reviews:,}")
+    print(f"Patches without review data: {games_without_reviews:,}")
     print(f"Results saved to: {patch_file.relative_to(ROOT)}")
     print(f"Summary saved to: {summary_file.relative_to(ROOT)}")
 
     if not summary.empty:
         print("\nSummary:")
         print(summary.to_string(index=False))
+    else:
+        print("\nNo patch events met the review-count requirement.")
 
-    # Generate plots from the saved analysis results.
+    # Regenerate plots using the updated results.
     create_plots(results_df, OUTPUT)
 
     print(
-        "\nInterpretation: these results describe associations "
-        "before and after patch announcements. They do not prove "
-        "that patches caused the observed changes."
+        "\nInterpretation: results describe associations before and "
+        "after patch announcements. They do not prove causation. "
+        "Non-overlapping windows reduce repeated-review overlap "
+        "within each game but do not remove all potential bias."
     )
 
 
