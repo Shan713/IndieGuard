@@ -1,17 +1,21 @@
-# Packages used by the pipelines on main (collect, clean, splits, features) and the EDA notebook.
-requests
-pandas
-numpy
-pyarrow
-scikit-learn
-scipy
-matplotlib
-seaborn
-# modelling (brief: Logistic Regression, Random Forest, XGBoost, SHAP)
-xgboost
-lightgbm
-shap
-# executing the Review 1 notebook
-nbformat
-nbconvert
-ipykernel
+# Python 3.12.14
+# Direct dependencies pinned from the tested development environment.
+
+requests==2.34.2
+pandas==3.0.6
+numpy==2.5.3
+pyarrow==26.0.0
+scikit-learn==1.9.1
+scipy==1.18.1
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# Modelling
+xgboost==3.4.1
+lightgbm==4.7.0
+shap==0.53.0
+
+# Notebook execution
+nbformat==5.11.1
+nbconvert==7.17.1
+ipykernel==7.4.0
