@@ -1,0 +1,65 @@
+group,n_reviews,topic_id,label,mean_topic_weight,dominant_topic_share
+All Sampled Reviews,50000,0,"Boss Design, Damage & Upgrade Difficulty",0.24422876186405848,0.27436
+All Sampled Reviews,50000,1,"Repetitive Gameplay, Grind & Pacing",0.028168971705119162,0.02528
+All Sampled Reviews,50000,2,"Flawed Design, Clunky Controls & RNG",0.033311290535691374,0.02676
+All Sampled Reviews,50000,3,Early Access State & Content Scarcity,0.047342298973168766,0.03906
+All Sampled Reviews,50000,4,Replayability & Co-op Friend Engagement,0.1475831337789129,0.15144
+All Sampled Reviews,50000,5,"Multiplayer Issues, Crashes & Dev Bugs",0.21495130995656436,0.21846
+All Sampled Reviews,50000,6,Art & Presentation vs Gameplay Loop,0.25183557221493735,0.25586
+All Sampled Reviews,50000,7,Unbalanced Mechanics & Frustration,0.015138660971547565,0.00878
+Negative Reviews,25000,0,"Boss Design, Damage & Upgrade Difficulty",0.2717574769921312,0.30856
+Negative Reviews,25000,1,"Repetitive Gameplay, Grind & Pacing",0.04695037355269942,0.0464
+Negative Reviews,25000,2,"Flawed Design, Clunky Controls & RNG",0.04868292727334338,0.04212
+Negative Reviews,25000,3,Early Access State & Content Scarcity,0.05360026459483797,0.04564
+Negative Reviews,25000,4,Replayability & Co-op Friend Engagement,0.10237957592605679,0.09336
+Negative Reviews,25000,5,"Multiplayer Issues, Crashes & Dev Bugs",0.24589044776362767,0.25396
+Negative Reviews,25000,6,Art & Presentation vs Gameplay Loop,0.20089276353961327,0.19344
+Negative Reviews,25000,7,Unbalanced Mechanics & Frustration,0.022126170357690253,0.01652
+Positive Reviews,25000,0,"Boss Design, Damage & Upgrade Difficulty",0.21670004673598575,0.24016
+Positive Reviews,25000,1,"Repetitive Gameplay, Grind & Pacing",0.0093875698575389,0.00416
+Positive Reviews,25000,2,"Flawed Design, Clunky Controls & RNG",0.01793965379803937,0.0114
+Positive Reviews,25000,3,Early Access State & Content Scarcity,0.041084333351499566,0.03248
+Positive Reviews,25000,4,Replayability & Co-op Friend Engagement,0.19278669163176906,0.20952
+Positive Reviews,25000,5,"Multiplayer Issues, Crashes & Dev Bugs",0.18401217214950105,0.18296
+Positive Reviews,25000,6,Art & Presentation vs Gameplay Loop,0.3027783808902614,0.31828
+Positive Reviews,25000,7,Unbalanced Mechanics & Frustration,0.008151151585404874,0.00104
+"Negative (<2h, Refund Window)",9097,0,"Boss Design, Damage & Upgrade Difficulty",0.24064111394386709,0.2514015609541607
+"Negative (<2h, Refund Window)",9097,1,"Repetitive Gameplay, Grind & Pacing",0.05653725806050791,0.05672199626250412
+"Negative (<2h, Refund Window)",9097,2,"Flawed Design, Clunky Controls & RNG",0.052629795097736104,0.04869737276025063
+"Negative (<2h, Refund Window)",9097,3,Early Access State & Content Scarcity,0.048975181374120845,0.04495987688248873
+"Negative (<2h, Refund Window)",9097,4,Replayability & Co-op Friend Engagement,0.07983662212288274,0.07354072771243267
+"Negative (<2h, Refund Window)",9097,5,"Multiplayer Issues, Crashes & Dev Bugs",0.269217692542619,0.2866879190942069
+"Negative (<2h, Refund Window)",9097,6,Art & Presentation vs Gameplay Loop,0.219103277910639,0.22238100472683303
+"Negative (<2h, Refund Window)",9097,7,Unbalanced Mechanics & Frustration,0.02360539290387664,0.015609541607123228
+"Negative (>=2h, Post-Window)",15903,0,"Boss Design, Damage & Upgrade Difficulty",0.2895569836669762,0.34125636672325976
+"Negative (>=2h, Post-Window)",15903,1,"Repetitive Gameplay, Grind & Pacing",0.041466383842108094,0.0404955039929573
+"Negative (>=2h, Post-Window)",15903,2,"Flawed Design, Clunky Controls & RNG",0.04642519875680558,0.03835754260202478
+"Negative (>=2h, Post-Window)",15903,3,Early Access State & Content Scarcity,0.05624595295922605,0.04602905112242973
+"Negative (>=2h, Post-Window)",15903,4,Replayability & Co-op Friend Engagement,0.11527483158520754,0.10469722693831353
+"Negative (>=2h, Post-Window)",15903,5,"Multiplayer Issues, Crashes & Dev Bugs",0.2325465537967985,0.2352386342199585
+"Negative (>=2h, Post-Window)",15903,6,Art & Presentation vs Gameplay Loop,0.19047579509131918,0.17688486449097654
+"Negative (>=2h, Post-Window)",15903,7,Unbalanced Mechanics & Frustration,0.021280010041859438,0.01704080991007986
+Price Tier < $5 (Negative),2647,0,"Boss Design, Damage & Upgrade Difficulty",0.25017808384034784,0.28636191915375897
+Price Tier < $5 (Negative),2647,1,"Repetitive Gameplay, Grind & Pacing",0.053561658731412436,0.05326785039667548
+Price Tier < $5 (Negative),2647,2,"Flawed Design, Clunky Controls & RNG",0.05162018420645579,0.044956554590102005
+Price Tier < $5 (Negative),2647,3,Early Access State & Content Scarcity,0.04721041921692163,0.03513411409142425
+Price Tier < $5 (Negative),2647,4,Replayability & Co-op Friend Engagement,0.10581858539827241,0.09444654325651682
+Price Tier < $5 (Negative),2647,5,"Multiplayer Issues, Crashes & Dev Bugs",0.2728404189110658,0.3018511522478277
+Price Tier < $5 (Negative),2647,6,Art & Presentation vs Gameplay Loop,0.17910511914018726,0.16924820551567812
+Price Tier < $5 (Negative),2647,7,Unbalanced Mechanics & Frustration,0.023042938942189846,0.014733660748016623
+Price Tier $10-$20 (Negative),10251,0,"Boss Design, Damage & Upgrade Difficulty",0.27321649956839344,0.3078724026924203
+Price Tier $10-$20 (Negative),10251,1,"Repetitive Gameplay, Grind & Pacing",0.04550200220236076,0.04477611940298507
+Price Tier $10-$20 (Negative),10251,2,"Flawed Design, Clunky Controls & RNG",0.04608955036401229,0.04009364940005853
+Price Tier $10-$20 (Negative),10251,3,Early Access State & Content Scarcity,0.056548443437737066,0.048580626280362894
+Price Tier $10-$20 (Negative),10251,4,Replayability & Co-op Friend Engagement,0.10534909988230373,0.09696614964393718
+Price Tier $10-$20 (Negative),10251,5,"Multiplayer Issues, Crashes & Dev Bugs",0.24225945595251888,0.24700029265437518
+Price Tier $10-$20 (Negative),10251,6,Art & Presentation vs Gameplay Loop,0.2030915248849461,0.195102916788606
+Price Tier $10-$20 (Negative),10251,7,Unbalanced Mechanics & Frustration,0.02267564495443536,0.0196078431372549
+Price Tier $20+ (Negative),6489,0,"Boss Design, Damage & Upgrade Difficulty",0.28336367172833227,0.32932655262752353
+Price Tier $20+ (Negative),6489,1,"Repetitive Gameplay, Grind & Pacing",0.04043209586668618,0.03760209585452304
+Price Tier $20+ (Negative),6489,2,"Flawed Design, Clunky Controls & RNG",0.047947699567286624,0.04006780705809832
+Price Tier $20+ (Negative),6489,3,Early Access State & Content Scarcity,0.056579379046062056,0.052550470026198184
+Price Tier $20+ (Negative),6489,4,Replayability & Co-op Friend Engagement,0.09383664589437915,0.08260132531977192
+Price Tier $20+ (Negative),6489,5,"Multiplayer Issues, Crashes & Dev Bugs",0.24835362643442133,0.2510402219140083
+Price Tier $20+ (Negative),6489,6,Art & Presentation vs Gameplay Loop,0.20219906929593012,0.19093851132686085
+Price Tier $20+ (Negative),6489,7,Unbalanced Mechanics & Frustration,0.021431748058411037,0.015873015873015872
