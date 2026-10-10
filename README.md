@@ -19,8 +19,10 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Models | Done for Review 1: Dummy baseline, Logistic Regression, Random Forest, LightGBM and XGBoost on both tasks, plus text-based review models: `docs/model_comparison.md` |
 | Business findings | First version done: `docs/business_findings.md` |
 | Problem statement | Done: `docs/problem_statement.md` |
-| Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs the analysis and models live, about 6 minutes) |
-| **Next** | **Review 1 slides and rehearsal, contribution summaries, and the team's agreement on the game-level tiers. Then Review 2: association rules, topic modelling, patch-impact analysis and the dashboard** |
+| Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` |
+| **Review 2: Text mining & topic modelling (#31–#33)** | **Done:** `notebooks/03_Text_Mining_and_Topic_Modelling.ipynb`, `docs/text_mining_and_evaluation.md` |
+| **Review 2: Combined business insights (#44)** | **Done:** `docs/combined_business_insights.md`, `slides/review2_presentation_guide.md` |
+| **Remaining Review 2** | Association rules, patch-impact analysis, and the dashboard |
 
 ## Getting started (about 5 minutes)
 
@@ -55,6 +57,22 @@ txt = pd.read_parquet("data/processed/features/text_svd")              # text co
 Every table has `split` (`train` or `test`) and `cv_fold` (0 to 4 for train, -1 for test). **They come from one shared
 split by game; use them as they are.** More: `docs/train_test_split.md`, `docs/feature_engineering.md`,
 `docs/data_documentation.md` (data dictionary).
+
+## Review 2: Text Mining & Combined Insights (#31–#33, #44)
+
+Run the complete Review 2 text analytics and business synthesis pipeline:
+
+```bash
+python -m src.analysis.text_mining        # N-grams, log odds, NMF topic modelling (k=8)
+python -m src.analysis.text_evaluation    # UMass coherence, diversity, stability, NMF vs LDA benchmark
+python -m src.analysis.combined_insights  # Patch impact & ranked strategic business insights
+python -m src.analysis.validate_review2   # Automated integrity & validation checks (18 checks)
+```
+
+- **Jupyter Notebook:** `notebooks/03_Text_Mining_and_Topic_Modelling.ipynb`
+- **Methodology & Evaluation Report:** `docs/text_mining_and_evaluation.md`
+- **Combined Insights Report:** `docs/combined_business_insights.md`
+- **Presentation Guide & Script:** `slides/review2_presentation_guide.md`
 
 ## Building a model: the steps
 
@@ -91,6 +109,9 @@ docs/                  documentation: start with the list below       figures/, 
 
 | File | What it explains |
 | --- | --- |
+| `docs/text_mining_and_evaluation.md` | **Tasks #31–#33:** NMF topic modelling (k=8), UMass coherence, diversity, stability, NMF vs LDA |
+| `docs/combined_business_insights.md` | **Task #44:** Synthesized developer playbook connecting text topics, refund window, pricing, and patches |
+| `slides/review2_presentation_guide.md` | **Review 2 presentation material:** slide outlines, speaking scripts, and faculty viva Q&A |
 | `docs/modelling_protocol.md` | **Rules for model development, metrics, reference baselines** |
 | `docs/model_comparison.md` | Results of all five models on both tasks, plus the text-based review models, with how to read them |
 | `docs/business_findings.md` | First business findings for a studio: refund window, complaint themes, what goes with struggling games |
