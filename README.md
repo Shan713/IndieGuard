@@ -20,7 +20,8 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Business findings | First version done: `docs/business_findings.md` |
 | Problem statement | Done: `docs/problem_statement.md` |
 | Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs the analysis and models live, about 6 minutes) |
-| **Next** | **Review 1 slides and rehearsal, contribution summaries, and the team's agreement on the game-level tiers. Then Review 2: association rules, topic modelling, patch-impact analysis and the dashboard** |
+| Review 2 | In progress: association rules merged (`src/analysis/association_rules.py`); patch impact, launch-risk scorer and text mining are in review; dashboard pages and deployment are open on the board |
+| **Next** | **Close the review comments on the open pull requests, finish the dashboard and its deployment, then the final report and the Review 2 slides (13 Oct)** |
 
 ## Getting started
 
