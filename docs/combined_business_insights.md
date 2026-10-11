@@ -62,11 +62,11 @@ The findings are prioritized below based on financial risk, review volume affect
   * $10 to $20: **26.4%** negative
   * $20 or more: **31.8%** negative  
   Outside the refund window, price has virtually zero impact on negative share (ranging narrowly between **5.8% and 10.0%** across all price bands). Furthermore, games under $5 achieve the Strong tier (**44.1%** of the time), compared to only **25.5%** for $10–$20 games.
-* **Supporting Metrics & Evidence:** Topic T3 (Early Access & Content Scarcity) and N-gram terms like `not_worth` (+1.86 Log Odds) and `overpriced` carry a 6.5x lift in negative reviews.
+* **Supporting Metrics & Evidence:** Topic T3 (Early Access & Content Scarcity) and N-gram terms like `not_worth` (+2.13 Log Odds) and `overpriced` carry a 6.5x lift in negative reviews.
 * **Features / Complaints Involved:** Launch price (`price_usd`, `price_tier`) interacting with perceived content volume (Topic 3).
 * **Why it Matters to Indie Studios:** Higher price tags drastically heighten player scrutiny during the opening hour. An indie roguelike charging $20+ without triple-A visual polish or immediate depth triggers aggressive refunding and "Mostly Negative" launch ratings.
-* **Actionable Studio Intervention:** Price new indie roguelikes below $15 ($9.99 to $12.99 sweet spot) at launch. If launching in Early Access, offer an introductory launch discount with an explicit content expansion roadmap to reset expectation baselines.
-* **Evidence Nature:** Controlled empirical association across 1,490 eligible games.
+* **Actionable Studio Intervention (Hypothesis):** **Pricing Alignment Hypothesis:** Pricing a new indie roguelite below $15 ($9.99 to $12.99 sweet spot) reduces refund-window price-expectation friction, mitigating negative review surges. If launching in Early Access, offering an introductory launch discount with an explicit content expansion roadmap resets expectation baselines.
+* **Evidence Nature & Limitation:** Controlled observational association across 1,490 eligible games. Price correlates with higher early negativity, but higher-priced games may also face unmeasured player expectations around graphical fidelity and content volume. This recommendation should be treated as an actionable pricing hypothesis to be validated with regional pricing experiments rather than a proven causal law.
 
 ---
 
@@ -74,7 +74,7 @@ The findings are prioritized below based on financial risk, review volume affect
 * **What the Data Shows:** Player criticism shifts between two distinct lifecycle phases:
   1. **Early Play (<2h):** Dominated by technical stability (Topic 5: 29.17%), clunky controls (Topic 2: 4.95%), and tutorial friction.
   2. **Late Play (>=2h):** Dominated by boss scaling and upgrade balance (Topic 0 expands from 24.28% to **34.13%**), repetitive pacing (Topic 1: `boring`, `repetitive`), and replayability fatigue (Topic 4 expands from 7.08% to **10.47%**).
-* **Supporting Metrics & Evidence:** Statistical topic prevalence shift in `reports/results/topic_prevalence.csv`. N-gram distinctiveness reveals `repetitive` (+1.28 Log Odds) and `unbalanced` (+1.15 Log Odds) appear almost exclusively among veteran reviews.
+* **Supporting Metrics & Evidence:** Statistical topic prevalence shift in `reports/results/topic_prevalence.csv`. N-gram distinctiveness reveals `repetitive` (+1.28 Log Odds) and `unbalanced` (+1.42 Log Odds) appear almost exclusively among veteran reviews.
 * **Features / Complaints Involved:** Onboarding mechanics (Controls/UI/Crashes) versus Depth mechanics (Progression curves, RNG tuning, Enemy variety).
 * **Why it Matters to Indie Studios:** Studios frequently misallocate post-launch engineering resources. Developers who rush to add new endgame content while ignoring onboarding controls suffer commercial failure at launch; developers who fix early bugs but ignore RNG balance and build diversity face long-term review score decay.
 * **Actionable Studio Intervention:** **Adopt a Two-Stage Patch Strategy:**
@@ -118,32 +118,38 @@ The findings are prioritized below based on financial risk, review volume affect
 
 Analyzing 28,875 patch events across 1,607 games (`reports/results/patch_impact_analysis.csv` and `figures/findings/patch_sentiment_impact.png`):
 
-```
-+-------------------+-----------------+-----------------------+----------------------+
-| Days Since Patch  | Review Volume   | Negative Review Rate  | Lift vs Unpatched    |
-+-------------------+-----------------+-----------------------+----------------------+
-| 0 to 3 days       | 36,150 reviews  |        11.8%          |        1.13x         |
-| 4 to 7 days       | 42,810 reviews  |        10.4%          |        1.00x         |
-| 8 to 14 days      | 58,220 reviews  |         9.8%          |        0.94x         |
-| 15 to 30 days     | 89,450 reviews  |         9.2%          |        0.88x         |
-| 31 to 90 days     | 145,200 reviews |         8.7%          |        0.84x         |
-| Unpatched Base    | 412,890 reviews |        10.4%          |        1.00x         |
-+-------------------+-----------------+-----------------------+----------------------+
-```
+| Days Since Patch | Review Volume | Negative Review Rate | Lift vs Unpatched Base |
+| :--- | :---: | :---: | :---: |
+| 0 to 3 days | 408,324 reviews | 10.37% | 0.75x |
+| 4 to 7 days | 220,547 reviews | 9.31% | 0.68x |
+| 8 to 14 days | 180,908 reviews | 8.93% | 0.65x |
+| 15 to 30 days | 182,433 reviews | 12.62% | 0.92x |
+| 31 to 90 days | 208,361 reviews | 10.28% | 0.75x |
+| 91 to 365 days | 225,121 reviews | 10.29% | 0.75x |
+| 365+ days | 80,423 reviews | 13.93% | 1.01x |
+| **Unpatched Base** | **67,319 reviews** | **13.77%** | **1.00x** |
 
-### Key Event Takeaways:
-1. **The Day 0–3 Patch Volatility:** Reviews submitted within 72 hours of a patch exhibit slightly elevated negativity (11.8%). This occurs because major patches often introduce unexpected regressions or alter player-favorite weapon builds.
-2. **The Medium-Term Sentiment Stabilization:** By days 15 to 30 post-patch, negative review rates decline to **9.2%** (a 12% relative drop versus the unpatched baseline), indicating that bug fixes and quality-of-life adjustments successfully stabilize player sentiment.
-3. **Causality Caution:** Releasing frequent patches is correlated with active developer support, but does not automatically cause negative sentiment to decline unless the patch explicitly resolves the specific friction points identified in text mining (controls, crashes, RNG scaling).
+### Methodology & Observational Findings:
+* **Dataset & Binning:** Calculated across all 1,573,436 reviews (1,506,117 with a preceding patch event in `data/processed/events.parquet`, 67,319 unpatched) by binning review timestamps relative to the most recent preceding patch date (`days_since_last_patch`).
+* **Observed Recency Trends:** Reviews submitted 8 to 14 days post-patch exhibit the lowest negativity (8.93%, lift 0.65x vs unpatched base 13.77%). Reviews in the 15 to 30 day window show a rise to 12.62% (0.92x lift), and older reviews (365+ days) reach 13.93% (1.01x lift).
+
+### Critical Causal Context & Alignment with the Team's Patch-Impact Analysis (#68 / card #38):
+* **Confounding & Launch Effects:** This naive recency binning is purely observational and must **not** be interpreted as a causal effect of patching. As games age, natural player attrition, shifting audiences, and long-tail sentiment decay increase negativity rates independently of patch frequency.
+* **Matched-Control Benchmark (PR #68 / `docs/patch_impact.md`):** The team's dedicated causal patch impact analysis (card #38, led by Gayas Sheik) evaluated 1,685 eligible patch windows across 617 games against 282 matched control windows across 164 games, using paired game-level bootstrapping (10,000 iterations, seed 42):
+  * **Estimated Matched Difference:** **+0.270 percentage points**
+  * **95% Bootstrap Confidence Interval:** **[-0.824, +1.357] percentage points**
+* **Conclusion:** Because the matched-control confidence interval cleanly includes zero, **patches do not exhibit a statistically significant causal improvement in overall review sentiment**. Releasing patches does not passively reverse negative reception; patching is a mandatory technical channel for resolving acute onboarding crashes (Topic T5) and control defects (Topic T2), but overall sentiment trajectory is driven by launch-window game quality and pricing alignment.
 
 ---
 
-## 4. The Studio Action Playbook
+## 4. The Studio Action Playbook: Hypotheses & Evidence
 
-| Production Phase | Timeline | Critical Milestone & Required Intervention |
-| :--- | :--- | :--- |
-| **Pre-Production** | Month -12 to -6 | **Scope Discipline:** Select tight, high-synergy subgenres (2D Pixel, Deckbuilding, Twin-stick). Avoid multiplayer co-op unless backed by dedicated networking engineers. |
-| **Pre-Launch Polish** | Month -3 to 0 | **Store Completeness & Polish:** Implement Steam achievements, cloud saves, and full controller support. Blind-test the opening 30 minutes to eradicate onboarding friction. |
-| **Launch Day** | Day 0 | **Price Alignment:** Price below $15 ($9.99–$12.99). Avoid pricing at $20+ without verified 15+ hour content depth. |
-| **Launch Week** | Day 1 to 7 | **Onboarding Hotfixes:** Monitor text triage for Topic T5 (Crashes) and Topic T2 (Controls). Deploy hotfixes immediately to prevent 2-hour refund exits. |
-| **Post-Launch Growth** | Day 8 to 90 | **Depth & Balance Tuning:** Shift patch focus to Topic T0 (Boss design, Damage scaling) and Topic T1 (Repetitive pacing) to preserve long-term review ratings. |
+The recommendations below translate IndieGuard's empirical findings into actionable hypotheses for studio decision-making. Each strategy specifies the underlying data pattern and a validation test for the studio:
+
+| Production Phase | Strategic Intervention (Hypothesis) | Underlying Empirical Evidence | Recommended Studio Test / Validation |
+| :--- | :--- | :--- | :--- |
+| **Pre-Production** | **Scope Discipline Hypothesis:** Constraining game scope to 2D single-player subgenres (deckbuilder, twin-stick, platformer) minimizes catastrophic launch failure compared to 3D or multiplayer scopes. | Online co-op games struggle 26.6% of the time vs 1.8% for twin-stick and 3.2% for 2D platformers (exact binomial test with Benjamini-Hochberg FDR control). Topic T5 netcode/lobby bugs account for 25.4% of multiplayer complaints. | Small studios (<5 developers) should prototype core mechanics in single-player; only commit to multiplayer if backed by dedicated networking engineers. |
+| **Pre-Launch Polish** | **Platform Completeness Hypothesis:** Full controller support, cloud saves, and Steam achievements serve as low-cost trust signals that lower refund churn. | Listed achievements reduce struggling risk from 19.6% to 12.5% (95% CI: 10.6%–14.8%). Full controller support lowers risk from 15.5% to 11.5%. XGBoost SHAP ranks store polish components (`pc_02`) as the top protective factor. | Implement complete Steamworks features prior to launch; conduct external blind playtests on Steam Deck to verify default bindings. |
+| **Launch Day** | **Pricing Alignment Hypothesis:** Pricing indie roguelites below $15 ($9.99–$12.99 sweet spot) minimizes refund-window scrutiny and mitigates initial negative reviews. | Inside the 2-hour refund window, negativity jumps from 11.4% (<$5) and 23.0% ($5–$10) to 26.4% ($10–$20) and 31.8% ($20+). Sub-$5 games achieve Strong tier 44.1% vs 25.5% for $10–$20 games. | Launch at $9.99–$12.99 with an introductory 10%–15% discount. Only price above $15 if external beta testers verify >15 hours of deep content without repetition. |
+| **Launch Week** | **Onboarding Triage Hypothesis:** Deploying Day 1–7 hotfixes strictly targeting technical crashes and input friction prevents 2-hour refund exits. | Under-2h reviews are 21.2% negative vs 8.8% later, generating 29.0% of all platform negative reviews. Peak early topics are Topic T5 (Crashes, 29.17%) and Topic T2 (Controls, 4.95%). | Instrument crash reporting on launch day. Prioritize zero-crash stability and camera/input responsiveness over gameplay balance during the first 7 days. |
+| **Post-Launch Growth** | **Lifecycle Bifurcation Hypothesis:** Week 2+ updates should shift focus from onboarding bugs to progression tuning and replayability to prevent long-term review erosion. | In reviews with >=2h playtime, Topic T0 (Boss design, damage scaling) expands to 34.13% and Topic T4 (Replayability fatigue) reaches 10.47%. Matched control analysis (#68) shows general patching gives only +0.27 pp (CI [-0.82, +1.36]); fixes must be theme-specific. | Survey players reaching 10+ hours on build variety, RNG fairness, and enemy damage curves before introducing major balance overhauls. |

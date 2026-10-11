@@ -153,8 +153,8 @@ def evaluate_nmf_vs_lda(corpus_sample: list[str]) -> pd.DataFrame:
 
 
 def evaluate_topic_stability(corpus_sample: list[str]) -> pd.DataFrame:
-    """Evaluate topic stability across different random seeds."""
-    log.info("Evaluating topic stability across random seeds (42, 101, 2024)...")
+    """Evaluate topic stability across bootstrap subsamples of negative reviews."""
+    log.info("Evaluating topic stability across 80% training subsamples (seeds: 101, 2024, 7, 99, 123)...")
     vec = TfidfVectorizer(
         ngram_range=(1, 2), min_df=15, max_df=0.5, max_features=15_000,
         sublinear_tf=True, stop_words=list(BASE_STOPWORDS), token_pattern=r"\b[a-z_][a-z0-9_]{2,}\b"
@@ -162,35 +162,55 @@ def evaluate_topic_stability(corpus_sample: list[str]) -> pd.DataFrame:
     X = vec.fit_transform(corpus_sample)
     feature_names = np.array(vec.get_feature_names_out())
 
-    seeds = [42, 101, 2024]
-    models_words = []
-    for s in seeds:
-        nmf = NMF(n_components=N_TOPICS, init="nndsvda", max_iter=250, random_state=s)
-        nmf.fit(X)
-        seed_words = []
-        for comp in nmf.components_:
-            top_idx = np.argsort(comp)[::-1][:10]
-            seed_words.append(set(feature_names[top_idx]))
-        models_words.append(seed_words)
+    # Fit baseline reference model on full sample
+    ref_nmf = NMF(n_components=N_TOPICS, init="nndsvda", max_iter=250, random_state=SEED)
+    ref_nmf.fit(X)
+    ref_words = []
+    for comp in ref_nmf.components_:
+        top_idx = np.argsort(comp)[::-1][:10]
+        ref_words.append(set(feature_names[top_idx]))
 
-    # Compute average pairwise Jaccard similarity for best-matching topics across seeds
+    # Test stability across 5 independent 80% subsamples
+    subsample_seeds = [101, 2024, 7, 99, 123]
+    n_docs = len(corpus_sample)
+    resample_jaccards: dict[int, list[float]] = {i: [] for i in range(N_TOPICS)}
+
+    for s in subsample_seeds:
+        rng = np.random.RandomState(s)
+        sub_idx = rng.choice(n_docs, size=int(0.8 * n_docs), replace=False)
+        X_sub = X[sub_idx]
+        sub_nmf = NMF(n_components=N_TOPICS, init="nndsvda", max_iter=250, random_state=s)
+        sub_nmf.fit(X_sub)
+        sub_words = []
+        for comp in sub_nmf.components_:
+            top_idx = np.argsort(comp)[::-1][:10]
+            sub_words.append(set(feature_names[top_idx]))
+
+        for i in range(N_TOPICS):
+            best_j = max(
+                len(ref_words[i] & sw) / len(ref_words[i] | sw)
+                for sw in sub_words
+            )
+            resample_jaccards[i].append(best_j)
+
     stability_records = []
     for i in range(N_TOPICS):
-        base_topic_words = models_words[0][i]
-        jaccard_scores = []
-        for other_seed_idx in range(1, len(seeds)):
-            # Find best matching topic in other seed
-            best_jaccard = max(
-                len(base_topic_words & other_words) / len(base_topic_words | other_words)
-                for other_words in models_words[other_seed_idx]
-            )
-            jaccard_scores.append(best_jaccard)
+        scores = resample_jaccards[i]
+        mean_j = float(np.mean(scores))
+        std_j = float(np.std(scores))
+        if mean_j >= 0.85:
+            status = "High Stability"
+        elif mean_j >= 0.65:
+            status = "Moderate Stability"
+        else:
+            status = "Lower Stability"
 
         stability_records.append({
             "topic_id": i,
             "label": TOPIC_LABELS[i],
-            "mean_pairwise_jaccard": np.mean(jaccard_scores),
-            "stability_status": "Highly Stable" if np.mean(jaccard_scores) >= 0.70 else "Moderately Stable"
+            "mean_pairwise_jaccard": round(mean_j, 3),
+            "std_pairwise_jaccard": round(std_j, 3),
+            "stability_status": status
         })
 
     stability_df = pd.DataFrame(stability_records)
@@ -216,15 +236,18 @@ def compile_evaluation_summary(comp_df: pd.DataFrame, nmf_coherences: list[float
         r1_test = "0.7850"
         r1_notes = "test ROC-AUC 0.955; test per-game ROC-AUC 0.958; precision 0.72, recall 0.72, F1 0.72"
 
+    mean_j = stability_df["mean_pairwise_jaccard"].mean()
+    std_j = stability_df["std_pairwise_jaccard"].mean()
+
     eval_table = [
         {
             "methodology_tier": "Unsupervised: NMF Topic Modelling (k=8)",
             "task_type": "Thematic Discovery / Complaint Domain Extraction",
             "primary_metric": f"Mean UMass Coherence: {comp_df.loc[comp_df['model']=='NMF (TF-IDF)', 'mean_umass_coherence'].values[0]:.3f}",
             "secondary_metric": f"Topic Diversity: {comp_df.loc[comp_df['model']=='NMF (TF-IDF)', 'topic_diversity'].values[0]:.2%}",
-            "stability_or_lift": f"Mean Stability Jaccard: {stability_df['mean_pairwise_jaccard'].mean():.2f}",
-            "role_in_indieguard": "Identifies recurring complaint failure modes (controls, crashes, RNG, grind) for studio triage.",
-            "operational_limitation": "Descriptive: discovers themes in written feedback; does not predict sentiment scores."
+            "stability_or_lift": f"Subsample Jaccard: {mean_j:.3f} +/- {std_j:.3f} (80% resamples)",
+            "role_in_indieguard": "Identifies recurring complaint failure modes (controls, crashes, early access, progression) for studio triage.",
+            "operational_limitation": "Lower raw UMass than LDA due to TF-IDF penalizing generic co-occurrences; descriptive rather than predictive."
         },
         {
             "methodology_tier": "Unsupervised Baseline: LDA (k=8)",
@@ -232,8 +255,8 @@ def compile_evaluation_summary(comp_df: pd.DataFrame, nmf_coherences: list[float
             "primary_metric": f"Mean UMass Coherence: {comp_df.loc[comp_df['model']=='LDA (Count Vectors)', 'mean_umass_coherence'].values[0]:.3f}",
             "secondary_metric": f"Topic Diversity: {comp_df.loc[comp_df['model']=='LDA (Count Vectors)', 'topic_diversity'].values[0]:.2%}",
             "stability_or_lift": "Lower diversity due to dominant general gaming tokens",
-            "role_in_indieguard": "Methodological baseline demonstrating superiority of NMF TF-IDF on short review texts.",
-            "operational_limitation": "Higher computational latency and semantic topic blending."
+            "role_in_indieguard": "Methodological baseline demonstrating higher raw UMass co-occurrence but severe semantic topic blending on short reviews.",
+            "operational_limitation": "Higher computational latency (45x slower) and redundant vocabulary across components."
         },
         {
             "methodology_tier": "Supervised: Logistic Regression (Full TF-IDF + Meta)",
@@ -264,19 +287,20 @@ def plot_diagnostics(comp_df: pd.DataFrame, nmf_coherences: list[float], lda_coh
     axes[0].bar(x + w / 2, lda_coherences, w, label="LDA (Count)", color="#C44E52")
     axes[0].set_xticks(x)
     axes[0].set_xticklabels([f"T{i}" for i in range(N_TOPICS)])
-    axes[0].set_ylabel("UMass Coherence (higher is better)")
-    axes[0].set_title("Topic Coherence per Component")
+    axes[0].set_ylabel("UMass Coherence (closer to 0 is higher co-occurrence)")
+    axes[0].set_title("Topic Coherence per Component (LDA vs NMF)")
     axes[0].legend()
     axes[0].grid(axis="y", alpha=0.3)
 
-    # 2. Topic Stability across Seeds (Jaccard similarity)
-    axes[1].bar(x, stability_df["mean_pairwise_jaccard"], color="#55A868")
-    axes[1].axhline(0.70, ls="--", color="grey", label="High Stability Threshold (0.70)")
+    # 2. Topic Stability across Subsamples (Jaccard similarity with error bars)
+    yerr = stability_df["std_pairwise_jaccard"] if "std_pairwise_jaccard" in stability_df.columns else None
+    axes[1].bar(x, stability_df["mean_pairwise_jaccard"], yerr=yerr, capsize=4, color="#55A868")
+    axes[1].axhline(0.70, ls="--", color="grey", label="Moderate Stability Threshold (0.70)")
     axes[1].set_xticks(x)
     axes[1].set_xticklabels([f"T{i}" for i in range(N_TOPICS)])
-    axes[1].set_ylim(0, 1.05)
-    axes[1].set_ylabel("Mean Pairwise Jaccard Similarity")
-    axes[1].set_title("Topic Stability Across Random Seeds (42, 101, 2024)")
+    axes[1].set_ylim(0, 1.15)
+    axes[1].set_ylabel("Mean Jaccard Similarity (80% Subsamples)")
+    axes[1].set_title("Topic Stability Across Subsamples (5x 80% Resamples)")
     axes[1].legend()
     axes[1].grid(axis="y", alpha=0.3)
 

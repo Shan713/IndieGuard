@@ -17,7 +17,7 @@ In Review 2, **Tasks #31–#33** replace heuristic keyword matching with a scala
 1. **Text Preprocessing & Multilingual Evaluation:** Analyzed 1,648,387 cleaned Steam reviews across 31 languages. Evaluated multilingual viability and established a rigorously filtered, high-purity English corpus of **557,202 reviews** (436,715 train / 120,487 test) with custom negation binding (`not_fun`, `too_hard`, `clunky_controls`).
 2. **Exploratory N-Gram Text Mining:** Extracted unigrams and bigrams using Dirichlet-smoothed **Log Odds Ratios**, pinpointing vocabulary that disproportionately drives negative reviews versus positive reviews, and early reviews (<2h) versus late reviews (>=2h).
 3. **Data-Driven Topic Modelling (NMF $k=8$):** Implemented Non-Negative Matrix Factorization on TF-IDF sparse matrices, discovering 8 distinct, non-overlapping semantic complaint themes.
-4. **Rigorous Topic Model Evaluation (Task #32):** Evaluated topic coherence using **UMass Coherence (-2.380)**, **Topic Diversity (90.0%)**, and **Random Seed Stability across seeds 42, 101, 2024 (Mean Jaccard = 1.00)**. Benchmarked NMF against Latent Dirichlet Allocation (LDA) to justify algorithmic selection.
+4. **Rigorous Topic Model Evaluation (Task #32):** Evaluated topic quality using **UMass Coherence (-2.380 vs LDA -1.732)**, **Topic Diversity (90.0% vs LDA 86.25%)**, and **Subsample Stability across 80% resamples (Mean Jaccard = 0.745 +/- 0.187)**. Benchmarked NMF against Latent Dirichlet Allocation (LDA) and justified NMF on semantic interpretability, vocabulary diversity, and computational efficiency.
 5. **Supervised vs. Unsupervised Clarification:** Formally demarcated unsupervised thematic discovery (which uncovers actionable developer failure modes) from supervised sentiment classification (which performs automated post-hoc triage on already-written reviews but cannot forecast pre-launch risk).
 
 ---
@@ -65,14 +65,23 @@ Using Laplace-smoothed Log Odds Ratios across 10,643 filtered unigrams and bigra
 
 | Term | Negative Count | Positive Count | Neg Freq / 10k | Pos Freq / 10k | Log Odds Ratio | Semantic Domain |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| `not_worth` | 1,842 | 312 | 26.4 | 4.1 | **+1.86** | Price & Value Disconnect |
-| `boring` | 3,124 | 645 | 44.8 | 8.5 | **+1.66** | Repetitive Pacing / Lack of Engagement |
-| `bad` | 4,510 | 1,024 | 64.6 | 13.5 | **+1.56** | General Product Dissatisfaction |
-| `unbalanced` | 682 | 114 | 9.8 | 1.5 | **+1.88** | Difficulty & Gameplay Tuning |
-| `crashes` | 1,120 | 240 | 16.1 | 3.2 | **+1.62** | Technical Stability & Bugs |
-| `waste` | 1,280 | 290 | 18.3 | 3.8 | **+1.57** | Regret of Time/Money Spent |
-| `clunky` | 1,045 | 265 | 15.0 | 3.5 | **+1.45** | Controls & Input Handling |
-| `not_fun` | 915 | 210 | 13.1 | 2.8 | **+1.54** | Core Gameplay Failure |
+| `not_fun` | 789 | 35 | 5.75 | 0.58 | **+2.28** | Core Gameplay Failure |
+| `not_worth` | 794 | 41 | 5.79 | 0.68 | **+2.13** | Price & Value Disconnect |
+| `boring` | 3,184 | 245 | 23.22 | 4.05 | **+1.75** | Repetitive Pacing / Lack of Engagement |
+| `clunky` | 570 | 47 | 4.16 | 0.78 | **+1.67** | Controls & Input Handling |
+| `waste` | 916 | 81 | 6.68 | 1.34 | **+1.61** | Regret of Time/Money Spent |
+| `unbalanced` | 444 | 47 | 3.24 | 0.78 | **+1.42** | Difficulty & Gameplay Tuning |
+| `crashes` | 616 | 86 | 4.49 | 1.42 | **+1.15** | Technical Stability & Bugs |
+| `bad` | 4,472 | 848 | 32.61 | 14.02 | **+0.85** | General Product Dissatisfaction |
+
+#### Methodological Specification & Counting Unit
+* **Unit of Counts:** The counts above represent **token occurrences** extracted via `CountVectorizer` on a balanced random sample of 30,000 negative and 30,000 positive reviews drawn from the verified English corpus ($N = 557,202$ uncapped, `text_mining_ok == True`, Latin character ratio $\ge 0.90$, foreign marker filter, tokenized with custom negation binding). Equal document sampling ensures log odds ratios reflect relative distinctiveness without distortion from the 9:1 platform positivity imbalance.
+* **Corpus-Wide Document Prevalence:** In contrast to sample token counts, counting the number of *distinct reviews* containing each term across the entire 557,202 English reviews (`target_is_negative == 1`: 56,962 reviews; `target_is_negative == 0`: 500,240 reviews) shows:
+  * `boring`: occurs in **5,372 negative reviews** (9.43% of negatives) vs **4,239 positive reviews** (0.85% of positives) — an 11.1x relative representation lift in negative reviews.
+  * `waste`: occurs in **1,703 negative reviews** (2.99% of negatives) vs **1,415 positive reviews** (0.28% of positives) — a 10.7x relative representation lift in negative reviews.
+  * `crashes`: occurs in **974 negative reviews** (1.71% of negatives) vs **1,475 positive reviews** (0.29% of positives) — a 5.9x relative representation lift in negative reviews.
+
+Both token-frequency log odds and full-corpus review counts align: `boring` is the single most prevalent quality complaint on Steam, while `crashes` and `clunky` form the sharpest early onboarding blockers.
 
 ### 3.2 Early (<2h) vs. Later (>=2h) Playtime Comparison
 Examining negative reviews written inside the 2-hour refund window versus later reviews (`reports/results/playtime_ngram_comparison.csv`):
@@ -133,22 +142,31 @@ Rather than treating topic models as black boxes or stopping at word clouds, we 
 
 ### 5.1 Intrinsic Metric Results
 1. **Topic Coherence (UMass):**
-   $$C_{\text{UMass}}(w_i, w_j) = \log \frac{D(w_i, w_j) + 1}{D(w_j)}$$
-   * NMF achieved a Mean UMass score of **-2.380**, indicating tightly co-occurring vocabulary clusters without spurious outliers.
+   $$C_{\text{UMass}}(w_i, w_j) = \log \frac{D(w_i, w_j) + 1}{D(w_j)} \le 0$$
+   * NMF achieved a Mean UMass score of **-2.380**, compared to LDA's **-1.732**. Because UMass is negative, values closer to 0 represent higher pairwise co-occurrence (meaning LDA scores higher on raw co-occurrence). However, LDA's higher score is driven by high-frequency general gaming vocabulary, whereas NMF penalizes non-specific co-occurrences through TF-IDF weighting.
 2. **Topic Diversity:**
    $$\text{Diversity} = \frac{|\bigcup_{k=1}^K Top10(T_k)|}{10 \times K}$$
-   * NMF achieved a Topic Diversity of **90.00%** (72 unique tokens across 80 top terms). No single generic gaming term dominated across topics.
-3. **Random Seed Stability:**
-   * Fitted NMF models across independent seeds (42, 101, 2024). Calculated pairwise Jaccard similarity across top-10 words of best-matching topics:
-   * **Mean Pairwise Jaccard: 1.00** (`reports/results/topic_stability_evaluation.csv`). NMF initialized via Non-Negative Double Singular Value Decomposition (`nndsvda`) is perfectly deterministic and robust against random initialization drift.
+   * NMF achieved a Topic Diversity of **90.00%** (72 unique tokens across 80 top terms), substantially higher than LDA (**86.25%**). NMF produces distinct, non-overlapping vocabularies across all 8 components.
+3. **Subsample Stability (Replacing Deterministic Seed Tests):**
+   * Testing topic stability across random seeds on the same data with deterministic `init="nndsvda"` trivially produces Jaccard = 1.00. To genuinely test stability against data perturbation, we evaluated topic recovery across **5 independent 80% subsamples** of the negative training reviews (seeds 101, 2024, 7, 99, 123) against the full reference model (`reports/results/topic_stability_evaluation.csv`):
+     * **T0 (Boss Design & Upgrades):** Mean Jaccard = **1.000 $\pm$ 0.000** (High Stability)
+     * **T1 (Repetitive Gameplay & Pacing):** Mean Jaccard = **0.733 $\pm$ 0.133** (Moderate Stability)
+     * **T2 (Controls, Flawed Design & RNG):** Mean Jaccard = **0.768 $\pm$ 0.156** (Moderate Stability)
+     * **T3 (Early Access & Content Scarcity):** Mean Jaccard = **0.855 $\pm$ 0.073** (High Stability)
+     * **T4 (Replayability & Co-op):** Mean Jaccard = **0.697 $\pm$ 0.061** (Moderate Stability)
+     * **T5 (Multiplayer & Crash Bugs):** Mean Jaccard = **0.855 $\pm$ 0.073** (High Stability)
+     * **T6 (Art & Presentation vs Loop):** Mean Jaccard = **0.723 $\pm$ 0.226** (Moderate Stability)
+     * **T7 (Unbalanced Mechanics & Frustration):** Mean Jaccard = **0.329 $\pm$ 0.341** (Lower Stability)
+   * **Overall Mean Pairwise Jaccard:** **0.745 $\pm$ 0.187**. The core diagnostic topics (Boss Design, Crashes, Early Access, Controls) remain highly stable under resampling, while low-prevalence residual clusters (T7) exhibit expected variance.
 
 ### 5.2 Comparative Baseline: NMF vs. LDA
 | Evaluation Metric | NMF (TF-IDF) | LDA (Count Vectors) | Justification & Takeaway |
 | :--- | :---: | :---: | :--- |
-| **Topic Coherence (UMass)** | **-2.380** | -1.732 | LDA scores higher on raw co-occurrence because it latches onto high-frequency general tokens |
-| **Topic Diversity** | **90.00%** | 86.25% | NMF achieves cleaner, less redundant topic vocabulary |
+| **Topic Coherence (UMass)** | -2.380 | **-1.732** | LDA achieves higher raw co-occurrence (closer to 0) because Count vectors favor ubiquitous general gaming words (`game`, `play`, `time`) |
+| **Topic Diversity** | **90.00%** | 86.25% | NMF achieves cleaner, less redundant topic vocabulary across top-10 terms |
 | **Fitting Execution Time** | **2.32 seconds** | 105.12 seconds | NMF is **45x faster**, critical for reproducible pipelines on large corpora |
 | **Semantic Separability** | **High** | Moderate | LDA blended general roguelike tokens across multiple topics; NMF cleanly isolated controls, crashes, and early access |
+| **Algorithmic Selection Verdict** | **Selected** | Baseline | **NMF selected:** superior interpretability, higher diversity, clean failure-mode isolation, and 45x speedup justify NMF despite LDA's higher raw UMass co-occurrence |
 
 ### 5.3 Distinction: Supervised Sentiment Detection vs. Unsupervised Topic Modelling
 It is vital to distinguish between:
@@ -157,7 +175,7 @@ It is vital to distinguish between:
   * **Role:** Automated post-hoc triage. It ingests an already-written review and classifies whether the player gave a thumbs-down.
   * **Crucial Limitation:** A sentiment classifier *cannot forecast pre-launch game risk*, because no reviews exist prior to release.
 * **Unsupervised Topic Modelling (Review 2's NMF model):**
-  * Evaluated via Coherence (-2.380), Diversity (90%), and Stability (1.00).
+  * Evaluated via Coherence (-2.380), Diversity (90%), and Subsample Stability (0.745 $\pm$ 0.187).
   * **Role:** Causal failure mode discovery. It decomposes the unstructured text of dissatisfied players into actionable categories (controls, netcode, RNG, progression), explaining *why* negative reviews occur and what developers must fix.
 
 ---
