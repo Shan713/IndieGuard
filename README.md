@@ -22,20 +22,50 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs the analysis and models live, about 6 minutes) |
 | **Next** | **Review 1 slides and rehearsal, contribution summaries, and the team's agreement on the game-level tiers. Then Review 2: association rules, topic modelling, patch-impact analysis and the dashboard** |
 
-## Getting started (about 5 minutes)
+## Getting started
 
-You need Python 3.12 (tested) and git. Run everything from the repository root.
+### Requirements
 
-```bash
+- Python 3.12
+- Git
+- Internet access to install Python dependencies
+
+Run commands from the repository root.
+
+### Setup
+
+Clone the repository and enter its directory:
+
+```powershell
 git clone https://github.com/Shan713/IndieGuard.git
 cd IndieGuard
-pip install -r requirements.txt
-python -m src.features.text         # builds the review-text features, about 1 minute (they are not committed: 233 MB)
-python -m src.features.validate     # 21 checks; all must pass
 ```
 
-The cleaned data and features are already in the repo (`data/processed/`). The raw scrape is **not** in the repo (it is
-frozen on M1's machine; counts and SHA256 hashes are in `docs/data_manifest.md`), and you do not need it.
+Install the pinned dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+### Build features and validate
+
+Run the complete feature-generation pipeline and validation script:
+
+```powershell
+.\scripts\run_all.ps1
+```
+
+The script builds the feature tables and runs the validation checks. It stops if feature generation or validation fails. A successful run should finish with all validation checks passing.
+
+### Validate existing artifacts without rebuilding
+
+To run validation only:
+
+```powershell
+python -m src.features.validate
+```
+
+The cleaned data and existing feature tables are stored in `data/processed/`. Raw scraped data is **not** included in the repository (it is frozen on M1's machine; counts and SHA256 hashes are in `docs/data_manifest.md`). Raw data is not required for this feature pipeline.
 
 ## The data you will use
 
@@ -44,7 +74,7 @@ import pandas as pd
 rf = pd.read_parquet("data/processed/features/review_features")        # 1,573,436 reviews, one row each
 gf = pd.read_parquet("data/processed/features/game_features.parquet")  # 1,861 games, launch-time + post-launch features
 gt = pd.read_parquet("data/processed/features/game_targets.parquet")   # game labels (tier_code 0/1/2, high_risk)
-txt = pd.read_parquet("data/processed/features/text_svd")              # text components (after running the text step), join on recommendationid
+txt = pd.read_parquet("data/processed/features/text_svd")              # text components (after running the feature pipeline), join on recommendationid
 ```
 
 | Task | Label | Table | Rows |
@@ -52,9 +82,7 @@ txt = pd.read_parquet("data/processed/features/text_svd")              # text co
 | Review level: will this review be negative? | `target_is_negative` | `review_features` | 1,573,436 |
 | Game level: which success tier? | `tier_code` (0 Struggling, 1 Solid, 2 Strong) | `game_features` + `game_targets`, keep `eligible == 1` | 1,490 |
 
-Every table has `split` (`train` or `test`) and `cv_fold` (0 to 4 for train, -1 for test). **They come from one shared
-split by game; use them as they are.** More: `docs/train_test_split.md`, `docs/feature_engineering.md`,
-`docs/data_documentation.md` (data dictionary).
+Every table has `split` (`train` or `test`) and `cv_fold` (0 to 4 for train, -1 for test). **They come from one shared split by game; use them as they are.** More: `docs/train_test_split.md`, `docs/feature_engineering.md`, `docs/data_documentation.md` (data dictionary).
 
 ## Building a model: the steps
 
@@ -68,6 +96,7 @@ split by game; use them as they are.** More: `docs/train_test_split.md`, `docs/f
 8. **Open a pull request** that says `Closes #<issue>` and attach the evidence (notebook, plot, results file). **A teammate reviews and merges.** Then the card moves to *Completed*.
 
 ### The rules that matter most
+
 - **Fit anything learned from data on training rows only** (scalers, encoders, imputers, bucket edges).
 - **Never use outcome or after-the-fact columns as features.** Not allowed: `outcome_*`, `steam_*`, `spy_*`, `metacritic_score`, `recommendations_total`, `votes_*`, `comment_count`, `weighted_vote_score`, `refunded`, `has_dev_response`, and keys (`appid`, `recommendationid`, `split`, `cv_fold`, `reviews_capped`). The full list is in the protocol.
 - **A launch-risk model uses only `launch_time` features.** Patch counts after launch (`patches_first_30d`, `patches_first_90d`, `sales_first_90d`) are for a post-launch monitor only. Each feature's group is in `docs/feature_engineering/feature_catalog.csv`.
@@ -75,11 +104,12 @@ split by game; use them as they are.** More: `docs/train_test_split.md`, `docs/f
 - **Do not make another split.** Do not edit raw or cleaned data; propose changes by pull request.
 
 ### What to expect
+
 Reference scores to beat are in the protocol. At game level, expect modest results: a random forest on launch-time features reaches macro-F1 0.41 (guessing the majority class gives 0.22) and finds only about 1 in 8 struggling games, and only 51 struggling games are in the test set. That is a finding, not a failure. Report it honestly and focus on which features matter (SHAP) and what it means for a studio.
 
 ## Repository layout
 
-```
+```text
 data/processed/        cleaned tables, split, features (committed)   data/raw, data/interim: local only
 src/collect/           scrapers and the raw-data manifest             src/clean/    cleaning pipeline
 src/splits/            the shared train/test split                    src/features/ features, tag PCA, text SVD, game targets, validation
@@ -107,6 +137,7 @@ docs/                  documentation: start with the list below       figures/, 
 M1 (Shantharam): data lead and board admin. M2 (Gayas): cleaning and features. M3 (Srihitha): EDA and dashboard. M4: modelling and association rules. M5: text mining and storytelling. The board is the source of truth for who owns what; M4 and M5 are not assigned yet.
 
 ## Known limitations (read before trusting a number)
+
 - The tag and text components were fitted on all training games, so they leak very slightly into each cross-validation fold.
 - Review-level results are dominated by a few very large games: always report the per-game average too.
 - Five very large games (Megabonk, Cult of the Lamb, Hades II, Balatro, Vampire Survivors) have only their newest ~15,000 reviews. They are left out of the review-level tables and kept at game level.
@@ -114,6 +145,7 @@ M1 (Shantharam): data lead and board admin. M2 (Gayas): cleaning and features. M
 - Details: `docs/data_documentation.md` (section 8) and `docs/feature_engineering.md` (section 7).
 
 ## Working agreement
+
 1. Every piece of work is an issue with one owner, a due date and evidence.
 2. Branch from `main` as `feature/<issue-number>-short-name`; open a pull request that says `Closes #<issue>`.
 3. A teammate reviews and merges. Update your card the same day the work happens; the board history is used to verify individual contribution.
