@@ -1,4 +1,4 @@
-﻿"""Export the launch-risk XGBoost model without evaluating the test split."""
+"""Export the launch-risk XGBoost model without evaluating the test split."""
 from __future__ import annotations
 
 import json
@@ -16,7 +16,9 @@ from src.models.game_xgboost import (
     cross_validate,
     load_game_data,
     tune_class_scales,
+    predict_labels,
 )
+
 
 OUTPUT_DIR = ROOT / "models" / "launch_risk"
 
@@ -37,6 +39,13 @@ def main() -> None:
     # CV uses cv_fold within the training split; no test data is evaluated.
     cv = cross_validate(df, feature_cols, BASE_PARAMS, verbose=True)
     scales, oof_f1 = tune_class_scales(cv["oof_y"], cv["oof_prob"])
+    oof_predictions = predict_labels(cv["oof_prob"], scales)
+    struggling_mask = cv["oof_y"] == 0
+    struggling_recall = (
+        float((oof_predictions[struggling_mask] == 0).mean())
+        if struggling_mask.any()
+        else 0.0
+    )
     n_rounds = cv["n_rounds"]
 
     if n_rounds < 1:
@@ -89,6 +98,12 @@ def main() -> None:
         "training_rows": int(len(train)),
         "cross_validation_folds": 5,
         "oof_macro_f1_after_scaling": float(oof_f1),
+        "oof_recall_struggling_after_scaling": struggling_recall,
+        "metric_note": (
+            "Out-of-fold metrics are calculated on the training split only. "
+            "Class-scaled scores are not calibrated probabilities. "
+            "Struggling-class recall is weak; see the documentation."
+        ),
         "training_protocol": (
             "Class scales selected from out-of-fold predictions on the training split. "
             "Final model fitted on the full training split. Test split not evaluated "
