@@ -1,0 +1,1 @@
+antecedents_str,consequents_str,n_antecedent,n_hit,support,confidence,conf_lo,conf_hi,lift,lift_lo,p_value,q_value,improvement,test_n_antecedent,test_support,test_confidence,test_conf_lo,test_conf_hi,test_lift,conf_diff,boot_lift_gt1,boot_lift_lo,boot_lift_hi,stability,is_stable
