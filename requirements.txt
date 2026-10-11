@@ -15,3 +15,5 @@ shap
 nbformat
 nbconvert
 ipykernel
+# association rules (Review 2: Apriori, FP-Growth)
+mlxtend
