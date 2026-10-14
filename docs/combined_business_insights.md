@@ -142,13 +142,41 @@ Analyzing 28,875 patch events across 1,607 games (`reports/results/patch_impact_
 
 ---
 
+## 3b. Association Rules: Tag and Price Combinations (PR #70, cards #34 to #36)
+
+FP-Growth was run on the 1,191 training games only, over launch-time items (tags, price band, Early Access), then each itemset was scored against the Strong and Struggling tiers. The test games (299) were used once, to check whether each rule still holds. Strong is the tier for 35.3% of training games, Struggling for 13.9%.
+
+| Result | Value |
+| :--- | :---: |
+| Candidate rules scored | 4,715 |
+| Strong rules passing FDR control (q < 0.10, lift >= 1.2) | 95 |
+| Struggling rules passing | **0** |
+| Strong rules that hold on the test games | 45 of 95 (29 had too few test games, 21 were unstable) |
+
+Most stable Strong rules:
+
+| Antecedent | Train games | Strong share (train) | Lift | Test games | Strong share (test) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Procedural Generation + Retro | 43 | 67% | 1.91 | 14 | 57% |
+| Arcade + Retro + Roguelite | 52 | 67% | 1.90 | 11 | 55% |
+| price <$5 + 2D + Procedural Generation | 36 | 67% | 1.89 | 11 | 45% |
+| Arcade + Pixel Graphics + Retro | 50 | 66% | 1.87 | 12 | 67% |
+| 2D + Perma Death + Procedural Generation | 32 | 66% | 1.86 | 12 | 75% |
+| price <$5 + Pixel Graphics + Procedural Generation | 29 | 66% | 1.85 | 12 | 42% |
+
+**How to read it.** Low-scope 2D, pixel, retro and procedural-generation combinations go with the Strong tier about two-thirds of the time against 35% overall, which supports the scope-discipline hypothesis in the playbook. No combination predicts Struggling, so there is no tag recipe for avoiding it; risk is not a matter of tags alone. Rules that include a price under $5 are often unstable on the test games (for example price <$5 + Retro + Roguelite: 67% in training, 29% on 14 test games), so price adds little once tags are known.
+
+**Limits.** Supports are small (about 30 to 60 training games, 10 to 25 test games), rules overlap, and these are associations in observational data, not effects of choosing the tags. They are hypotheses for a studio to test, not recipes.
+
+---
+
 ## 4. The Studio Action Playbook: Hypotheses & Evidence
 
 The recommendations below translate IndieGuard's empirical findings into actionable hypotheses for studio decision-making. Each strategy specifies the underlying data pattern and a validation test for the studio:
 
 | Production Phase | Strategic Intervention (Hypothesis) | Underlying Empirical Evidence | Recommended Studio Test / Validation |
 | :--- | :--- | :--- | :--- |
-| **Pre-Production** | **Scope Discipline Hypothesis:** Constraining game scope to 2D single-player subgenres (deckbuilder, twin-stick, platformer) minimizes catastrophic launch failure compared to 3D or multiplayer scopes. | Online co-op games struggle 26.6% of the time vs 1.8% for twin-stick and 3.2% for 2D platformers (exact binomial test with Benjamini-Hochberg FDR control). Topic T5 netcode/lobby bugs account for 25.4% of multiplayer complaints. | Small studios (<5 developers) should prototype core mechanics in single-player; only commit to multiplayer if backed by dedicated networking engineers. |
+| **Pre-Production** | **Scope Discipline Hypothesis:** Constraining game scope to 2D single-player subgenres (deckbuilder, twin-stick, platformer) minimizes catastrophic launch failure compared to 3D or multiplayer scopes. | Online co-op games struggle 26.6% of the time vs 1.8% for twin-stick and 3.2% for 2D platformers (exact binomial test with Benjamini-Hochberg FDR control). Topic T5 netcode/lobby bugs account for 25.4% of multiplayer complaints. FP-Growth rules agree (section 3b): 2D, retro and procedural-generation combinations are Strong about two-thirds of the time against 35% overall. | Small studios (<5 developers) should prototype core mechanics in single-player; only commit to multiplayer if backed by dedicated networking engineers. |
 | **Pre-Launch Polish** | **Platform Completeness Hypothesis:** Full controller support, cloud saves, and Steam achievements serve as low-cost trust signals that lower refund churn. | Listed achievements reduce struggling risk from 19.6% to 12.5% (95% CI: 10.6%–14.8%). Full controller support lowers risk from 15.5% to 11.5%. XGBoost SHAP ranks store polish components (`pc_02`) as the top protective factor. | Implement complete Steamworks features prior to launch; conduct external blind playtests on Steam Deck to verify default bindings. |
 | **Launch Day** | **Pricing Alignment Hypothesis:** Pricing indie roguelites below $15 ($9.99–$12.99 sweet spot) minimizes refund-window scrutiny and mitigates initial negative reviews. | Inside the 2-hour refund window, negativity jumps from 11.4% (<$5) and 23.0% ($5–$10) to 26.4% ($10–$20) and 31.8% ($20+). Sub-$5 games achieve Strong tier 44.1% vs 25.5% for $10–$20 games. | Launch at $9.99–$12.99 with an introductory 10%–15% discount. Only price above $15 if external beta testers verify >15 hours of deep content without repetition. |
 | **Launch Week** | **Onboarding Triage Hypothesis:** Deploying Day 1–7 hotfixes strictly targeting technical crashes and input friction prevents 2-hour refund exits. | Under-2h reviews are 21.2% negative vs 8.8% later, generating 29.0% of all platform negative reviews. Peak early topics are Topic T5 (Crashes, 29.17%) and Topic T2 (Controls, 4.95%). | Instrument crash reporting on launch day. Prioritize zero-crash stability and camera/input responsiveness over gameplay balance during the first 7 days. |

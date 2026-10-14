@@ -17,7 +17,7 @@ In Review 2, **Tasks #31–#33** replace heuristic keyword matching with a scala
 1. **Text Preprocessing & Multilingual Evaluation:** Analyzed 1,648,387 cleaned Steam reviews across 31 languages. Evaluated multilingual viability and established a rigorously filtered, high-purity English corpus of **557,202 reviews** (436,715 train / 120,487 test) with custom negation binding (`not_fun`, `too_hard`, `clunky_controls`).
 2. **Exploratory N-Gram Text Mining:** Extracted unigrams and bigrams using Dirichlet-smoothed **Log Odds Ratios**, pinpointing vocabulary that disproportionately drives negative reviews versus positive reviews, and early reviews (<2h) versus late reviews (>=2h).
 3. **Data-Driven Topic Modelling (NMF $k=8$):** Implemented Non-Negative Matrix Factorization on TF-IDF sparse matrices, discovering 8 distinct, non-overlapping semantic complaint themes.
-4. **Rigorous Topic Model Evaluation (Task #32):** Evaluated topic quality using **UMass Coherence (-2.380 vs LDA -1.732)**, **Topic Diversity (90.0% vs LDA 86.25%)**, and **Subsample Stability across 80% resamples (Mean Jaccard = 0.745 +/- 0.187)**. Benchmarked NMF against Latent Dirichlet Allocation (LDA) and justified NMF on semantic interpretability, vocabulary diversity, and computational efficiency.
+4. **Rigorous Topic Model Evaluation (Task #32):** Evaluated topic quality using **UMass Coherence (-2.380 vs LDA -1.732)**, **Topic Diversity (90.0% vs LDA 86.25%)**, and **Subsample Stability across 80% resamples (Mean Jaccard = 0.745; spread across topics 0.19)**. Benchmarked NMF against Latent Dirichlet Allocation (LDA) and justified NMF on semantic interpretability, vocabulary diversity, and computational efficiency.
 5. **Supervised vs. Unsupervised Clarification:** Formally demarcated unsupervised thematic discovery (which uncovers actionable developer failure modes) from supervised sentiment classification (which performs automated post-hoc triage on already-written reviews but cannot forecast pre-launch risk).
 
 ---
@@ -77,11 +77,11 @@ Using Laplace-smoothed Log Odds Ratios across 10,643 filtered unigrams and bigra
 #### Methodological Specification & Counting Unit
 * **Unit of Counts:** The counts above represent **token occurrences** extracted via `CountVectorizer` on a balanced random sample of 30,000 negative and 30,000 positive reviews drawn from the verified English corpus ($N = 557,202$ uncapped, `text_mining_ok == True`, Latin character ratio $\ge 0.90$, foreign marker filter, tokenized with custom negation binding). Equal document sampling ensures log odds ratios reflect relative distinctiveness without distortion from the 9:1 platform positivity imbalance.
 * **Corpus-Wide Document Prevalence:** In contrast to sample token counts, counting the number of *distinct reviews* containing each term across the entire 557,202 English reviews (`target_is_negative == 1`: 56,962 reviews; `target_is_negative == 0`: 500,240 reviews) shows:
-  * `boring`: occurs in **5,372 negative reviews** (9.43% of negatives) vs **4,239 positive reviews** (0.85% of positives) — an 11.1x relative representation lift in negative reviews.
-  * `waste`: occurs in **1,703 negative reviews** (2.99% of negatives) vs **1,415 positive reviews** (0.28% of positives) — a 10.7x relative representation lift in negative reviews.
-  * `crashes`: occurs in **974 negative reviews** (1.71% of negatives) vs **1,475 positive reviews** (0.29% of positives) — a 5.9x relative representation lift in negative reviews.
+  * `boring`: occurs in **5,183 negative reviews** (9.10% of negatives) vs **3,992 positive reviews** (0.80% of positives) — an 11.4x relative representation lift in negative reviews.
+  * `waste`: occurs in **1,649 negative reviews** (2.89% of negatives) vs **1,327 positive reviews** (0.27% of positives) — a 10.9x relative representation lift in negative reviews.
+  * `crashes`: occurs in **952 negative reviews** (1.67% of negatives) vs **1,449 positive reviews** (0.29% of positives) — a 5.8x relative representation lift in negative reviews.
 
-Both token-frequency log odds and full-corpus review counts align: `boring` is the single most prevalent quality complaint on Steam, while `crashes` and `clunky` form the sharpest early onboarding blockers.
+Both token-frequency log odds and full-corpus review counts align: `boring` is the single most prevalent quality complaint in this dataset, while `crashes` and `clunky` form the sharpest early onboarding blockers.
 
 ### 3.2 Early (<2h) vs. Later (>=2h) Playtime Comparison
 Examining negative reviews written inside the 2-hour refund window versus later reviews (`reports/results/playtime_ngram_comparison.csv`):
@@ -157,7 +157,7 @@ Rather than treating topic models as black boxes or stopping at word clouds, we 
      * **T5 (Multiplayer & Crash Bugs):** Mean Jaccard = **0.855 $\pm$ 0.073** (High Stability)
      * **T6 (Art & Presentation vs Loop):** Mean Jaccard = **0.723 $\pm$ 0.226** (Moderate Stability)
      * **T7 (Unbalanced Mechanics & Frustration):** Mean Jaccard = **0.329 $\pm$ 0.341** (Lower Stability)
-   * **Overall Mean Pairwise Jaccard:** **0.745 $\pm$ 0.187**. The core diagnostic topics (Boss Design, Crashes, Early Access, Controls) remain highly stable under resampling, while low-prevalence residual clusters (T7) exhibit expected variance.
+   * **Overall Mean Pairwise Jaccard:** **0.745** (the mean of the eight topic means; the spread across topics is $\pm$ 0.19 and the mean within-topic standard deviation over resamples is 0.13). The core diagnostic topics (Boss Design, Crashes, Early Access, Controls) remain highly stable under resampling, while low-prevalence residual clusters (T7) exhibit expected variance.
 
 ### 5.2 Comparative Baseline: NMF vs. LDA
 | Evaluation Metric | NMF (TF-IDF) | LDA (Count Vectors) | Justification & Takeaway |
@@ -175,7 +175,7 @@ It is vital to distinguish between:
   * **Role:** Automated post-hoc triage. It ingests an already-written review and classifies whether the player gave a thumbs-down.
   * **Crucial Limitation:** A sentiment classifier *cannot forecast pre-launch game risk*, because no reviews exist prior to release.
 * **Unsupervised Topic Modelling (Review 2's NMF model):**
-  * Evaluated via Coherence (-2.380), Diversity (90%), and Subsample Stability (0.745 $\pm$ 0.187).
+  * Evaluated via Coherence (-2.380), Diversity (90%), and Subsample Stability (mean Jaccard 0.745; topic-to-topic spread 0.19).
   * **Role:** Causal failure mode discovery. It decomposes the unstructured text of dissatisfied players into actionable categories (controls, netcode, RNG, progression), explaining *why* negative reviews occur and what developers must fix.
 
 ---
