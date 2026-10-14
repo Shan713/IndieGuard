@@ -60,12 +60,14 @@ Measured on a 24-core machine, one fit on the full review-level train takes abou
 
 On a laptop with 6 to 8 cores, multiply by 2 to 4. That is why the work is split.
 
-## Split of the work (60:40)
+## Split of the work (by compute)
+
+Rule: compute-heavy runs go to Shantharam, light runs and write-ups go to Srihitha.
 
 | Owner | Work packages | Effort |
 | --- | --- | --- |
-| Srihitha | review Random Forest, review XGBoost, text Logistic Regression, game Random Forest, game XGBoost, game Logistic Regression | 10 of 17 (59%) |
-| Shantharam | review Logistic Regression, review LightGBM, game LightGBM, text LightGBM, and the integration (results table, `compare.py`, docs, notebook, slides) | 7 of 17 (41%) |
+| Shantharam | review XGBoost, review Random Forest, text Logistic Regression, text LightGBM, review LightGBM (about 8 h on 24 cores) | 11.5 of 17 (68%) |
+| Srihitha | review Logistic Regression, game Random Forest, game XGBoost, game Logistic Regression, game LightGBM (minutes each), and the integration (results table, `compare.py`, docs, notebook, slides) | 5.5 of 17 (32%) |
 
 Effort units: review RF 3, review XGBoost 3, text LR 2, review LightGBM 2, text LightGBM 1.5, integration 1.5, game XGBoost 1, game LightGBM 1, review LR 1, game RF 0.5, game LR 0.5.
 
