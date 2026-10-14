@@ -1,0 +1,2 @@
+games,eligible_patch_events,mean_game_level_positive_pct_change,median_game_level_positive_pct_change,bootstrap_95_ci_low,bootstrap_95_ci_high,bootstrap_replicates,random_seed,mean_game_level_negative_pct_change,mean_game_level_review_volume_change,mean_game_level_review_volume_pct_change
+617,1685,-2.0580289718080373,-1.25,-2.7549772810896695,-1.3669470475654188,10000,42,2.0580289718080373,84.71474806921347,165.4214099948988
