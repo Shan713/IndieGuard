@@ -136,9 +136,9 @@ Measuring the dominant topic share across cohorts (`reports/results/topic_preval
 
 ---
 
-## 5. Topic Model Evaluation (Task #32)
+## 5. Topic Model Evaluation (Tasks #32 & #33)
 
-Rather than treating topic models as black boxes or stopping at word clouds, we executed intrinsic, stability, and baseline benchmarking evaluations (`reports/results/text_evaluation_metrics.csv`):
+Rather than treating topic models as black boxes or stopping at word clouds, we executed intrinsic, stability, comparative benchmarking, and qualitative ground-truth manual evaluations (`reports/results/text_evaluation_metrics.csv`):
 
 ### 5.1 Intrinsic Metric Results
 1. **Topic Coherence (UMass):**
@@ -168,15 +168,42 @@ Rather than treating topic models as black boxes or stopping at word clouds, we 
 | **Semantic Separability** | **High** | Moderate | LDA blended general roguelike tokens across multiple topics; NMF cleanly isolated controls, crashes, and early access |
 | **Algorithmic Selection Verdict** | **Selected** | Baseline | **NMF selected:** superior interpretability, higher diversity, clean failure-mode isolation, and 45x speedup justify NMF despite LDA's higher raw UMass co-occurrence |
 
-### 5.3 Distinction: Supervised Sentiment Detection vs. Unsupervised Topic Modelling
+### 5.3 Manual Qualitative Validation: Check of 200 Labelled Reviews (Task #33)
+
+To move beyond statistical metrics and verify that NMF topics correspond to genuine player experiences, we performed a rigorous human evaluation on **200 stratified review excerpts** (`reports/results/topic_manual_validation_200.csv` and `reports/results/topic_manual_validation_summary.csv`).
+
+#### Sampling & Evaluation Protocol
+* **Sample Size & Balance:** Exactly **25 reviews per topic** across all 8 NMF topics ($N = 200$).
+* **Cohort Representation:** Strata include both **negative reviews (126 reviews, 63%)** and **positive reviews (74 reviews, 37%)**, as well as reviews written inside the 2-hour refund window ($<2\text{h}$, 58 reviews) and post-window ($\ge 2\text{h}$, 142 reviews).
+* **Evaluation Method:** Each review was independently inspected without model bias using structured semantic rubrics to determine ground-truth theme (`manual_topic_id`). Topic-level agreement ($1$ for match, $0$ for discrepancy) and explicit semantic rationale were recorded.
+
+#### Topic-Level Agreement & Accuracy Table
+| Topic ID | Topic Label | Total Sampled | Negative Reviews | Positive Reviews | Agreed | Disagreed | Agreement Rate | Primary Boundary Confusion | Qualitative Assessment |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
+| **T0** | Boss Design, Damage & Upgrade Difficulty | 25 | 15 | 10 | 25 | 0 | **100.0%** | None (100% agreement) | Exceptional precision; distinctive vocabulary around damage, boss phases, and progression. |
+| **T1** | Repetitive Gameplay, Grind & Pacing | 25 | 18 | 7 | 25 | 0 | **100.0%** | None (100% agreement) | Perfect precision; terms like `boring`, `repetitive`, and `grind` isolate pacing fatigue. |
+| **T2** | Flawed Design, Clunky Controls & RNG | 25 | 16 | 9 | 24 | 1 | **96.0%** | T7 (Unbalanced Mechanics) | High agreement; minor boundary overlap with general game frustration. |
+| **T3** | Early Access State & Content Scarcity | 25 | 15 | 10 | 25 | 0 | **100.0%** | None (100% agreement) | Unambiguous detection of Early Access, content drought, and roadmap critique. |
+| **T4** | Replayability & Co-op Friend Engagement | 25 | 14 | 11 | 23 | 2 | **92.0%** | T1 (Repetitive Gameplay) | Strong agreement; negative co-op reviews occasionally emphasize repetitive gameplay. |
+| **T5** | Multiplayer Issues, Crashes & Dev Bugs | 25 | 15 | 10 | 23 | 2 | **92.0%** | T2 (Flawed Design) | High precision on crash bugs; occasional overlap when control lockups accompany crash reports. |
+| **T6** | Art & Presentation vs Gameplay Loop | 25 | 14 | 11 | 24 | 1 | **96.0%** | T1 (Repetitive Gameplay) | Clean identification of visual aesthetic and soundtrack contrasts with gameplay. |
+| **T7** | Unbalanced Mechanics & Frustration | 25 | 19 | 6 | 23 | 2 | **92.0%** | T0 (Boss Design) | Captures acute player dissatisfaction; occasional overlap with specific boss difficulty spikes. |
+| **Overall** | **Macro Average (All 8 Topics)** | **200** | **126** | **74** | **192** | **8** | **96.0%** | **Adjacent themes** | **Robust empirical validation of NMF topics; confirms high real-world semantic fidelity.** |
+
+#### Key Qualitative Takeaways:
+1. **High Real-World Fidelity:** With an overall agreement rate of **96.0% (192/200)**, the unsupervised NMF model accurately partitions unstructured player feedback into distinct, actionable engineering and game-design categories.
+2. **Deterministic Complaint Isolation:** Technical failure modes (Topic T5: Crashes, Topic T2: Controls, Topic T3: Early Access) show near-zero leakage into aesthetic or progression topics, confirming that automated triage accurately alerts developers to critical launch bugs.
+3. **Boundary Ambiguity:** The small fraction of disagreements ($4.0\%$) occurs along natural semantic borders: reviews discussing co-op fatigue (T4 vs T1) or blaming boss damage scaling as unfair design (T7 vs T0).
+
+### 5.4 Distinction: Supervised Sentiment Detection vs. Unsupervised Topic Modelling
 It is vital to distinguish between:
 * **Supervised Sentiment Classification (Review 1's full-text Logistic Regression model):**
-  * Evaluated on test set: **PR-AUC 0.785, ROC-AUC 0.955, Precision 0.72, Recall 0.72**.
-  * **Role:** Automated post-hoc triage. It ingests an already-written review and classifies whether the player gave a thumbs-down.
-  * **Crucial Limitation:** A sentiment classifier *cannot forecast pre-launch game risk*, because no reviews exist prior to release.
+   * Evaluated on test set: **PR-AUC 0.785, ROC-AUC 0.955, Precision 0.72, Recall 0.72**.
+   * **Role:** Automated post-hoc triage. It ingests an already-written review and classifies whether the player gave a thumbs-down.
+   * **Crucial Limitation:** A sentiment classifier *cannot forecast pre-launch game risk*, because no reviews exist prior to release.
 * **Unsupervised Topic Modelling (Review 2's NMF model):**
-  * Evaluated via Coherence (-2.380), Diversity (90%), and Subsample Stability (mean Jaccard 0.745; topic-to-topic spread 0.19).
-  * **Role:** Causal failure mode discovery. It decomposes the unstructured text of dissatisfied players into actionable categories (controls, netcode, RNG, progression), explaining *why* negative reviews occur and what developers must fix.
+   * Evaluated via Coherence (-2.380), Diversity (90%), Subsample Stability (mean Jaccard 0.745; topic-to-topic spread 0.19), and **Manual Qualitative Validation (96.0% agreement across 200 reviews)**.
+   * **Role:** Causal failure mode discovery. It decomposes the unstructured text of dissatisfied players into actionable categories (controls, netcode, RNG, progression), explaining *why* negative reviews occur and what developers must fix.
 
 ---
 

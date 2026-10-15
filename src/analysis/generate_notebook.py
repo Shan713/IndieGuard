@@ -139,11 +139,23 @@ To confirm that the extracted topics are mathematically sound and robust, we eva
    * **Unsupervised topic modelling** discovers **latent root causes** and actionable developer failure modes.
 """))
 
-# Section 7 Code
 cells.append(nbf.v4.new_code_cell("""eval_metrics = pd.read_csv('../reports/results/text_evaluation_metrics.csv')
 display(eval_metrics[['methodology_tier', 'primary_metric', 'secondary_metric', 'role_in_indieguard']])
 
 display(Image(filename='../figures/text_mining/topic_evaluation_diagnostics.png'))
+"""))
+
+# Section 6b: Task #33 Manual Qualitative Validation
+cells.append(nbf.v4.new_markdown_cell("""### 6b. Task #33: Qualitative Ground-Truth Validation (200 Labelled Reviews)
+
+To verify that the unsupervised NMF topics reflect real-world player complaints without hallucinated clusters, we performed an independent ground-truth evaluation across **200 stratified review excerpts** (`reports/results/topic_manual_validation_200.csv`):
+* **Sample Balance:** Exactly 25 reviews per topic across all 8 topics (126 Negative / 74 Positive).
+* **Overall Agreement:** **96.0% (192/200)** agreement between model assigned dominant topics and manual human review.
+* **Per-Topic Accuracy:** Ranges from **92.0% to 100.0%**, confirming that technical topics (crashes, controls, early access) isolate critical launch failure modes with high precision.
+"""))
+
+cells.append(nbf.v4.new_code_cell("""manual_summary = pd.read_csv('../reports/results/topic_manual_validation_summary.csv')
+display(manual_summary[['topic_id', 'topic_label', 'total_sampled', 'negative_count', 'positive_count', 'agreed_count', 'agreement_rate', 'primary_confusion']])
 """))
 
 # Section 8 Markdown
