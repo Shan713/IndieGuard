@@ -43,7 +43,7 @@ The split is a suggestion; swap slides if someone prefers another. The slide not
 | --- | --- |
 | Did tuning change your conclusions? | No. Cross-validation moved by 0.002 to 0.02 and the test scores did not follow consistently; the three tree models still tie. The text model's jump is mostly a vocabulary refit on all training reviews. |
 | Why NMF if LDA has better coherence? | UMass favours LDA, but NMF gives more distinct, interpretable themes (diversity 90.0% against 86.25%) and fits about 45 times faster. We report both. |
-| Is the manual topic check done? | It is being redone with blind labels; we do not quote an agreement figure. |
+| Is the manual topic check done? | Done blind, but labelled by an AI assistant, not a team member: 35.5% agreement, kappa 0.30, 73 of 200 with no clear theme. Early Access (88%), repetition (64%) and multiplayer and crashes (60%) hold up; boss and balance topics (8% to 16%) do not. An earlier 96% figure was withdrawn. A human re-label of a subset is the next step. |
 | Do patches work? | Not in general. The drop after a patch is explained by launch timing and regression to the mean; against matched controls the difference is +0.27 points with an interval that includes zero. |
 | Can the rules be trusted? | They are tested on training games with FDR control and checked once on test games: 45 of 95 hold. Supports are small, so they are hypotheses. No rule predicts Struggling. |
 | How good is the scorer? | About 0.43 macro-F1 in cross-validation against 0.22 for guessing; Struggling games are hard to find. It compares launch plans; it does not promise an outcome. |
