@@ -1,0 +1,8 @@
+# Slim dependencies for Streamlit Community Cloud (the app reads small committed tables and one XGBoost model).
+# Choose Python 3.12 under Advanced settings when deploying.
+streamlit==1.66.0
+pandas==3.0.6
+numpy==2.5.3
+pyarrow==26.0.0
+xgboost==3.4.1
+altair==6.3.0
