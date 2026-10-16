@@ -143,7 +143,7 @@ Tuning moves cross-validation scores by a few thousandths to a hundredth and the
 
 ## 8. Text mining and complaint themes
 
-On the English corpus (557,202 reviews after language, script and quality filters) we bound negations (`not_fun`, `too_hard`), compared negative and positive vocabulary with smoothed log-odds, and fitted an NMF topic model with eight topics on 40,000 negative training reviews, with LDA as the baseline. NMF has lower raw UMass coherence than LDA (-2.380 against -1.732) but higher topic diversity (90.0% against 86.25%) and cleaner separation, and was chosen for interpretability and speed. Stability under 80% resampling gives a mean Jaccard of 0.745, with the small residual topic (unbalanced mechanics) the least stable. Early (under 2 hours) negatives lean to crashes and controls; later ones to boss balance and repetition. Terms such as `boring` appear in 9.1% of negative reviews against 0.8% of positive ones (11x). A manual check of 200 labelled reviews is being redone with blind labels (card #33), so we do not report an agreement figure here.
+On the English corpus (557,202 reviews after language, script and quality filters) we bound negations (`not_fun`, `too_hard`), compared negative and positive vocabulary with smoothed log-odds, and fitted an NMF topic model with eight topics on 40,000 negative training reviews, with LDA as the baseline. NMF has lower raw UMass coherence than LDA (-2.380 against -1.732) but higher topic diversity (90.0% against 86.25%) and cleaner separation, and was chosen for interpretability and speed. Stability under 80% resampling gives a mean Jaccard of 0.745, with the small residual topic (unbalanced mechanics) the least stable. Early (under 2 hours) negatives lean to crashes and controls; later ones to boss balance and repetition. Terms such as `boring` appear in 9.1% of negative reviews against 0.8% of positive ones (11x). A blind check of 200 reviews (labelled by an AI assistant with the model's topic hidden, in one pass) agrees with the model on 35.5% of them (Cohen's kappa 0.30), and 73 reviews had no clear theme. Three topics are recovered well: Early Access and content scarcity (88%), repetition and pacing (64%) and multiplayer, crashes and bugs (60%). The generic "flawed design" topic (0%) and the boss, replayability and balance topics (8% to 16%) are weak, so the themes built on them are exploratory. An earlier 96% figure came from labels that were not independent of the model and was withdrawn; a human re-label of a subset would strengthen the check.
 
 ![Topics by playtime](../figures/text_mining/topics_by_playtime.png)
 
@@ -177,6 +177,7 @@ An exported XGBoost model scores a game's review-reception tier from launch-time
 - Five very large games are capped. About 60% of reviews are not English, so text results cover a minority.
 - Only 51 Struggling games are in the test set, so game-level intervals are wide; cross-validation is slightly optimistic, so quote the test scores.
 - The review models use reviewer-history columns read at scrape time, so they explain reviews rather than score a launch.
+- The blind topic check agrees with the model on only 35.5% of reviews (one AI annotator); only the Early Access, repetition and multiplayer-and-crash themes are reliable.
 - Discount impact was not analysed.
 
 ## 14. Reproducibility and ethics
