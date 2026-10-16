@@ -2,7 +2,7 @@
 
 **Goal.** Check by hand whether the topic model's themes match what reviewers wrote. You label 200 reviews **without seeing the model's topic**, then `score` compares your labels with it.
 
-**Do not open** `reports/results/topic_manual_validation_200.csv` while labelling: it holds the model's answer.
+**Do not open** `reports/results/topic_model_assignments_200.csv` while labelling: it holds the model's answer.
 
 ## How
 

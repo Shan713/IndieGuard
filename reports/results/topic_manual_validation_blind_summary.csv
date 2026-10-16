@@ -1,0 +1,10 @@
+model_topic_id,label,sampled,agreed,agreement_rate,cohen_kappa
+0,"Boss Design, Damage & Upgrade Difficulty",25,2,0.08,
+1,"Repetitive Gameplay, Grind & Pacing",25,16,0.64,
+2,"Flawed Design, Clunky Controls & RNG",25,0,0.0,
+3,Early Access State & Content Scarcity,25,22,0.88,
+4,Replayability & Co-op Friend Engagement,25,3,0.12,
+5,"Multiplayer Issues, Crashes & Dev Bugs",25,15,0.6,
+6,Art & Presentation vs Gameplay Loop,25,9,0.36,
+7,Unbalanced Mechanics & Frustration,25,4,0.16,
+overall,all topics,200,71,0.355,0.29938900203665986

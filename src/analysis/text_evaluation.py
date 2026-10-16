@@ -269,24 +269,23 @@ def compile_evaluation_summary(comp_df: pd.DataFrame, nmf_coherences: list[float
         }
     ]
 
-    # Load manual qualitative validation results (Task #33)
-    manual_summary_file = REPORTS / "topic_manual_validation_summary.csv"
-    if manual_summary_file.exists():
-        man_df = pd.read_csv(manual_summary_file)
-        overall_row = man_df[man_df["topic_id"] == "Overall"]
-        if len(overall_row) > 0:
-            tot_sampled = overall_row["total_sampled"].values[0]
-            agree_count = overall_row["agreed_count"].values[0]
-            agree_rate = float(overall_row["agreement_rate"].values[0])
-            eval_table.append({
-                "methodology_tier": f"Qualitative Validation: Human Check of {tot_sampled} Labelled Reviews (Task #33)",
-                "task_type": "Semantic Topic Ground-Truth Agreement",
-                "primary_metric": f"Overall Agreement: {agree_rate:.1%} ({agree_count}/{tot_sampled} reviews)",
-                "secondary_metric": "Sample Balance: 126 Negative / 74 Positive across 8 topics",
-                "stability_or_lift": "Per-Topic Accuracy: 92.0% - 100.0% across 8 complaint domains",
-                "role_in_indieguard": "Validates that unsupervised NMF topics capture genuine player complaints without hallucinated or spurious clusters.",
-                "operational_limitation": "Manual validation bounded by sample size (N=200); minor boundary overlap observed between mechanical frustration (T7) and boss difficulty (T0)."
-            })
+    # Blind manual check of 200 reviews (Task #33): scored by src.analysis.topic_manual_validation
+    blind_file = REPORTS / "topic_manual_validation_blind_summary.csv"
+    if blind_file.exists():
+        sm = pd.read_csv(blind_file, index_col=0)
+        ov = sm.loc["overall"]
+        d = pd.read_csv(REPORTS / "topic_manual_validation_blind.csv")
+        other = int((d.manual_topic_id == 8).sum())
+        themed = d[d.manual_topic_id != 8]
+        eval_table.append({
+            "methodology_tier": "Blind manual check of 200 labelled reviews (Task #33; labelled by an AI assistant)",
+            "task_type": "Topic agreement against blind labels",
+            "primary_metric": f"Overall agreement: {float(ov.agreement_rate):.1%} ({int(ov.agreed)}/{int(ov.sampled)}); Cohen's kappa {float(ov.cohen_kappa):.2f}",
+            "secondary_metric": f"{other} of 200 labelled other / unclear; {themed.agree.mean():.1%} agreement among the {len(themed)} with a theme",
+            "stability_or_lift": "Per-topic agreement: 0% (flawed design) to 88% (early access)",
+            "role_in_indieguard": "Shows which complaint themes are recovered reliably: early access, repetition, multiplayer and crashes.",
+            "operational_limitation": "One annotator (an AI assistant), one pass, 25 reviews per topic; a human re-label of a subset would strengthen it."
+        })
 
     summary_df = pd.DataFrame(eval_table)
     summary_df.to_csv(REPORTS / "text_evaluation_metrics.csv", index=False)

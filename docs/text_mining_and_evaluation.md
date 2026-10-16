@@ -168,32 +168,31 @@ Rather than treating topic models as black boxes or stopping at word clouds, we 
 | **Semantic Separability** | **High** | Moderate | LDA blended general roguelike tokens across multiple topics; NMF cleanly isolated controls, crashes, and early access |
 | **Algorithmic Selection Verdict** | **Selected** | Baseline | **NMF selected:** superior interpretability, higher diversity, clean failure-mode isolation, and 45x speedup justify NMF despite LDA's higher raw UMass co-occurrence |
 
-### 5.3 Manual Qualitative Validation: Check of 200 Labelled Reviews (Task #33)
+### 5.3 Blind manual check of 200 reviews (Task #33)
 
-To move beyond statistical metrics and verify that NMF topics correspond to genuine player experiences, we performed a rigorous human evaluation on **200 stratified review excerpts** (`reports/results/topic_manual_validation_200.csv` and `reports/results/topic_manual_validation_summary.csv`).
+**Method.** The 200 reviews of the first sample (25 per topic by the model's assignment) were shuffled and labelled with the model's topic hidden, following `docs/topic_labelling_guide.md`: a topic number from 0 to 7, or 8 for "other / unclear", and a short note per review. `python -m src.analysis.topic_manual_validation score` then joins the labels to the model's topic. Files: `reports/results/topic_manual_validation_blind*.csv`.
 
-#### Sampling & Evaluation Protocol
-* **Sample Size & Balance:** Exactly **25 reviews per topic** across all 8 NMF topics ($N = 200$).
-* **Cohort Representation:** Strata include both **negative reviews (126 reviews, 63%)** and **positive reviews (74 reviews, 37%)**, as well as reviews written inside the 2-hour refund window ($<2\text{h}$, 58 reviews) and post-window ($\ge 2\text{h}$, 142 reviews).
-* **Evaluation Method:** Each review was independently inspected without model bias using structured semantic rubrics to determine ground-truth theme (`manual_topic_id`). Topic-level agreement ($1$ for match, $0$ for discrepancy) and explicit semantic rationale were recorded.
+**Who labelled.** The labels were assigned by an AI assistant, not by a team member, working blind to the model's output. It had earlier seen about 20 of the excerpts next to the model's topic. A single annotator labelled each review once, so a human re-label of a subset would strengthen the result.
 
-#### Topic-Level Agreement & Accuracy Table
-| Topic ID | Topic Label | Total Sampled | Negative Reviews | Positive Reviews | Agreed | Disagreed | Agreement Rate | Primary Boundary Confusion | Qualitative Assessment |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| **T0** | Boss Design, Damage & Upgrade Difficulty | 25 | 15 | 10 | 25 | 0 | **100.0%** | None (100% agreement) | Exceptional precision; distinctive vocabulary around damage, boss phases, and progression. |
-| **T1** | Repetitive Gameplay, Grind & Pacing | 25 | 18 | 7 | 25 | 0 | **100.0%** | None (100% agreement) | Perfect precision; terms like `boring`, `repetitive`, and `grind` isolate pacing fatigue. |
-| **T2** | Flawed Design, Clunky Controls & RNG | 25 | 16 | 9 | 24 | 1 | **96.0%** | T7 (Unbalanced Mechanics) | High agreement; minor boundary overlap with general game frustration. |
-| **T3** | Early Access State & Content Scarcity | 25 | 15 | 10 | 25 | 0 | **100.0%** | None (100% agreement) | Unambiguous detection of Early Access, content drought, and roadmap critique. |
-| **T4** | Replayability & Co-op Friend Engagement | 25 | 14 | 11 | 23 | 2 | **92.0%** | T1 (Repetitive Gameplay) | Strong agreement; negative co-op reviews occasionally emphasize repetitive gameplay. |
-| **T5** | Multiplayer Issues, Crashes & Dev Bugs | 25 | 15 | 10 | 23 | 2 | **92.0%** | T2 (Flawed Design) | High precision on crash bugs; occasional overlap when control lockups accompany crash reports. |
-| **T6** | Art & Presentation vs Gameplay Loop | 25 | 14 | 11 | 24 | 1 | **96.0%** | T1 (Repetitive Gameplay) | Clean identification of visual aesthetic and soundtrack contrasts with gameplay. |
-| **T7** | Unbalanced Mechanics & Frustration | 25 | 19 | 6 | 23 | 2 | **92.0%** | T0 (Boss Design) | Captures acute player dissatisfaction; occasional overlap with specific boss difficulty spikes. |
-| **Overall** | **Macro Average (All 8 Topics)** | **200** | **126** | **74** | **192** | **8** | **96.0%** | **Adjacent themes** | **Robust empirical validation of NMF topics; confirms high real-world semantic fidelity.** |
+**An earlier version of this section reported 96% agreement. It has been replaced: those labels were not independent of the model's topic.**
 
-#### Key Qualitative Takeaways:
-1. **High Real-World Fidelity:** With an overall agreement rate of **96.0% (192/200)**, the unsupervised NMF model accurately partitions unstructured player feedback into distinct, actionable engineering and game-design categories.
-2. **Deterministic Complaint Isolation:** Technical failure modes (Topic T5: Crashes, Topic T2: Controls, Topic T3: Early Access) show near-zero leakage into aesthetic or progression topics, confirming that automated triage accurately alerts developers to critical launch bugs.
-3. **Boundary Ambiguity:** The small fraction of disagreements ($4.0\%$) occurs along natural semantic borders: reviews discussing co-op fatigue (T4 vs T1) or blaming boss damage scaling as unfair design (T7 vs T0).
+**Result.** Overall agreement is **35.5% (71/200)** with a Cohen's kappa of **0.30**. 73 of the 200 reviews were labelled "other / unclear" (short or without a theme); among the 127 reviews that do have a theme, 55.9% agree.
+
+| Topic | Label | Sampled | Agreed | Agreement |
+| :---: | :--- | :---: | :---: | :---: |
+| T0 | Boss Design, Damage & Upgrade Difficulty | 25 | 2 | 8% |
+| T1 | Repetitive Gameplay, Grind & Pacing | 25 | 16 | 64% |
+| T2 | Flawed Design, Clunky Controls & RNG | 25 | 0 | 0% |
+| T3 | Early Access State & Content Scarcity | 25 | 22 | 88% |
+| T4 | Replayability & Co-op Friend Engagement | 25 | 3 | 12% |
+| T5 | Multiplayer Issues, Crashes & Dev Bugs | 25 | 15 | 60% |
+| T6 | Art & Presentation vs Gameplay Loop | 25 | 9 | 36% |
+| T7 | Unbalanced Mechanics & Frustration | 25 | 4 | 16% |
+| All | All topics | 200 | 71 | 35.5% |
+
+**Reading it.** Three topics are recovered well: Early Access and content scarcity (88%), repetitive gameplay and pacing (64%) and multiplayer, crashes and bugs (60%). "Flawed design, clunky controls and RNG" (0%) is mostly generic "bad" or "not fun" reviews with no concrete complaint, which the model forces into a topic; boss design, replayability and unbalanced mechanics (8% to 16%) overlap with each other (boss design with unbalanced mechanics, unbalanced mechanics with flawed design). The model assigns every review a topic, including short ones without a theme, which lowers agreement. The sample has 25 reviews per topic, so each rate has a wide interval, and the overall rate is not weighted by how common each topic is.
+
+**Consequence for the findings.** The complaint themes that rest on the well-recovered topics (crashes and multiplayer bugs, repetition, Early Access) are supported. Statements about boss and balance themes, and about the generic "flawed design" topic, should be read as exploratory.
 
 ### 5.4 Distinction: Supervised Sentiment Detection vs. Unsupervised Topic Modelling
 It is vital to distinguish between:

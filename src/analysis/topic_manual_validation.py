@@ -6,7 +6,7 @@
 The sheet reuses the 200 review IDs of the first sample (25 per topic by the model's assignment), shuffled, with the model's topic
 hidden. A person reads each review and writes the topic number (0 to 7) that is its main theme, or 8 for "other / unclear", plus a
 short note in their own words. `score` joins the labels to the model's topic and writes per-topic agreement, a confusion matrix and
-Cohen's kappa. The labeller must not look at `topic_manual_validation_200.csv`, which holds the model's topic.
+Cohen's kappa. The labeller must not look at `topic_model_assignments_200.csv`, which holds the model's topic.
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "reports" / "results"
-MODEL_SAMPLE = RES / "topic_manual_validation_200.csv"       # holds the model's topic per review (first sample)
+MODEL_SAMPLE = RES / "topic_model_assignments_200.csv"       # the model's topic per review (do not open while labelling)
 SHEET = RES / "topic_manual_labelling_sheet.csv"
 OUT = RES / "topic_manual_validation_blind.csv"
 SUMMARY = RES / "topic_manual_validation_blind_summary.csv"
