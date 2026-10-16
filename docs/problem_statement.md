@@ -54,8 +54,8 @@ closes, and when to patch**, using data collected from Steam's own public source
 | H2. The effect is larger for pricier games | **Supported:** 31.8% negative inside the window for games at $20 or more, against 11.4% under $5 |
 | H3. Early complaints differ from later ones | **Supported:** controls, camera and interface in 13.1% of early negative reviews against 7.2% later; repetition and balance dominate later |
 | H4. Store metadata alone predicts a game's tier well | **Not supported:** macro-F1 about 0.42 against 0.22 for guessing; the signal is weak |
-| H5. The review text predicts whether the review is negative far better than metadata | **Supported:** PR-AUC 0.785 against 0.360 on the same English reviews |
-| H6. Some tag combinations go with strong reception | **Open:** single tags show differences, but they are uncorrected hypotheses; association rules (Review 2) test it properly |
+| H5. The review text predicts whether the review is negative far better than metadata | **Supported:** PR-AUC 0.838 against 0.361 on the same English reviews (tuned) |
+| H6. Some tag combinations go with strong reception | **Partly supported:** 95 Strong rules pass FDR control and 47% of the significant ones hold on the test games; no rule predicts Struggling (`docs/combined_business_insights.md`, section 3b) |
 
 ## Risks and limits
 
