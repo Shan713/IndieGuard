@@ -66,18 +66,19 @@ class Model:
             return DummyClassifier(strategy="prior")
         if self.name == "logreg":
             return make_pipeline(SimpleImputer(strategy="median", add_indicator=True), StandardScaler(),
-                                 LogisticRegression(C=p["C"], class_weight="balanced", max_iter=300))
+                                 LogisticRegression(C=p["C"], class_weight=p.get("class_weight", "balanced"), max_iter=300))
         if self.name == "rf":
             return RandomForestClassifier(
-                n_estimators=150 if review else 300, min_samples_leaf=p["min_samples_leaf"], max_features=p["max_features"],
-                max_samples=0.25 if review else None, class_weight="balanced_subsample", n_jobs=-1, random_state=SEED)
+                n_estimators=p.get("n_estimators", 150 if review else 300), min_samples_leaf=p["min_samples_leaf"],
+                max_features=p["max_features"], max_samples=p.get("max_samples", 0.25 if review else None), class_weight="balanced_subsample", n_jobs=-1, random_state=SEED)
         # Early stopping uses the same metric as the XGBoost runs (PR-AUC for reviews, multi-class log-loss for games).
         # Judged on log-loss, a class-weighted review model stops at round 1, because weighting worsens log-loss at once.
         weight = ({"scale_pos_weight": float((y == 0).sum() / max((y == 1).sum(), 1)), "metric": "average_precision"} if review
                   else {"class_weight": "balanced", "metric": "multi_logloss"})
         return lgb.LGBMClassifier(
-            n_estimators=MAX_ROUNDS, learning_rate=0.05, num_leaves=p["num_leaves"], min_child_samples=p["min_child_samples"],
-            subsample=0.8, subsample_freq=1, colsample_bytree=0.8, reg_lambda=1.0, n_jobs=-1, random_state=SEED,
+            n_estimators=MAX_ROUNDS, learning_rate=p.get("learning_rate", 0.05), num_leaves=p["num_leaves"],
+            min_child_samples=p["min_child_samples"], subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
+            reg_lambda=p.get("reg_lambda", 1.0), n_jobs=-1, random_state=SEED,
             verbose=-1, **weight)
 
     def fit(self, X, y, X_val=None, y_val=None, n_rounds: int | None = None) -> "Model":
