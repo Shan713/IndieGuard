@@ -1,0 +1,21 @@
+appid,name,release_year,price_usd,n_dlc,n_achievements,n_supported_languages,steam_total_reviews,neg_share,tier,split
+3201630,Beast Brawl,2024,0.0,0,,1,12,0.0,,train
+2848740,OverRider,2024,9.99,0,58.0,3,78,0.1282,Solid,train
+2816940,Bloody Heaven 2,2024,4.99,0,1.0,2,138,0.1522,Solid,train
+2657310,Godrop,2024,8.99,1,70.0,10,313,0.0543,Strong,train
+3885520,Dice of Kalma,2025,4.99,1,40.0,20,128,0.0938,Strong,train
+2289650,Mini Airways - ATC simulator,2024,9.99,2,65.0,17,1603,0.0761,Strong,train
+3180460,4fools1,2025,0.0,0,22.0,2,16,0.1875,,train
+2965140,Cross The World,2025,19.99,0,,1,23,0.0,Strong,train
+1638390,Indies' Lies,2023,14.99,2,24.0,7,792,0.2424,Solid,train
+1423670,Autopanic Zero,2024,0.0,1,1.0,3,38,0.1053,Solid,train
+2881660,Holy Shoot,2025,12.99,0,23.0,10,364,0.2555,Solid,train
+515010,A Duel Hand Disaster: Trackher,2024,9.99,0,10.0,1,33,0.0606,Strong,train
+3424740,Firework War,2025,0.0,1,10.0,2,55,0.0364,Strong,train
+3585160,From The Top,2025,3.99,0,7.0,1,148,0.1622,Solid,train
+2892660,DON'T EXIST,2024,6.95,0,12.0,2,69,0.2319,Solid,train
+2321770,The Druid,2023,0.0,0,33.0,2,131,0.1527,Solid,train
+2901040,Ivorfall,2024,0.0,0,,1,27,0.037,Strong,train
+4158400,Clockwork Cleanup,2025,0.0,0,,1,444,0.0023,Strong,train
+2636910,Moonbase Lambda,2025,4.99,0,11.0,9,42,0.0714,Strong,test
+1721110,Abyssus,2025,24.99,5,119.0,9,5789,0.1472,Solid,train
