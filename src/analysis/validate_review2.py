@@ -38,8 +38,8 @@ def run_checks() -> int:
         "topic_stability_evaluation.csv": ["topic_id", "label", "mean_pairwise_jaccard", "stability_status"],
         "patch_impact_analysis.csv": ["patch_recency_bin", "n_reviews", "negative_rate"],
         "combined_insights.csv": ["rank", "theme", "what_data_shows", "supporting_evidence_metrics", "recommended_action"],
-        "topic_manual_validation_200.csv": ["sample_id", "recommendationid", "sentiment", "model_topic_id", "manual_topic_id", "agreement", "review_excerpt"],
-        "topic_manual_validation_summary.csv": ["topic_id", "topic_label", "total_sampled", "agreed_count", "agreement_rate"],
+        "topic_manual_validation_blind.csv": ["sample_id", "recommendationid", "manual_topic_id", "manual_note", "model_topic_id", "agree"],
+        "topic_manual_validation_blind_summary.csv": ["model_topic_id", "label", "sampled", "agreed", "agreement_rate"],
     }
 
     for fname, expected_cols in required_csvs.items():
@@ -108,15 +108,14 @@ def run_checks() -> int:
             checks_passed += 1
             log.info("PASS: Topic stability Jaccard similarities strictly bounded in [0, 1]")
 
-        man_sum = pd.read_csv(REPORTS / "topic_manual_validation_summary.csv")
-        overall = man_sum[man_sum["topic_id"] == "Overall"]
-        if len(overall) == 0 or int(overall["total_sampled"].values[0]) != 200:
-            log.error("Invalid total_sampled in topic_manual_validation_summary.csv")
+        man_sum = pd.read_csv(REPORTS / "topic_manual_validation_blind_summary.csv", index_col=0)
+        if "overall" not in man_sum.index or int(man_sum.loc["overall", "sampled"]) != 200:
+            log.error("Invalid sample size in topic_manual_validation_blind_summary.csv")
             errors += 1
         else:
-            acc = float(overall["agreement_rate"].values[0])
+            acc = float(man_sum.loc["overall", "agreement_rate"])
             checks_passed += 1
-            log.info("PASS: Manual validation sample size = 200, overall agreement = %.1f%%", acc * 100)
+            log.info("PASS: Blind manual validation sample size = 200, overall agreement = %.1f%%", acc * 100)
 
     except Exception as e:
         log.error("Integrity check failed: %s", e)

@@ -145,17 +145,18 @@ display(eval_metrics[['methodology_tier', 'primary_metric', 'secondary_metric', 
 display(Image(filename='../figures/text_mining/topic_evaluation_diagnostics.png'))
 """))
 
-# Section 6b: Task #33 Manual Qualitative Validation
-cells.append(nbf.v4.new_markdown_cell("""### 6b. Task #33: Qualitative Ground-Truth Validation (200 Labelled Reviews)
+# Section 6b: Task #33 blind manual check
+cells.append(nbf.v4.new_markdown_cell("""### 6b. Task #33: Blind Manual Check of 200 Reviews
 
-To verify that the unsupervised NMF topics reflect real-world player complaints without hallucinated clusters, we performed an independent ground-truth evaluation across **200 stratified review excerpts** (`reports/results/topic_manual_validation_200.csv`):
-* **Sample Balance:** Exactly 25 reviews per topic across all 8 topics (126 Negative / 74 Positive).
-* **Overall Agreement:** **96.0% (192/200)** agreement between model assigned dominant topics and manual human review.
-* **Per-Topic Accuracy:** Ranges from **92.0% to 100.0%**, confirming that technical topics (crashes, controls, early access) isolate critical launch failure modes with high precision.
+The 200 reviews of the first sample were labelled with the model's topic hidden (`reports/results/topic_manual_validation_blind.csv`; guide in `docs/topic_labelling_guide.md`). The labels were assigned by an AI assistant, not by a team member, in one pass.
+* **Overall agreement:** **35.5% (71/200)**, Cohen's kappa 0.30. 73 reviews were labelled "other / unclear"; among the 127 with a theme, 55.9% agree.
+* **Well recovered:** Early Access and content scarcity (88%), repetition and pacing (64%), multiplayer, crashes and bugs (60%).
+* **Weak:** flawed design and RNG (0%), boss design, replayability and unbalanced mechanics (8% to 16%).
+An earlier version of this check reported 96%; it has been replaced because those labels were not independent of the model.
 """))
 
-cells.append(nbf.v4.new_code_cell("""manual_summary = pd.read_csv('../reports/results/topic_manual_validation_summary.csv')
-display(manual_summary[['topic_id', 'topic_label', 'total_sampled', 'negative_count', 'positive_count', 'agreed_count', 'agreement_rate', 'primary_confusion']])
+cells.append(nbf.v4.new_code_cell("""manual_summary = pd.read_csv('../reports/results/topic_manual_validation_blind_summary.csv')
+display(manual_summary)
 """))
 
 # Section 8 Markdown

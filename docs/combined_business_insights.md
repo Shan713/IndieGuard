@@ -129,6 +129,8 @@ Analyzing 28,875 patch events across 1,607 games (`reports/results/patch_impact_
 | 365+ days | 80,423 reviews | 13.93% | 1.01x |
 | **Unpatched Base** | **67,319 reviews** | **13.77%** | **1.00x** |
 
+*Descriptive recency view only: it bins reviews by days since the most recent patch and does not estimate what a patch does. For the effect of patches see `docs/patch_impact.md`.*
+
 ### Methodology & Observational Findings:
 * **Dataset & Binning:** Calculated across all 1,573,436 reviews (1,506,117 with a preceding patch event in `data/processed/events.parquet`, 67,319 unpatched) by binning review timestamps relative to the most recent preceding patch date (`days_since_last_patch`).
 * **Observed Recency Trends:** Reviews submitted 8 to 14 days post-patch exhibit the lowest negativity (8.93%, lift 0.65x vs unpatched base 13.77%). Reviews in the 15 to 30 day window show a rise to 12.62% (0.92x lift), and older reviews (365+ days) reach 13.93% (1.01x lift).
