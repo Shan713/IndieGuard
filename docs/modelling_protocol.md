@@ -60,6 +60,10 @@ languages). Missing values: tree models can use them as they are; impute for lin
 - **Class imbalance.** Use class weights or sample weights. Choose any decision threshold on the cross-validation folds, never on test.
 - **Interpretation.** SHAP or permutation importance for the best model, as the brief asks, and say what it means for a studio.
 
+## Hyperparameter tuning
+
+Every reported model is tuned by grid search with the same rules: select on the 5 shared folds inside train only (PR-AUC at review and text level, macro-F1 at game level), anything fitted from data inside each fold, seed 42, the default setting evaluated as grid point 0, every grid point recorded in `reports/results/tuning_<task>_<model>.csv`; then refit on the full train, set the threshold or class scales from out-of-fold predictions and score the test set once. Run with `python -m src.models.grid_search --task <review|game|reviewtext> --model <model>`; plan and grids in `docs/hyperparameter_tuning_plan.md`; default against tuned in `docs/model_comparison.md`.
+
 ## 5. Table every member reports
 
 | Model | Task | Feature set | CV (mean ± sd, 5 folds) | Test | Notes |

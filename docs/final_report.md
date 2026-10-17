@@ -101,9 +101,9 @@ Game level, three tiers (guessing macro-F1 0.22):
 | --- | ---: | ---: | ---: | ---: |
 | Dummy (prior) | 0.225 +/- 0.003 | 0.220 | 0.00 | [0.20, 0.24] |
 | Logistic Regression | 0.422 +/- 0.033 | 0.423 | 0.39 | [0.36, 0.48] |
-| Random Forest | 0.421 +/- 0.038 | 0.404 | 0.14 | [0.34, 0.46] |
-| LightGBM | 0.447 +/- 0.019 | 0.421 | 0.45 | [0.36, 0.48] |
-| XGBoost | 0.418 +/- 0.044 | 0.388 | 0.14 | [0.33, 0.45] |
+| Random Forest | 0.434 +/- 0.037 | 0.371 | 0.10 | [0.31, 0.43] |
+| LightGBM | 0.445 +/- 0.027 | 0.372 | 0.22 | [0.31, 0.43] |
+| XGBoost | 0.444 +/- 0.027 | 0.437 | 0.41 | [0.38, 0.50] |
 
 Review level with the review text, English reviews (guessing PR-AUC 0.115):
 
@@ -115,7 +115,7 @@ Review level with the review text, English reviews (guessing PR-AUC 0.115):
 | Logistic Regression, full text + metadata | 0.819 +/- 0.021 | 0.838 | 0.971 |
 
 - **Review level.** The three tree models are about equal (their gaps are smaller than the fold spread of 0.03 to 0.04) and Logistic Regression is weaker, so negativity depends on non-linear patterns. All beat the baseline by about 2.5 times.
-- **Game level.** All four real models beat the baseline by a similar margin and the simple ones do as well as boosting; the intervals overlap (299 test games, 51 of them Struggling), so there is no winner. Struggling games are the hard class. More data would not help (a flat learning curve); more information would.
+- **Game level.** All four real models beat the baseline (0.22). After grid search XGBoost (0.437) and Logistic Regression (0.423) hold up on the test games, while Random Forest (0.371) and LightGBM (0.372) fall back although their cross-validation scores rose; the intervals overlap (299 test games, 51 of them Struggling), so there is no winner. Struggling games are the hard class. More data would not help (a flat learning curve); more information would.
 - **With text.** Metadata alone reaches 0.36, 78 compressed text components 0.59, and the full TF-IDF text 0.84 (ROC-AUC 0.97). At the chosen threshold the tuned text model has precision 0.75 and recall 0.79; in the Review 1 notebook a live fit on 60,000 unseen English reviews reached an accuracy of 94.2% against 88.5% for always guessing "positive". It **detects** a negative review from its own words; it does not forecast one.
 - **What drives the predictions** (SHAP and permutation importance): review length, Chinese-language reviews and playtime at review at review level; a few tag components (polished store page, roguelite and bullet hell, 2D pixel art) and the number of achievements at game level. These are associations.
 
@@ -128,16 +128,16 @@ The first review compared models whose settings had been fixed. We then ran grid
 | Review LightGBM | 25 | 0.2814 | 0.2867 | `{"learning_rate": 0.1, "min_child_samples": 200, "num_leaves": 127}` |
 | Review XGBoost | 37 | 0.2847 | 0.2918 | `{"learning_rate": 0.03, "max_depth": 8, "min_child_weight": 10, "sub_col": 0.9}` |
 | Review Random Forest | 13 | 0.2785 | 0.2808 | `{"max_features": "sqrt", "min_samples_leaf": 20, "n_estimators": 300}` |
-| Review Logistic Regression | not yet run | | | |
+| Review Logistic Regression | 11 | 0.2084 | 0.2084 | `{"C": 10.0, "class_weight": "balanced"}` |
 | Text LightGBM, metadata | 25 | 0.3323 | 0.3339 | `{"learning_rate": 0.03, "min_child_samples": 50, "num_leaves": 63}` |
 | Text LightGBM, metadata + text components | 25 | 0.5739 | 0.5922 | `{"learning_rate": 0.1, "min_child_samples": 500, "num_leaves": 127}` |
 | Text Logistic Regression (TF-IDF) | 30 | 0.7922 | 0.7938 | `{"C": 3.0, "max_features": 100000, "ngram_range": [1, 2]}` |
-| Game Logistic Regression | not yet run | | | |
-| Game Random Forest | not yet run | | | |
-| Game LightGBM | not yet run | | | |
-| Game XGBoost | not yet run | | | |
+| Game Logistic Regression | 12 | 0.4177 | 0.4224 | `{"C": 0.01, "penalty": "l2"}` |
+| Game Random Forest | 60 | 0.3535 | 0.4340 | `{"max_depth": null, "max_features": 0.5, "min_samples_leaf": 10, "n_estimators": 300}` |
+| Game LightGBM | 55 | 0.4170 | 0.4454 | `{"learning_rate": 0.1, "min_child_samples": 10, "num_leaves": 8, "reg_lambda": 0.0}` |
+| Game XGBoost | 97 | 0.4086 | 0.4443 | `{"gamma": 1.0, "learning_rate": 0.1, "max_depth": 2, "min_child_weight": 5, "subsample": 0.7}` |
 
-Tuning moves cross-validation scores by a few thousandths to a hundredth and the test scores do not follow consistently, so the conclusions do not depend on the fixed settings. The one large change, the text Logistic Regression's test PR-AUC from 0.785 to 0.838, comes mostly from refitting the TF-IDF vocabulary on all 437k training reviews (before: a 100k sample) and allowing 100k terms, not from the grid, which moved cross-validation by only 0.002.
+At review level tuning moves cross-validation scores by a few thousandths (inside one standard deviation), so the conclusions do not depend on the fixed settings. At game level the searches are larger (55 to 97 settings on 1,191 games) and cross-validation gains of up to 0.08 (Random Forest) did not carry to the test games for Random Forest and LightGBM (test 0.371 and 0.372, lower than before tuning), a sign that the search fitted the validation folds; the models are within each other's intervals either way. The one large change, the text Logistic Regression's test PR-AUC from 0.785 to 0.838, comes mostly from refitting the TF-IDF vocabulary on all 437k training reviews (before: a 100k sample) and allowing 100k terms, not from the grid, which moved cross-validation by only 0.002.
 
 ![Game-level confusion matrices (XGBoost)](../figures/models/game_xgb_confusion.png)
 
@@ -188,10 +188,10 @@ An exported XGBoost model scores a game's review-reception tier from launch-time
 
 | Member | Contribution |
 | --- | --- |
-| Shantharam P | Data collection and cleaning, documentation, problem statement, shared split and targets, Logistic Regression / Random Forest / LightGBM, model comparison, text models, notebook, tuning of the review and text models, dashboard, board |
+| Shantharam P | Data collection and cleaning, documentation, problem statement, shared split and targets, Logistic Regression / Random Forest / LightGBM, model comparison, text models, notebook, tuning of every model (review, game and text level, run with the grid search in `src/models/grid_search.py`), dashboard, board |
 | Pradeep Sasidharan | XGBoost review-level and game-level models with SHAP, association rules |
 | Gayas Sheik | Feature engineering and tag dimensionality reduction, patch-impact analysis, launch-risk scorer, reproducibility |
-| Thotakura Srihitha | Exploratory analysis (29 figures, association tests, tag combinations); game-level tuning (in progress) |
+| Thotakura Srihitha | Exploratory analysis (29 figures, association tests, tag combinations); dashboard wireframe and CSV downloads |
 | Valikala Tejaswini | Text mining and topic modelling, combined insights |
 
 The project board lists every card with its owner and evidence: https://github.com/users/Shan713/projects/1

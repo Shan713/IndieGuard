@@ -6,8 +6,9 @@
   python -m src.models.grid_search --task review --model logreg
   python -m src.models.grid_search --task reviewtext --model lgbm       # metadata, and metadata + text components
   python -m src.models.grid_search --task reviewtext --model logreg --games-frac 0.5
+  python -m src.models.grid_search --task game --model rf        # also logreg, lgbm, xgboost (macro-F1, small data)
 
-Rules (docs/hyperparameter_tuning_plan.md): select on the 5 shared CV folds inside train only, metric PR-AUC, seed 42,
+Rules (docs/hyperparameter_tuning_plan.md): select on the 5 shared CV folds inside train only, metric PR-AUC (macro-F1 for games), seed 42,
 every grid point recorded, then refit on the full train, set the threshold from out-of-fold predictions and score the test
 set once. The default setting is evaluated as grid point 0, so the table shows default against tuned.
 
@@ -25,6 +26,8 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+from . import game_models as gm
+from . import game_xgboost as gx
 from . import review_models as rm
 from . import review_text_models as rtm
 from . import review_xgboost as rx
@@ -40,6 +43,10 @@ GRIDS: dict[tuple[str, str], dict] = {
     ("review", "rf"): {"min_samples_leaf": [5, 20, 50, 200], "max_features": ["sqrt", 0.3, 0.5], "n_estimators": [300]},
     ("review", "lgbm"): LGBM_GRID,
     ("review", "xgboost"): {"max_depth": [4, 6, 8], "min_child_weight": [1, 10, 50], "learning_rate": [0.03, 0.1], "sub_col": [0.7, 0.9]},
+    ("game", "logreg"): {"C": [0.001, 0.01, 0.1, 1.0, 10.0, 100.0], "penalty": ["l1", "l2"]},
+    ("game", "rf"): {"min_samples_leaf": [1, 2, 3, 5, 10], "max_features": ["sqrt", 0.3, 0.5], "n_estimators": [300, 600], "max_depth": [None, 8]},
+    ("game", "lgbm"): {"num_leaves": [4, 8, 16], "min_child_samples": [5, 10, 20], "learning_rate": [0.03, 0.1], "reg_lambda": [0.0, 1.0, 5.0]},
+    ("game", "xgboost"): {"max_depth": [2, 3, 4, 6], "min_child_weight": [1, 5, 10], "learning_rate": [0.03, 0.1], "subsample": [0.7, 1.0], "gamma": [0.0, 1.0]},
     ("reviewtext", "lgbm"): LGBM_GRID,
     ("reviewtext", "logreg"): {"C": [0.3, 1.0, 3.0, 10.0, 30.0], "ngram_range": [(1, 1), (1, 2)], "max_features": [20_000, 50_000, 100_000]},
 }
@@ -81,7 +88,7 @@ def search(points: list[dict], run_point, path, label: str) -> tuple[dict, pd.Da
                "rounds": res.get("rounds"), "fit_seconds": round(time.time() - t0, 1)}
         rows.append(row)
         finish_table(rows, path)
-        log.info("%s [%d/%d] cv PR-AUC %.4f +/- %.4f  %.0fs  %s", label, i + 1, len(points), row["cv_mean"], row["cv_sd"], row["fit_seconds"], key)
+        log.info("%s [%d/%d] cv %.4f +/- %.4f  %.0fs  %s", label, i + 1, len(points), row["cv_mean"], row["cv_sd"], row["fit_seconds"], key)
     t = finish_table(rows, path)
     best = t.sort_values(["cv_mean", "is_default"], ascending=[False, False]).iloc[0]
     log.info("%s best %s  cv %.4f (default %.4f)", label, best["params"], best["cv_mean"], t[t.is_default].cv_mean.iloc[0])
@@ -125,6 +132,47 @@ def run_zoo(task: str, name: str, frac: float) -> None:
             rm.save_results(name, cv, test, best, len(feats), True)
         else:
             rtm.save(fs_key, cv, test, best, tuned=True)
+
+
+# ---- game level: macro-F1 on the shared folds; the class scales come from out-of-fold predictions
+GAME_DEFAULTS = {"logreg": {"C": 0.1, "penalty": "l2"}, "rf": {"min_samples_leaf": 3, "max_features": "sqrt", "n_estimators": 300, "max_depth": None},
+                 "lgbm": {"num_leaves": 8, "min_child_samples": 10, "learning_rate": 0.05, "reg_lambda": 1.0}}
+
+
+def run_game(name: str) -> None:
+    df = gx.load_game_data()
+    feats = gx._feature_cols(df)
+    tag = f"game_{name}"
+    path = RESULTS / f"tuning_{tag}.csv"
+    if name == "xgboost":
+        base = {k: gx.BASE_PARAMS[k] for k in ("max_depth", "min_child_weight", "learning_rate", "subsample", "gamma")}
+        points = [base] + [p for p in expand(GRIDS[("game", name)]) if p != base]
+
+        def run_point(p):
+            cv = gx.cross_validate(df, feats, {**gx.BASE_PARAMS, **p}, verbose=False)
+            s = cv["summary"]
+            return {"cv_mean": s["cv_macro_f1_mean"], "cv_sd": s["cv_macro_f1_std"], "rounds": cv["n_rounds"]}
+    else:
+        default = GAME_DEFAULTS[name]
+        points = [default] + [p for p in expand(GRIDS[("game", name)]) if p != default]
+
+        def run_point(p):
+            s = gm.cross_validate(df, feats, name, p)["summary"]["macro_f1"]
+            return {"cv_mean": s[0], "cv_sd": s[1]}
+
+    best, _ = search(points, run_point, path, tag)
+    if name == "xgboost":
+        params = {**gx.BASE_PARAMS, **best}
+        cv = gx.cross_validate(df, feats, params, verbose=False)
+        scale, _ = gx.tune_class_scales(cv["oof_y"], cv["oof_prob"])
+        test = gx.evaluate_test(df, feats, params, cv["n_rounds"], scale)
+        gx.save_results(cv, test, params, len(feats), "all", "", True)
+    else:
+        cv = gm.cross_validate(df, feats, name, best)
+        scale, _ = gx.tune_class_scales(cv["oof_y"], cv["oof_prob"])
+        test = gm.evaluate_test(df, feats, name, best, cv["n_rounds"], scale)
+        gm.save_results(name, cv, test, best, len(feats), True)
+    log.info("%s TEST macro-F1 %.4f", tag, test["metrics"]["macro_f1"])
 
 
 # ---- XGBoost on review features
@@ -206,12 +254,14 @@ def run_text_lr(frac: float) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Grid search for a reported model")
-    ap.add_argument("--task", choices=["review", "reviewtext"], required=True)
+    ap.add_argument("--task", choices=["review", "reviewtext", "game"], required=True)
     ap.add_argument("--model", choices=["logreg", "rf", "lgbm", "xgboost"], required=True)
     ap.add_argument("--games-frac", type=float, default=1.0, help="share of training games used to compare grid points")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
-    if a.model == "xgboost":
+    if a.task == "game":
+        run_game(a.model)
+    elif a.model == "xgboost":
         run_xgb(a.games_frac)
     elif a.task == "reviewtext" and a.model == "logreg":
         run_text_lr(a.games_frac)

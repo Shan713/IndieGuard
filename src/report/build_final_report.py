@@ -163,7 +163,7 @@ Review level with the review text, English reviews (guessing PR-AUC 0.115):
 {t['text']}
 
 - **Review level.** The three tree models are about equal (their gaps are smaller than the fold spread of 0.03 to 0.04) and Logistic Regression is weaker, so negativity depends on non-linear patterns. All beat the baseline by about 2.5 times.
-- **Game level.** All four real models beat the baseline by a similar margin and the simple ones do as well as boosting; the intervals overlap (299 test games, 51 of them Struggling), so there is no winner. Struggling games are the hard class. More data would not help (a flat learning curve); more information would.
+- **Game level.** All four real models beat the baseline (0.22). After grid search XGBoost (0.437) and Logistic Regression (0.423) hold up on the test games, while Random Forest (0.371) and LightGBM (0.372) fall back although their cross-validation scores rose; the intervals overlap (299 test games, 51 of them Struggling), so there is no winner. Struggling games are the hard class. More data would not help (a flat learning curve); more information would.
 - **With text.** Metadata alone reaches 0.36, 78 compressed text components 0.59, and the full TF-IDF text 0.84 (ROC-AUC 0.97). At the chosen threshold the tuned text model has precision 0.75 and recall 0.79; in the Review 1 notebook a live fit on 60,000 unseen English reviews reached an accuracy of 94.2% against 88.5% for always guessing "positive". It **detects** a negative review from its own words; it does not forecast one.
 - **What drives the predictions** (SHAP and permutation importance): review length, Chinese-language reviews and playtime at review at review level; a few tag components (polished store page, roguelite and bullet hell, 2D pixel art) and the number of achievements at game level. These are associations.
 
@@ -173,7 +173,7 @@ The first review compared models whose settings had been fixed. We then ran grid
 
 {tuning_table()}
 
-Tuning moves cross-validation scores by a few thousandths to a hundredth and the test scores do not follow consistently, so the conclusions do not depend on the fixed settings. The one large change, the text Logistic Regression's test PR-AUC from 0.785 to 0.838, comes mostly from refitting the TF-IDF vocabulary on all 437k training reviews (before: a 100k sample) and allowing 100k terms, not from the grid, which moved cross-validation by only 0.002.
+At review level tuning moves cross-validation scores by a few thousandths (inside one standard deviation), so the conclusions do not depend on the fixed settings. At game level the searches are larger (55 to 97 settings on 1,191 games) and cross-validation gains of up to 0.08 (Random Forest) did not carry to the test games for Random Forest and LightGBM (test 0.371 and 0.372, lower than before tuning), a sign that the search fitted the validation folds; the models are within each other's intervals either way. The one large change, the text Logistic Regression's test PR-AUC from 0.785 to 0.838, comes mostly from refitting the TF-IDF vocabulary on all 437k training reviews (before: a 100k sample) and allowing 100k terms, not from the grid, which moved cross-validation by only 0.002.
 
 ![Game-level confusion matrices (XGBoost)](../figures/models/game_xgb_confusion.png)
 
@@ -224,10 +224,10 @@ An exported XGBoost model scores a game's review-reception tier from launch-time
 
 | Member | Contribution |
 | --- | --- |
-| Shantharam P | Data collection and cleaning, documentation, problem statement, shared split and targets, Logistic Regression / Random Forest / LightGBM, model comparison, text models, notebook, tuning of the review and text models, dashboard, board |
+| Shantharam P | Data collection and cleaning, documentation, problem statement, shared split and targets, Logistic Regression / Random Forest / LightGBM, model comparison, text models, notebook, tuning of every model (review, game and text level, run with the grid search in `src/models/grid_search.py`), dashboard, board |
 | Pradeep Sasidharan | XGBoost review-level and game-level models with SHAP, association rules |
 | Gayas Sheik | Feature engineering and tag dimensionality reduction, patch-impact analysis, launch-risk scorer, reproducibility |
-| Thotakura Srihitha | Exploratory analysis (29 figures, association tests, tag combinations); game-level tuning (in progress) |
+| Thotakura Srihitha | Exploratory analysis (29 figures, association tests, tag combinations); dashboard wireframe and CSV downloads |
 | Valikala Tejaswini | Text mining and topic modelling, combined insights |
 
 The project board lists every card with its owner and evidence: https://github.com/users/Shan713/projects/1

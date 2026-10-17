@@ -77,6 +77,29 @@ def table(df: pd.DataFrame, spec: list[tuple[str, callable]]) -> str:
     return "\n".join(out)
 
 
+TUNING_FILES = [("Review level", "PR-AUC", "review", "tuning_review_{key}.csv", ORDER[1:]),
+                ("Game level", "macro-F1", "game", "tuning_game_{key}.csv", ORDER[1:]),
+                ("Review text, Logistic Regression", "PR-AUC", "text", "tuning_reviewtext_logreg.csv", [None]),
+                ("Review text, LightGBM metadata", "PR-AUC", "text", "tuning_reviewtext_lgbm_meta.csv", [None]),
+                ("Review text, LightGBM metadata + text", "PR-AUC", "text", "tuning_reviewtext_lgbm_meta_svd.csv", [None])]
+
+
+def tuning_summary() -> pd.DataFrame:
+    """One row per grid search: default setting against the best grid point (both scored on the shared CV folds)."""
+    rows = []
+    for level, metric, _, pattern, keys in TUNING_FILES:
+        for key in keys:
+            path = RESULTS / pattern.format(key=key)
+            if not path.exists():
+                continue
+            t = pd.read_csv(path)
+            d, b = t[t["is_default"]].iloc[0], t.sort_values("rank").iloc[0]
+            rows.append({"Level": level, "Model": NAMES[key] if key else "", "Metric": metric, "Grid points": len(t),
+                         "Default CV": d["cv_mean"], "Tuned CV": b["cv_mean"], "Gain": b["cv_mean"] - d["cv_mean"],
+                         "Tuned CV sd": b["cv_sd"], "Best setting": b["params"]})
+    return pd.DataFrame(rows)
+
+
 def figure(rev: pd.DataFrame, gm: pd.DataFrame, txt: pd.DataFrame) -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 3, figsize=(18, 4.9), gridspec_kw={"width_ratios": [1, 1, 0.9]})
@@ -130,6 +153,11 @@ def main() -> None:
                         ("Test PR-AUC", f3("Test")), ("Test ROC-AUC", f3("Test ROC-AUC")), ("Per-game ROC-AUC", f3("Per-game ROC-AUC")),
                         ("Precision / recall / F1 at the CV threshold", lambda r: f"{r['Precision']:.2f} / {r['Recall']:.2f} / {r['F1']:.2f}")])
     figure(rev, gm, txt)
+    tun = tuning_summary()
+    tun.to_csv(RESULTS / "comparison_tuning.csv", index=False)
+    tun_t = table(tun, [("Search", lambda r: f"{r['Level']}" + (f", {r['Model']}" if r["Model"] else "")), ("Metric", lambda r: r["Metric"]),
+                        ("Grid points", lambda r: f"{r['Grid points']}"), ("Default (CV)", f3("Default CV")), ("Tuned (CV)", f3("Tuned CV")),
+                        ("Change", lambda r: f"{r['Gain']:+.3f}"), ("Best setting", lambda r: f"`{r['Best setting']}`")])
     notes = NOTES.read_text(encoding="utf-8") if NOTES.exists() else ""
     DOCS.joinpath("model_comparison.md").write_text(
         "# Model comparison\n\n"
@@ -142,7 +170,11 @@ def main() -> None:
         "## Review level with the review text (English reviews: 436,715 training / 120,487 test)\n\n"
         "Same task on the English reviews that have text features. The metadata-only row is the like-for-like reference on exactly these "
         "reviews (they are negative a little more often than the rest, 11.5% in this test set, so the numbers differ from the first table). "
-        "Run `python -m src.models.review_text_models` (it needs `python -m src.features.text` first).\n\n" + txt_t + "\n\n" + notes,
+        "Run `python -m src.models.review_text_models` (it needs `python -m src.features.text` first).\n\n" + txt_t + "\n\n" +
+        "## Default against tuned settings (grid search on the shared folds)\n\n"
+        "Every reported model was tuned by grid search on the 5 shared cross-validation folds inside the training part "
+        "(`docs/hyperparameter_tuning_plan.md`); the default setting is grid point 0, so both columns are scored the same way. "
+        "Grid tables: `reports/results/tuning_*.csv`. The test set was scored once per model, after tuning.\n\n" + tun_t + "\n\n" + notes,
         encoding="utf-8")
     print(rev_t); print(); print(gm_t)
 

@@ -66,11 +66,12 @@ class Model:
             return DummyClassifier(strategy="prior")
         if self.name == "logreg":
             return make_pipeline(SimpleImputer(strategy="median", add_indicator=True), StandardScaler(),
-                                 LogisticRegression(C=p["C"], class_weight=p.get("class_weight", "balanced"), max_iter=300))
+                                 LogisticRegression(C=p["C"], class_weight=p.get("class_weight", "balanced"), max_iter=300,
+                                                    penalty=p.get("penalty", "l2"), solver="saga" if p.get("penalty") == "l1" else "lbfgs"))
         if self.name == "rf":
             return RandomForestClassifier(
                 n_estimators=p.get("n_estimators", 150 if review else 300), min_samples_leaf=p["min_samples_leaf"],
-                max_features=p["max_features"], max_samples=p.get("max_samples", 0.25 if review else None), class_weight="balanced_subsample", n_jobs=-1, random_state=SEED)
+                max_features=p["max_features"], max_depth=p.get("max_depth"), max_samples=p.get("max_samples", 0.25 if review else None), class_weight="balanced_subsample", n_jobs=-1, random_state=SEED)
         # Early stopping uses the same metric as the XGBoost runs (PR-AUC for reviews, multi-class log-loss for games).
         # Judged on log-loss, a class-weighted review model stops at round 1, because weighting worsens log-loss at once.
         weight = ({"scale_pos_weight": float((y == 0).sum() / max((y == 1).sum(), 1)), "metric": "average_precision"} if review
