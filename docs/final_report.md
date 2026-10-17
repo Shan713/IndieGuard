@@ -161,6 +161,8 @@ For 1,685 patch announcements across 617 games we compared the positive-review s
 
 ## 11. Launch-risk scorer and dashboard
 
+The dashboard is deployed at https://indieguard.streamlit.app (five pages; run locally with `streamlit run src/dashboard/app.py`, see `docs/dashboard.md`).
+
 An exported XGBoost model scores a game's review-reception tier from launch-time features only (83 features: price, launch timing, content, platforms and the 68 tag components). `src/dashboard/featurize.py` turns raw metadata and tags into those features with the saved training-fitted PCA and reproduces the stored features for all 1,861 games. Cross-validation macro-F1 is about 0.43; the scores are class-scaled, not calibrated probabilities, and Struggling games are hard to find. The Streamlit dashboard (`src/dashboard/app.py`, `docs/dashboard.md`) has a market explorer, tag-rule and complaint explorer, patch-impact page and the scorer, and reads small tables rebuilt by `python -m src.dashboard.build_data`.
 
 ## 12. Recommendations for a studio (hypotheses)

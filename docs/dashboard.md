@@ -30,7 +30,7 @@ python -m src.dashboard.build_data
 1. Sign in at share.streamlit.io with the GitHub account that owns the repository and choose **Create app**.
 2. Repository `Shan713/IndieGuard`, branch `main`, main file path `src/dashboard/app.py`.
 3. Under **Advanced settings** select Python 3.12. The app installs `src/dashboard/requirements.txt` (slim: Streamlit, pandas, numpy, pyarrow, XGBoost, Altair).
-4. Deploy. The first start takes a few minutes. Put the public URL in the README.
+4. Deploy. The first start takes a few minutes. The deployed app is at https://indieguard.streamlit.app (free apps go to sleep when idle: open it a few minutes before a demo).
 
 The repository is public and the app does not need secrets.
 
