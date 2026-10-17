@@ -2,6 +2,18 @@
 
 Deck: `slides/review2.pptx` (20 slides on the official template, speaker notes on every slide). Target 15 minutes including questions; the plan below is 14:30 of talking, so about 0:30 is left to absorb slips and one question.
 
+## Equal split: 2:54 each
+
+Everyone speaks the same time: 2:45 on their own slides plus 9 seconds on the contributions slide.
+
+| Speaker | Slides | Time |
+| --- | --- | ---: |
+| Shantharam | 1, 3, 4, 5, 6 (and 19, 9 s) | 2:54 |
+| Srihitha | 7, 18 (and 19, 9 s) | 2:54 |
+| Gayas | 8, 9, 10, 17 (and 19, 9 s) | 2:54 |
+| Tejaswini | 2, 11, 12, 13 (and 19, 9 s) | 2:54 |
+| Pradeep | 14, 15, 16, 20 (and 19, 9 s) | 2:54 |
+
 ## Timing and speakers
 
 | Slide | Title | Speaker | Time | Cumulative |
@@ -11,37 +23,36 @@ Deck: `slides/review2.pptx` (20 slides on the official template, speaker notes o
 | 3 | Complete project workflow | Shantharam | 0:30 | 1:30 |
 | 4 | Overall dataset description | Shantharam | 0:45 | 2:15 |
 | 5 | Sample dataset and key variables | Shantharam | 0:35 | 2:50 |
-| 6 | Dataset validation and preparation | Shantharam | 0:45 | 3:35 |
-| 7 | Exploratory analysis and preprocessing | Srihitha | 0:55 | 4:30 |
-| 8 | Predictive modelling and final evaluation | Pradeep | 0:50 | 5:20 |
-| 9 | Model comparison at a glance | Pradeep | 0:20 | 5:40 |
-| 10 | Selected advanced analytics methods | Shantharam | 0:30 | 6:10 |
-| 11 | Method 1 implementation | Tejaswini | 0:45 | 6:55 |
-| 12 | Method 1 results at a glance | Tejaswini | 0:20 | 7:15 |
-| 13 | Method 1 evaluation and comparison | Tejaswini | 0:55 | 8:10 |
-| 14 | Method 2 implementation | Pradeep | 0:45 | 8:55 |
-| 15 | Method 2 rules at a glance | Pradeep | 0:20 | 9:15 |
-| 16 | Method 2 evaluation and comparison | Pradeep | 0:55 | 10:10 |
-| 17 | Combined insights and recommendations | Shantharam | 0:55 | 11:05 |
-| 18 | Interactive dashboard or website | Srihitha | 2:00 | 13:05 |
-| 19 | Completion and individual contribution | all five, about 9 seconds each | 0:45 | 13:50 |
-| 20 | Conclusion and limitations | Shantharam | 0:40 | 14:30 |
+| 6 | Dataset validation and preparation | Shantharam | 0:35 | 3:25 |
+| 7 | Exploratory analysis and preprocessing | Srihitha | 0:55 | 4:20 |
+| 8 | Predictive modelling and final evaluation | Gayas | 0:55 | 5:15 |
+| 9 | Model comparison at a glance | Gayas | 0:25 | 5:40 |
+| 10 | Selected advanced analytics methods | Gayas | 0:40 | 6:20 |
+| 11 | Method 1 implementation | Tejaswini | 0:45 | 7:05 |
+| 12 | Method 1 results at a glance | Tejaswini | 0:20 | 7:25 |
+| 13 | Method 1 evaluation and comparison | Tejaswini | 1:00 | 8:25 |
+| 14 | Method 2 implementation | Pradeep | 0:45 | 9:10 |
+| 15 | Method 2 rules at a glance | Pradeep | 0:25 | 9:35 |
+| 16 | Method 2 evaluation and comparison | Pradeep | 0:55 | 10:30 |
+| 17 | Combined insights and recommendations | Gayas | 0:45 | 11:15 |
+| 18 | Interactive dashboard or website | Srihitha | 1:50 | 13:05 |
+| 19 | Completion and individual contribution | all five (9 s each) | 0:45 | 13:50 |
+| 20 | Conclusion and limitations | Pradeep | 0:40 | 14:30 |
 
-The split is a suggestion; swap slides if someone prefers another. The slide notes name the same speaker and time. Slides 9, 12 and 15 are chart slides (20 seconds each): say the one-line reading and move on.
+The split is a suggestion; swap slides if someone prefers another, but keep the total per person equal. The slide notes name the same speaker and time. Slides 9, 12 and 15 are chart slides (20 to 25 seconds each): say the one-line reading and move on.
 
 ## Hand-over lines
 
 - 1 to 2: "That was indieguard: indie game launch analytics. Next: business problem and objectives." (Shantharam to Tejaswini)
 - 2 to 3: "That was business problem and objectives. Next: complete project workflow." (Tejaswini to Shantharam)
 - 6 to 7: "That was dataset validation and preparation. Next: exploratory analysis and preprocessing." (Shantharam to Srihitha)
-- 7 to 8: "That was exploratory analysis and preprocessing. Next: predictive modelling and final evaluation." (Srihitha to Pradeep)
-- 9 to 10: "That was model comparison at a glance. Next: selected advanced analytics methods." (Pradeep to Shantharam)
-- 10 to 11: "That was selected advanced analytics methods. Next: method 1 implementation." (Shantharam to Tejaswini)
+- 7 to 8: "That was exploratory analysis and preprocessing. Next: predictive modelling and final evaluation." (Srihitha to Gayas)
+- 10 to 11: "That was selected advanced analytics methods. Next: method 1 implementation." (Gayas to Tejaswini)
 - 13 to 14: "That was method 1 evaluation and comparison. Next: method 2 implementation." (Tejaswini to Pradeep)
-- 16 to 17: "That was method 2 evaluation and comparison. Next: combined insights and recommendations." (Pradeep to Shantharam)
-- 17 to 18: "That was combined insights and recommendations. Next: interactive dashboard or website." (Shantharam to Srihitha)
-- 18 to 19: "That was interactive dashboard or website. Next: completion and individual contribution." (Srihitha to all five, about 9 seconds each)
-- 19 to 20: "That was completion and individual contribution. Next: conclusion and limitations." (all five, about 9 seconds each to Shantharam)
+- 16 to 17: "That was method 2 evaluation and comparison. Next: combined insights and recommendations." (Pradeep to Gayas)
+- 17 to 18: "That was combined insights and recommendations. Next: interactive dashboard or website." (Gayas to Srihitha)
+- 18 to 19: "That was interactive dashboard or website. Next: completion and individual contribution." (Srihitha to all five (9 s each))
+- 19 to 20: "That was completion and individual contribution. Next: conclusion and limitations." (all five (9 s each) to Pradeep)
 
 ## Dashboard demo (slide 18, about two minutes; open https://indieguard.streamlit.app a few minutes earlier so it is awake)
 
