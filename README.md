@@ -22,7 +22,7 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | Review 1 notebook | Done: `notebooks/review1/IndieGuard_Review1.ipynb` (runs the analysis and models live, about 6 minutes) |
 | **Review 2: Text mining & topic modelling (#31–#33)** | **Done:** `notebooks/03_Text_Mining_and_Topic_Modelling.ipynb`, `docs/text_mining_and_evaluation.md` |
 | **Review 2: Combined business insights (#44)** | **Done:** `docs/combined_business_insights.md`, `slides/review2_presentation_guide.md` |
-| Review 2 (Other components) | In progress: association rules merged (`src/analysis/association_rules.py`); patch impact, launch-risk scorer and text mining in review; dashboard pages and deployment open |
+| Review 2 (Other components) | Implemented: association rules, text mining, patch impact, launch-risk scorer, dashboard (`src/dashboard/app.py`), grid search for every model, final report and slides; open: dashboard deployment |
 | **Next** | **Close the review comments on the open pull requests, finish the dashboard and its deployment, then the final report and the Review 2 slides (13 Oct)** |
 
 ## Getting started

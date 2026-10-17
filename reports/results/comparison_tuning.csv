@@ -1,0 +1,12 @@
+Level,Model,Metric,Grid points,Default CV,Tuned CV,Gain,Tuned CV sd,Best setting
+Review level,Logistic Regression,PR-AUC,11,0.208407298051892,0.2084077814426817,4.833907897017209e-07,0.0242848423068705,"{""C"": 10.0, ""class_weight"": ""balanced""}"
+Review level,Random Forest,PR-AUC,13,0.2784821495496871,0.2808004209306594,0.002318271380972292,0.0625440649085114,"{""max_features"": ""sqrt"", ""min_samples_leaf"": 20, ""n_estimators"": 300}"
+Review level,LightGBM,PR-AUC,25,0.2813996475235323,0.2867476312503504,0.005347983726818106,0.0366246644856984,"{""learning_rate"": 0.1, ""min_child_samples"": 200, ""num_leaves"": 127}"
+Review level,XGBoost,PR-AUC,37,0.2846661141898959,0.2918027791825568,0.007136664992660913,0.0373038596419747,"{""learning_rate"": 0.03, ""max_depth"": 8, ""min_child_weight"": 10, ""sub_col"": 0.9}"
+Game level,Logistic Regression,macro-F1,12,0.4177231427340878,0.4224114919465945,0.004688349212506715,0.0330098728649078,"{""C"": 0.01, ""penalty"": ""l2""}"
+Game level,Random Forest,macro-F1,60,0.3535139757835958,0.4340304780211103,0.0805165022375145,0.0366338716978284,"{""max_depth"": null, ""max_features"": 0.5, ""min_samples_leaf"": 10, ""n_estimators"": 300}"
+Game level,LightGBM,macro-F1,55,0.4170121758327202,0.4453790701707221,0.02836689433800188,0.0273952222714549,"{""learning_rate"": 0.1, ""min_child_samples"": 10, ""num_leaves"": 8, ""reg_lambda"": 0.0}"
+Game level,XGBoost,macro-F1,97,0.4086451788130881,0.4442830667781107,0.0356378879650226,0.027045339128923,"{""gamma"": 1.0, ""learning_rate"": 0.1, ""max_depth"": 2, ""min_child_weight"": 5, ""subsample"": 0.7}"
+"Review text, Logistic Regression",,PR-AUC,30,0.7921851290033394,0.7938082854700953,0.0016231564667559262,0.0433390027464562,"{""C"": 3.0, ""max_features"": 100000, ""ngram_range"": [1, 2]}"
+"Review text, LightGBM metadata",,PR-AUC,25,0.3322703699291034,0.3339485422018554,0.0016781722727519655,0.0253439406503545,"{""learning_rate"": 0.03, ""min_child_samples"": 50, ""num_leaves"": 63}"
+"Review text, LightGBM metadata + text",,PR-AUC,25,0.573918103792116,0.592176296540081,0.01825819274796492,0.0257013448478383,"{""learning_rate"": 0.1, ""min_child_samples"": 500, ""num_leaves"": 127}"

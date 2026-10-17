@@ -1,0 +1,15 @@
+{
+  "objective": "multi:softprob",
+  "num_class": 3,
+  "eval_metric": "mlogloss",
+  "max_depth": 2,
+  "learning_rate": 0.1,
+  "subsample": 0.7,
+  "colsample_bytree": 0.8,
+  "min_child_weight": 5,
+  "gamma": 1.0,
+  "reg_alpha": 0.1,
+  "reg_lambda": 1.0,
+  "seed": 42,
+  "nthread": -1
+}

@@ -13,3 +13,4 @@ __pycache__/
 venv/
 # Never commit the steamid salt, wherever it ends up.
 .steamid_salt
+data/data-compressed.zip

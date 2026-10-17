@@ -12,9 +12,9 @@ The Dummy row is the baseline to beat.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Dummy (prior) | default settings | 0.107 ± 0.024 | 0.106 | 0.500 | 0.500 | 0.11 / 1.00 / 0.19 |
 | Logistic Regression | tuned | 0.208 ± 0.024 | 0.194 | 0.663 | 0.684 | 0.20 / 0.43 / 0.27 |
-| Random Forest | tuned | 0.285 ± 0.040 | 0.275 | 0.721 | 0.745 | 0.23 / 0.50 / 0.31 |
-| LightGBM | tuned | 0.285 ± 0.034 | 0.265 | 0.729 | 0.744 | 0.23 / 0.53 / 0.32 |
-| XGBoost | default settings | 0.285 ± 0.031 | 0.283 | 0.733 | 0.743 | 0.24 / 0.52 / 0.33 |
+| Random Forest | tuned | 0.286 ± 0.038 | 0.280 | 0.726 | 0.739 | 0.23 / 0.50 / 0.32 |
+| LightGBM | tuned | 0.287 ± 0.037 | 0.254 | 0.724 | 0.751 | 0.22 / 0.52 / 0.31 |
+| XGBoost | tuned | 0.292 ± 0.037 | 0.275 | 0.729 | 0.752 | 0.23 / 0.53 / 0.32 |
 
 ## Game level: success tier (1,191 training / 299 test games)
 
@@ -22,9 +22,9 @@ The Dummy row is the baseline to beat.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Dummy (prior) | default settings | 0.225 ± 0.003 | 0.220 [0.20, 0.24] | 0.333 | 0.00 / 1.00 / 0.00 | 0.500 | 0.220 / 0.00 |
 | Logistic Regression | tuned | 0.422 ± 0.033 | 0.423 [0.36, 0.48] | 0.439 | 0.39 / 0.40 / 0.52 | 0.644 | 0.440 / 0.45 |
-| Random Forest | tuned | 0.421 ± 0.038 | 0.404 [0.34, 0.46] | 0.405 | 0.14 / 0.57 / 0.50 | 0.682 | 0.417 / 0.24 |
-| LightGBM | tuned | 0.447 ± 0.019 | 0.421 [0.36, 0.48] | 0.444 | 0.45 / 0.37 / 0.51 | 0.648 | 0.421 / 0.45 |
-| XGBoost | default settings | 0.418 ± 0.044 | 0.388 [0.33, 0.45] | 0.390 | 0.14 / 0.56 / 0.48 | 0.629 | 0.404 / 0.22 |
+| Random Forest | tuned | 0.434 ± 0.037 | 0.371 [0.31, 0.43] | 0.376 | 0.10 / 0.56 / 0.47 | 0.668 | 0.414 / 0.27 |
+| LightGBM | tuned | 0.445 ± 0.027 | 0.372 [0.31, 0.43] | 0.373 | 0.22 / 0.45 / 0.46 | 0.625 | 0.372 / 0.22 |
+| XGBoost | tuned | 0.444 ± 0.027 | 0.437 [0.38, 0.50] | 0.456 | 0.41 / 0.38 / 0.57 | 0.642 | 0.437 / 0.41 |
 
 ## Review level with the review text (English reviews: 436,715 training / 120,487 test)
 
@@ -33,9 +33,27 @@ Same task on the English reviews that have text features. The metadata-only row 
 | Model | CV PR-AUC (mean ± sd) | Test PR-AUC | Test ROC-AUC | Per-game ROC-AUC | Precision / recall / F1 at the CV threshold |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Dummy (prior) | 0.101 ± 0.018 | 0.115 | 0.500 | 0.500 | 0.12 / 1.00 / 0.21 |
-| LightGBM, metadata only | 0.332 ± 0.026 | 0.360 | 0.758 | 0.793 | 0.34 / 0.47 / 0.40 |
-| LightGBM, metadata + text components | 0.574 ± 0.026 | 0.581 | 0.892 | 0.898 | 0.53 / 0.59 / 0.56 |
-| Logistic Regression, full text + metadata | 0.757 ± 0.025 | 0.785 | 0.955 | 0.958 | 0.72 / 0.72 / 0.72 |
+| LightGBM, metadata only | 0.334 ± 0.025 | 0.360 | 0.758 | 0.790 | 0.32 / 0.49 / 0.39 |
+| LightGBM, metadata + text components | 0.592 ± 0.026 | 0.593 | 0.895 | 0.905 | 0.52 / 0.62 / 0.56 |
+| Logistic Regression, full text + metadata | 0.819 ± 0.021 | 0.838 | 0.971 | 0.976 | 0.75 / 0.79 / 0.77 |
+
+## Default against tuned settings (grid search on the shared folds)
+
+Every reported model was tuned by grid search on the 5 shared cross-validation folds inside the training part (`docs/hyperparameter_tuning_plan.md`); the default setting is grid point 0, so both columns are scored the same way. Grid tables: `reports/results/tuning_*.csv`. The test set was scored once per model, after tuning.
+
+| Search | Metric | Grid points | Default (CV) | Tuned (CV) | Change | Best setting |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Review level, Logistic Regression | PR-AUC | 11 | 0.208 | 0.208 | +0.000 | `{"C": 10.0, "class_weight": "balanced"}` |
+| Review level, Random Forest | PR-AUC | 13 | 0.278 | 0.281 | +0.002 | `{"max_features": "sqrt", "min_samples_leaf": 20, "n_estimators": 300}` |
+| Review level, LightGBM | PR-AUC | 25 | 0.281 | 0.287 | +0.005 | `{"learning_rate": 0.1, "min_child_samples": 200, "num_leaves": 127}` |
+| Review level, XGBoost | PR-AUC | 37 | 0.285 | 0.292 | +0.007 | `{"learning_rate": 0.03, "max_depth": 8, "min_child_weight": 10, "sub_col": 0.9}` |
+| Game level, Logistic Regression | macro-F1 | 12 | 0.418 | 0.422 | +0.005 | `{"C": 0.01, "penalty": "l2"}` |
+| Game level, Random Forest | macro-F1 | 60 | 0.354 | 0.434 | +0.081 | `{"max_depth": null, "max_features": 0.5, "min_samples_leaf": 10, "n_estimators": 300}` |
+| Game level, LightGBM | macro-F1 | 55 | 0.417 | 0.445 | +0.028 | `{"learning_rate": 0.1, "min_child_samples": 10, "num_leaves": 8, "reg_lambda": 0.0}` |
+| Game level, XGBoost | macro-F1 | 97 | 0.409 | 0.444 | +0.036 | `{"gamma": 1.0, "learning_rate": 0.1, "max_depth": 2, "min_child_weight": 5, "subsample": 0.7}` |
+| Review text, Logistic Regression | PR-AUC | 30 | 0.792 | 0.794 | +0.002 | `{"C": 3.0, "max_features": 100000, "ngram_range": [1, 2]}` |
+| Review text, LightGBM metadata | PR-AUC | 25 | 0.332 | 0.334 | +0.002 | `{"learning_rate": 0.03, "min_child_samples": 50, "num_leaves": 63}` |
+| Review text, LightGBM metadata + text | PR-AUC | 25 | 0.574 | 0.592 | +0.018 | `{"learning_rate": 0.1, "min_child_samples": 500, "num_leaves": 127}` |
 
 ## How to read these results
 
