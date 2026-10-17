@@ -45,9 +45,11 @@ def market_explorer() -> None:
         f = f[f.release_year.isin(years)]
     if bands:
         f = f[f.price_band.isin(bands)]
-    for t in tags:
-        f = f[f.tag_list.apply(lambda ts, t=t: t in ts)]
+    if tags and not f.empty:
+        f = f[f.tag_list.apply(lambda ts: all(t in ts for t in tags)).astype(bool)]
     tiered = f[f.tier.notna()]
+    st.caption(f"Showing {len(f):,} of {len(g):,} games (minimum {min_rev} reviews). Games under 20 reviews have no tier, so the tier shares use "
+               f"{len(tiered):,} games. Set the minimum to 0 to see all {len(g):,}.")
     c = st.columns(4)
     c[0].metric("Games", f"{len(f):,}")
     c[1].metric("Median negative share", pct(f.neg_share.median()) if len(f) else "n/a")
@@ -93,6 +95,7 @@ def market_explorer() -> None:
     st.dataframe(f.sort_values("steam_total_reviews", ascending=False)[["name", "release_year", "price_usd", "steam_total_reviews", "neg_share", "tier", "tags"]]
                  .rename(columns={"steam_total_reviews": "reviews"}), column_config={"neg_share": st.column_config.NumberColumn("negative share", format="percent")},
                  width="stretch", hide_index=True, height=320)
+    st.download_button("Download these games (CSV)", f.drop(columns=["tag_list"]).to_csv(index=False).encode("utf-8"), "indieguard_games_filtered.csv", "text/csv")
 
 
 # ------------------------------------------------------------------ page 2
@@ -119,6 +122,7 @@ def rules_and_complaints() -> None:
             st.dataframe(r.sort_values("lift", ascending=False)[["antecedents_str", "n_antecedent", "confidence", "lift", "q_value", "test_n_antecedent", "test_confidence", "stability"]]
                          .rename(columns={"antecedents_str": "combination", "n_antecedent": "train games", "test_n_antecedent": "test games"}),
                          width="stretch", hide_index=True, height=340)
+            st.download_button("Download these rules (CSV)", r.sort_values("lift", ascending=False).to_csv(index=False).encode("utf-8"), "indieguard_rules_filtered.csv", "text/csv")
         st.caption("Associations in observational data, with small supports (about 30 to 60 training games). Hypotheses, not recipes.")
     with c_tab:
         st.write("Eight complaint themes found by NMF topic modelling on negative English reviews.")
