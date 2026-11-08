@@ -240,22 +240,24 @@ def explain_prediction(game: dict, tier: str) -> None:
     """Review 2 feedback: say why a game looks strong or weak, and what would improve it."""
     from src.dashboard.explain import explain, suggest
     with st.spinner("Working out the reasons..."):
-        ex, sg = explain(game), suggest(game)
-    ex = ex[ex.factor != "Launch timing"]          # recent years only had less time to collect negatives; not a lever
+        ex, sg = explain(game), suggest(game, tier)
     st.subheader("Why the model thinks so")
+    st.caption("Each launch choice is compared with its obvious alternative (with or without achievements, a tag, controller support and so on) "
+               "and the game is re-scored: the bars show how much the choice changes the risk of Struggling.")
     good, bad = ex[ex.effect > 0].head(6), ex[ex.effect < 0].sort_values("effect").head(6)
     left, right = st.columns(2)
-    left.markdown("**Working in its favour** (pushes toward Strong)")
-    left.markdown("\n".join(f"- {r.factor}" + (f" ({r.value})" if r.value and r.value != "present" else "") for r in good.itertuples()) or "- nothing stands out")
-    right.markdown("**Working against it** (pushes toward Struggling)")
-    right.markdown("\n".join(f"- {r.factor}" + (f" ({r.value})" if r.value and r.value != "present" else "") for r in bad.itertuples()) or "- nothing stands out")
-    top = pd.concat([good, bad]).assign(direction=lambda d: d.effect.gt(0).map({True: "toward Strong", False: "toward Struggling"}))
+    left.markdown("**Working in its favour** (lowers the risk)")
+    left.markdown("\n".join(f"- {r.factor.replace('$', '\\$')}" for r in good.itertuples()) or "- nothing stands out")
+    right.markdown("**Working against it** (raises the risk)")
+    right.markdown("\n".join(f"- {r.factor.replace('$', '\\$')}" for r in bad.itertuples()) or "- nothing stands out")
+    top = pd.concat([good, bad]).assign(direction=lambda d: d.effect.gt(0).map({True: "lowers the risk", False: "raises the risk"}),
+                                        points=lambda d: 100 * d.effect)
     if len(top):
         st.altair_chart(alt.Chart(top).mark_bar().encode(
-            x=alt.X("effect:Q", title="push on the prediction (model units; right = toward Strong)"),
+            x=alt.X("points:Q", title="change in the Struggling score, points (right = lowers the risk)"),
             y=alt.Y("factor:N", sort="-x", title=None, axis=alt.Axis(labelOverlap=False, labelLimit=260)),
-            color=alt.Color("direction:N", scale=alt.Scale(domain=["toward Strong", "toward Struggling"], range=["#55A868", "#C44E52"]), legend=None),
-            tooltip=["factor", "value", alt.Tooltip("effect:Q", format="+.2f")]).properties(height=max(140, 32 * len(top))), width="stretch")
+            color=alt.Color("direction:N", scale=alt.Scale(domain=["lowers the risk", "raises the risk"], range=["#55A868", "#C44E52"]), legend=None),
+            tooltip=["factor", alt.Tooltip("points:Q", format="+.1f", title="points")]).properties(height=max(140, 32 * len(top))), width="stretch")
 
     tags = {t.strip() for t in str(game.get("tags") or "").split(";") if t.strip()}
     price = _price_item(float(game.get("price_usd") or 0))
@@ -275,8 +277,8 @@ def explain_prediction(game: dict, tier: str) -> None:
                             "Struggling score": sg.struggling.map("{:.0%}".format) + " (" + sg.struggling_delta.map("{:+.0%}".format) + ")"})
         st.dataframe(show[["area", "change", "Strong score", "Struggling score", "new_tier"]].rename(columns={"area": "Area", "change": "Change", "new_tier": "Tier after the change"}),
                      hide_index=True, width="stretch")
-    st.caption("Reasons come from the model's per-feature contributions; each tag is scored by removing it and re-scoring. Suggestions change one input at a time and re-score with "
-               "the same model. Both are associations learned from 1,191 training games, not guaranteed effects. Add a tag only if it honestly describes the game: Steam tags come from players.")
+    st.caption("Reasons and suggestions change one input at a time and re-score the game with the same model; suggestions are ranked by the drop in the Struggling score "
+               "(for a game already predicted Strong, by the rise in the Strong score). Both are associations learned from 1,191 training games, not guaranteed effects. Add a tag only if it honestly describes the game: Steam tags come from players.")
 
 
 # ------------------------------------------------------------------ page 5
