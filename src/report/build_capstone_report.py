@@ -294,7 +294,7 @@ for i, (a, b) in enumerate(members):
 
 # ============================================================================== declaration, acknowledgement
 heading("Declaration and acknowledgement", 1, page_break=True)
-para("We declare that this report and the project it describes are our own work as a team. The data were collected by our own scrapers from public Steam sources; "
+para("We declare that this report and the project it describes are our own work as a team, with AI assistance disclosed in Section 8.3. The data were collected by our own scrapers from public Steam sources; "
      "no pre-built dataset was used. Prior studies, algorithms and software are cited in the reference list. Our use of generative-AI tools, "
      "what each tool supported, the code and content it affected, and how we verified and corrected it are disclosed in full in Section 8.3. "
      "Tools assisted the work; the project's research design, data collection runs, analytical decisions and final conclusions were made, run and checked by the team.")
@@ -312,7 +312,7 @@ for r in sg.rows:
 # ============================================================================== abstract and executive summary
 heading("Abstract", 1, page_break=True)
 para("A small indie studio has little room for a bad launch. Steam lets a player refund a game bought in the last 14 days if they have played it for under two hours, "
-     "so the reviews written in that early window show whether the first hour convinced players. IndieGuard asks what drives negative reviews, which feature combinations go with strong reception, and whether patches help. "
+     "and early impressions shape a game's rating. Refunds are not public, so we do not measure them; instead we study negative reviews written in that first two-hour window as a proxy for launch risk. IndieGuard asks what drives negative reviews, which feature combinations go with strong reception, and whether patches help. "
      "We collected our own data with throttled, resumable scrapers on 1,861 indie roguelike and roguelite games (2022 to 2025), 1.65 million reviews and 29,918 patch and sale events, "
      "cleaned them under 32 logged rules and split them by game. Exploratory analysis (Unit 1), five model families at review and game level with grid-search tuning (Unit 2), and two Unit 3 methods, "
      "text mining and association rule mining, were evaluated on held-out games. Reviews written inside the refund window are 21.2% negative against 8.8% later. A text model detects negative reviews "
@@ -322,7 +322,7 @@ para("A small indie studio has little room for a bad launch. Steam lets a player
 
 heading("Executive summary", 1, page_break=True)
 para("Small studios have to decide what to fix before launch, which feature combinations to back and when a patch is worth the effort, but public information gives them little to go on. "
-     "Reviews written in a game's first two hours deserve special attention: the player can still ask for a refund at that point, so a negative review there usually means the first hour did not work for them.")
+     "We focus on negative reviews written in a game's first two hours, the period in which Steam still allows a refund. Refund numbers are not public and we do not measure them; an early negative review is used as a proxy, a sign that the first hour did not work for that player.")
 para("To study this we built our own dataset from Steam (1,861 indie roguelike games and 1.65 million reviews) and checked each result on games that were held back from the models. The main findings are:")
 bullets(["**The first two hours matter.** 21.2% of reviews written under two hours of play are negative, against 8.8% later; they make up 29% of all negative reviews. For games priced $20 or more the early figure is 31.8%.",
          "**Complaints change.** Early negative reviews lean to crashes, multiplayer bugs and controls; later ones to boss design, balance and repetition.",
@@ -373,7 +373,7 @@ para("Lin et al. studied about 11 million reviews of 6,224 Steam games and found
 # ---------------------------------------------------------------- 2
 heading("2. Dataset Collection, Validation and Preparation", 1)
 heading("2.1 Provenance, coverage and challenges", 2)
-para("We collected all data ourselves on 1 and 2 October 2026 from four public Steam sources, using scrapers we wrote: store search (Indie plus five roguelike tags, 2022 to 2025), store details and tags, SteamSpy owner estimates, and the news feed (patch and sale announcements). Reviews were paged with Steam's cursor. The dataset is not taken from Kaggle or any other repository, and it contains no synthetic records. The endpoints are public, and we used them for non-commercial academic analysis at a low request rate. The raw files are kept only on team machines (they are excluded from the public repository), frozen with row counts and a hash, and are not redistributed; the repository holds the cleaned, pseudonymised tables.")
+para("We collected all data ourselves on 1 and 2 October 2026 from four public Steam sources, using scrapers we wrote: store search (Indie plus five roguelike tags, 2022 to 2025), store details and tags, SteamSpy owner estimates, and the news feed (patch and sale announcements). Reviews were paged with Steam's cursor. The dataset is not taken from Kaggle or any other repository, and it contains no synthetic records. The usage terms we followed were these. The Steam Web API Terms of Use [22] limit use to 100,000 calls per day; our use is non-commercial academic analysis, and at one request every 1.25 to 1.6 seconds the scrapers stayed below that limit. The review endpoint we used is the one Steam documents publicly for listing a game's reviews [4]. The SteamSpy API asks clients to stay under one request per second [5], and our scraper waited 1.1 seconds between calls. Reviews are written by Steam users, so we keep no names or profile links and hash reviewer IDs. The raw files are kept only on team machines (they are excluded from the public repository), frozen with row counts and a hash, and are not redistributed; the repository holds the cleaned, pseudonymised tables.")
 para('The raw data hold 1,861 games (58 variables), 1,652,999 reviews in 31 languages and 29,918 news events. After cleaning, 1,648,387 reviews (34 variables) remain. The data are observed at three levels: review, game and announcement. There are two targets. At review level the target is whether a review is negative (about 10% are). At game level it is a three-level tier, defined for the 1,490 games with at least 20 reviews: Struggling (30% or more negative), Solid, and Strong (10% or less). Table 2 shows sample rows and Appendix A gives the data dictionary.')
 rows = []
 for r in games_s[games_s.tier.notna()].sample(5, random_state=5).itertuples():
@@ -382,8 +382,8 @@ table(rows, ["Game", "Release year", "Price", "Steam reviews", "Negative share",
       "Representative sample of the final data: five games (top) and five reviews (bottom); full samples are in data/sample/.", size=9.5)
 doc.paragraphs[-1].paragraph_format.space_after = Pt(0)
 rows = []
-for r in rev_s.sample(5, random_state=2).itertuples():
-    txt = str(r.review).replace("\n", " ")
+for r in pd.concat([rev_s[rev_s.voted_up].sample(3, random_state=2), rev_s[~rev_s.voted_up.astype(bool)].sample(2, random_state=2)]).itertuples():
+    txt = " ".join(str(r.review).split())
     rows.append([txt[:46] + ("..." if len(txt) > 46 else ""), r.language, f"{r.playtime_hours:g} h", "negative" if not r.voted_up else "positive"])
 table(rows, ["Review text (shortened)", "Language", "Playtime at review", "Target"], [3.6, 0.9, 1.1, 1.0], None, size=9.5)
 para('Collection was slower than planned. Steam started refusing requests (HTTP 429) after roughly 150 calls, so we changed the scraper to wait between requests, back off when refused and save its place so that a run could resume after a failure. SteamSpy was blocked by our network provider and had to be reached through another route. For the five largest games we kept only the newest 15,000 reviews; for every other game we collected almost all the reviews Steam reports.')
@@ -432,8 +432,8 @@ rows = []
 for m in ["Dummy (prior)", "Logistic Regression", "Random Forest", "LightGBM", "XGBoost"]:
     a, g = rv[m], gv[m]
     rows.append([m, f"{a['CV mean']:.3f} ± {a['CV sd']:.3f}", f"{a.Test:.3f}", f"{a['Test ROC-AUC']:.3f}", f"{g['CV mean']:.3f} ± {g['CV sd']:.3f}", f"{g.Test:.3f} [{g['CI low']:.2f}, {g['CI high']:.2f}]", f"{g['Recall Struggling']:.2f}"])
-table(rows, ["Model", "Review CV PR-AUC", "Test PR-AUC", "Test ROC-AUC", "Game CV macro-F1", "Test macro-F1 [95% CI]", "Recall Struggling"], [1.35, 1.0, 0.65, 0.7, 1.0, 1.1, 0.7],
-      "Model comparison on the shared held-out test games (metadata only; guessing PR-AUC 0.106, macro-F1 0.22). Validation: 5-fold CV by game; test scored once.", size=9, align_right_from=1)
+table(rows, ["Model", "Review CV PR-AUC", "Test PR-AUC", "Test ROC-AUC", "Game CV macro-F1", "Test macro-F1 [95% CI]", "Recall Struggling"], [1.35, 0.95, 0.7, 0.7, 0.95, 1.15, 0.75],
+      "Model comparison on the shared held-out test games (metadata only; guessing PR-AUC 0.106, macro-F1 0.22). Validation: 5-fold CV by game; test scored once.", size=9.5, align_right_from=1)
 para('At review level (Table 5, Figure 3) the three tree models are roughly tied at a test PR-AUC of 0.25 to 0.28, about 2.5 times guessing, while Logistic Regression is weaker (0.19). At game level every model beats guessing, but the intervals overlap because the test set has only 299 games. Tuning helped XGBoost (0.437) and Logistic Regression (0.423) on test, while Random Forest and LightGBM fell back to about 0.37 even though their cross-validation scores improved. With only 1,191 training games, the grid search probably fitted noise in the validation folds for these two models, so we kept their test results as they are. Struggling games are the hardest class to find (Figure 4). We selected XGBoost at game level for its test score and Struggling recall, although it is not clearly better than Logistic Regression.')
 figure(FIG / "models" / "model_comparison.png", "Cross-validation and test scores for all models at review level, game level and with review text (Python/Matplotlib; `python -m src.models.compare`).", width=5.9)
 figure_pair(FIG / "models" / "game_xgb_confusion.png", "Game-level XGBoost confusion matrices on the 299 test games (default and tuned class scales).",
@@ -488,7 +488,7 @@ table([["Data and setting", "About 11M reviews of 6,224 Steam games (2016 snapsh
        ["Methods and validation", "Descriptive analysis; no model scored on unseen games", "Bayesian hierarchical models; coefficients", "Text classifiers for review helpfulness", "Models scored once on held-out games; baselines; FDR-controlled rules; topics"],
        ["Comparable findings", "Negative reviews come early (we: 21.2% inside 2 h); design criticised more than bugs (we: crashes early, balance later)", "Price, languages and release date matter for popularity; our tier macro-F1 is modest (0.42 to 0.44)", "Review text can be modelled; ours detects negativity (PR-AUC 0.84), a different target", "Adds refund window, patch timing, text and tags in one niche"],
        ["Why not numeric", "No predictive metric", "Different target (players, not tiers)", "Helpfulness, other language", "Gaps: causal claims, revenue, other genres"]],
-      ["Criterion", "Lin et al. [1]", "De Luisa et al. [2]", "SteamBR [3]", "Current project"], [1.0, 1.5, 1.35, 1.35, 1.5], "Comparison with existing studies (direct numerical comparison is not valid: different data, targets and protocols).", size=9)
+      ["Criterion", "Lin et al. [1]", "De Luisa et al. [2]", "SteamBR [3]", "Current project"], [1.0, 1.5, 1.35, 1.35, 1.5], "Comparison with existing studies (direct numerical comparison is not valid: different data, targets and protocols).", size=9.5)
 para('None of the three studies can be compared with ours on a single number, because each uses different data, a different target and a different evaluation. The closest is Lin et al., whose finding that negative reviews arrive early matches our refund-window result in direction. SteamBR shows that Steam review text can be modelled reliably with text classifiers, which supports our text-based approach, although it predicts helpfulness in Portuguese rather than negativity in English. Our contribution is a whole niche collected from scratch, the refund-window view, held-out testing that also reports weak results, and an application a studio can use.')
 heading("6.3 KPI-based business impact and scenarios", 2)
 HOURS, RATE = 40, 30
@@ -545,7 +545,7 @@ table([["Thotakura Srihitha / CB.SC.U4CSE23450", "Exploratory analysis (29 figur
        ["Shantharam P / CB.SC.U4CSE23146", "Data collection and cleaning; split and targets; grid-search tuning of the game-level models and review Logistic Regression; dashboard and deployment", "1 to 17 Oct 2026", "`src/collect`, `src/clean`; PRs #57, #95, #96, #102; cards #5 to #17, #23 to #27, #43, #83 to #94"],
        ["Pradeep Sasidharan / CB.SC.U4CSE23232", "Model development: review- and game-level models (Logistic Regression, Random Forest, XGBoost) with SHAP; model comparison against baselines; association rule mining", "3 to 11 Oct 2026", "`src/models`; PRs #55, #70; cards #34, #35, #36"],
        ["Valikala Tejaswini / CB.SC.U4CSE23752", "Text mining and topic modelling; combined business insights; blind topic check", "10 to 16 Oct 2026", "PRs #66, #81, #99; cards #31, #32, #33, #44"]],
-      ["Team member / register no.", "Assigned work", "Period", "Evidence link / artifact"], [1.5, 2.6, 0.85, 1.75], "Individual contributions, dates and evidence (dates from the pull-request history).", size=9)
+      ["Team member / register no.", "Assigned work", "Period", "Evidence link / artifact"], [1.5, 2.6, 0.85, 1.75], "Individual contributions, dates and evidence (dates from the pull-request history).", size=9.5)
 heading("8.3 AI use and originality declarations", 2)
 para('We list every generative-AI tool we used. The tools assisted the team; they did not replace it. The research question, scope, data collection runs, analytical choices and conclusions were decided by team members, and each member wrote and checked their own modules. By signing the declaration page, each member confirms that this list is complete for their own work.')
 table([["ChatGPT (OpenAI)", "Ideation: brainstorming project topics, research questions and feature ideas in the planning stage.", "Early ideas and the shortlist of topics and questions. No data, code or reported results.",
@@ -555,8 +555,8 @@ table([["ChatGPT (OpenAI)", "Ideation: brainstorming project topics, research qu
        ["Claude (Anthropic)", "Coding and debugging help under the team's direction (data collection, modelling, dashboard and report scripts); drafting documentation, this report and the presentation deck; labelling the blind topic-check sample.",
         "Parts of the project scripts, documentation, slides and this report.",
         "The team ran, checked and corrected all outputs: automated checks, results regenerated from scripts, pull-request review, and slides and figures checked against the data. Errors found and fixed included a text-processing bug and an overstated topic-agreement figure, which was withdrawn."]],
-      ["Tool", "Tasks supported", "Content / code affected", "Human verification and corrections"], [1.0, 1.8, 1.8, 2.0], "Generative-AI disclosure.", size=9)
-para("No AI tool collected data on its own, created or altered records, or decided the conclusions; every figure in this report is produced by code from the project data. Apart from the cited sources, the ideas, analysis and writing are the team's own, and borrowed ideas, figures and code are cited.")
+      ["Tool", "Tasks supported", "Content / code affected", "Human verification and corrections"], [1.0, 1.8, 1.8, 2.0], "Generative-AI disclosure.", size=9.5)
+para("No AI tool collected data on its own, created or altered records, or decided the conclusions; every figure in this report is produced by code from the project data. Apart from the cited sources, the ideas, analysis and conclusions are the team's own. Where AI tools produced draft text or code, as listed above, the team reviewed, edited and verified it before it was used, and borrowed ideas, figures and code are cited.")
 # ---------------------------------------------------------------- 9
 heading("9. Conclusion, Recommendations and Roadmap", 1)
 para('The traceability matrix (Table 12) shows how each objective was met. We quantified the refund-window effect, built a text detector and complaint themes, predicted game tiers modestly, found and tested tag-combination rules, measured patch impact against controls, and built a public dashboard. Three results were weaker than we hoped: game-tier prediction from store data is modest, no rule was found for struggling games, and patches showed no effect. These still matter to a studio, because they show where store data and patching alone are not enough.')
@@ -578,8 +578,8 @@ refs = [
     "Dayi Lin, Cor-Paul Bezemer, Ying Zou, and Ahmed E. Hassan. 2019. An empirical study of game reviews on the Steam platform. *Empirical Software Engineering* 24, 1 (2019), 170-207. https://doi.org/10.1007/s10664-018-9627-4",
     "Andraž De Luisa, Jan Hartman, David Nabergoj, Samo Pahor, Marko Rus, Bozhidar Stevanoski, Jure Demšar, and Erik Štrumbelj. 2021. Predicting the popularity of games on Steam. *Elektrotehniški vestnik* 88, 4 (2021), 151-162. arXiv:2110.02896.",
     "Gabriel A. Z. Jorge and Thiago A. S. Pardo. 2023. SteamBR: a dataset for game reviews and evaluation of a state-of-the-art method for helpfulness prediction. In *Proceedings of the Brazilian Workshop on Social Network Analysis and Mining (BraSNAM)*.",
-    "Valve Corporation. Steam Refunds. Steam Support. https://store.steampowered.com/steam_refunds/ (accessed October 2026); and User Reviews, Steamworks documentation. https://partner.steamgames.com/doc/store/reviews (accessed October 2026).",
-    "SteamSpy. Owner estimates and game statistics. https://steamspy.com (accessed October 2026).",
+    "Valve Corporation. Steam Refunds. Steam Support. https://store.steampowered.com/steam_refunds/ (accessed October 2026); and User Reviews, Steamworks documentation. https://partner.steamgames.com/doc/store/getreviews (accessed October 2026).",
+    "SteamSpy. SteamSpy API: owner estimates and game statistics, with request-rate limits. https://steamspy.com/api.php (accessed October 2026).",
     "Government of India. 2023. The Digital Personal Data Protection Act, 2023 (No. 22 of 2023).",
     "Fabian Pedregosa et al. 2011. Scikit-learn: machine learning in Python. *Journal of Machine Learning Research* 12 (2011), 2825-2830.",
     "Guolin Ke, Qi Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei Ye, and Tie-Yan Liu. 2017. LightGBM: a highly efficient gradient boosting decision tree. In *Advances in Neural Information Processing Systems 30*.",
@@ -596,6 +596,7 @@ refs = [
     "Jacob VanderPlas, Brian E. Granger, Jeffrey Heer, Dominik Moritz, Kanit Wongsuphasawat, Arvind Satyanarayan, Eitan Lees, Ilia Timofeev, Ben Welsh, and Scott Sievert. 2018. Altair: interactive statistical visualizations for Python. *Journal of Open Source Software* 3, 32 (2018), 1057. https://doi.org/10.21105/joss.01057",
     "John D. Hunter. 2007. Matplotlib: a 2D graphics environment. *Computing in Science & Engineering* 9, 3 (2007), 90-95. https://doi.org/10.1109/MCSE.2007.55",
     "Michael L. Waskom. 2021. seaborn: statistical data visualization. *Journal of Open Source Software* 6, 60 (2021), 3021. https://doi.org/10.21105/joss.03021",
+    "Valve Corporation. Steam Web API Terms of Use. https://steamcommunity.com/dev/apiterms (accessed October 2026).",
 ]
 for i, r in enumerate(refs, start=1):
     p = doc.add_paragraph(); p.paragraph_format.left_indent = Inches(0.4); p.paragraph_format.first_line_indent = Inches(-0.4); p.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -640,7 +641,7 @@ for lab, cmd in (("Install", "python -m venv .venv  ;  pip install -r requiremen
 para("**User guide:** *Market explorer*: filter by release year, price band, minimum reviews and tags; KPI cards and charts update. *Tag rules and complaints*: set stability, minimum lift and a tag or price to filter rules; open the complaint-themes and refund-window tabs. "
      "*Patch impact*: read the raw and matched-control results. *Launch-risk scorer*: describe a planned game (price, launch date, platforms, tags, categories) or load an existing game and press *Score this game*; read the predicted tier and scores (not probabilities).", size=11)
 heading("Appendix D. Tracking-board evidence, contribution records and AI declaration", 1)
-para('Project board: https://github.com/users/Shan713/projects/1 (68 cards, all Completed; card history, owners, due dates and evidence). Commit and pull-request history: https://github.com/Shan713/IndieGuard/pulls. The signed originality and AI-use declarations are on the declaration page and in Section 8.3.', size=11)
+para('Project board: https://github.com/users/Shan713/projects/1 (68 cards, all Completed; card history, owners, due dates and evidence). Commit and pull-request history: https://github.com/Shan713/IndieGuard/pulls. The originality and AI-use declaration is signed by all members on the declaration page; the detailed AI disclosure is in Section 8.3.', size=11)
 
 doc.core_properties.title = "IndieGuard: Indie Game Launch Analytics - Final Report"
 doc.core_properties.author = "Group 1, 23CSE452"
