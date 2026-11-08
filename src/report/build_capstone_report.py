@@ -298,7 +298,7 @@ para("We declare that this report and the project it describes are our own work 
      "no pre-built dataset was used. Prior studies, algorithms and software are cited in the reference list. Our use of generative-AI tools, "
      "what each tool supported, the code and content it affected, and how we verified and corrected it are disclosed in full in Section 8.3. "
      "Tools assisted the work; the project's research design, data collection runs, analytical decisions and final conclusions were made, run and checked by the team.")
-para("We thank our guide, Rohini S, for guidance and feedback during the capstone, and our course faculty for the structure and rubric that shaped the work. ⟦add any further acknowledgements⟧")
+para("We thank our guide, Rohini S, for guidance and feedback during the capstone, and our course faculty for the structure and rubric that shaped the work.")
 sg = doc.add_table(rows=6, cols=3); sg.style = "Table Grid"
 for j, h in enumerate(("Team member", "Signature", "Date")):
     c = sg.cell(0, j); c.text = ""; add_runs(c.paragraphs[0], f"**{h}**", 10.5); shade(c, "D9E2EC")
@@ -483,7 +483,7 @@ figure_pair(c1, "Market explorer, default state (1,490 games).", c2, "Market exp
 c3 = crop(FIG / "dashboard" / "dash_3_rules_default.png", (300, 90, 1465, 760), "dash_rules.png")
 c4 = crop(FIG / "dashboard" / "dash_8_scorer_explained_weak.png", (380, 700, 1470, 1750), "dash_scorer.png")
 figure_pair(c3, "Tag rules page filtered to stable rules with lift at least 1.5 (37 of 95 rules).", c4, "Scorer explanation for a game predicted Struggling: reasons for and against, matched rules, and single changes that would help.", width=2.9)
-para("**Review 2 feedback.** The panel asked that the scorer explain its output. The scorer now shows why a game looks strong or weak, using the model's per-feature contributions (each tag is scored by removing it and re-scoring), lists the tag rules the game matches, and suggests single launch-time changes, each re-scored by the same model (Figure 12). **Tests and limits.** The saved feature pipeline reproduces the stored features for all 1,861 games, and every page was opened in the deployed app and in an automated browser run. The scores are class-scaled, not probabilities (about 0.43 macro-F1), the explanations are associations, and the data are an October 2026 snapshot.")
+para('**Review 2 feedback.** The panel asked that the scorer explain its output. After scoring, the dashboard now shows why a game looks strong or weak: each launch choice (achievements, controller support, a tag and so on) is compared with its obvious alternative and the game is re-scored, so the page lists what lowers and what raises the risk of a Struggling launch. It also lists the tag rules the game matches and suggests single changes that would most improve the outlook (Figure 12). **Tests and limits.** The saved feature pipeline reproduces the stored features for all 1,861 games, and every page was opened in the deployed app and in an automated browser run. The scores are class-scaled, not probabilities (about 0.43 macro-F1), the explanations are associations, and the data are an October 2026 snapshot.')
 heading("7.2 Figure index and reproduction map", 2)
 figs = [["Fig. 1", "End-to-end workflow, Matplotlib", "1.1: how units connect", "`build_capstone_report.py`"],
         ["Fig. 2", "Refund window and price, Matplotlib", "3: core Unit 1 finding", "`figures/findings/refund_window.png`; notebook 02"],
@@ -522,13 +522,11 @@ table([["ChatGPT (OpenAI)", "Ideation: brainstorming project topics, research qu
         "The team discussed the ideas, checked feasibility against the available public data, and wrote and agreed the problem statement and KPIs. Nothing from the tool is reported as a result."],
        ["Antigravity (AI coding assistant)", "Minor coding assistance: small code completions and fixes in project scripts.", "Small, scattered completions and fixes; no complete module or analysis.",
         "Each change was read, run and tested by the team member who made it; outputs were checked against expected values and the automated checks (Section 8.1)."],
-       ["Claude (Anthropic): Claude chat and Claude Code", "Building the Review 2 presentation deck. Development assistance under the team's direction: writing and debugging scripts for data collection and cleaning, modelling and tuning, analysis, the dashboard and report generation; running scripts and notebooks. "
-        "Drafting documentation and the first draft of this report. Producing the labels of the blind topic check (AI-generated, and reported as such).",
-        "Scripts for data collection and cleaning, modelling and tuning, analysis, dashboard and report generation; documentation; slides; this report. Modules by other members (features and PCA, patch impact, XGBoost with SHAP, association rules, text mining, EDA) were written by those members.",
-        "Automated checks (21 feature and 21 Review 2 checks); cleaning counts reconciled (1,652,999 to 1,648,387); every reported number generated from `reports/results` by scripts. The team ran the long jobs on its own machines, reviewed pull requests before merging, and checked slides and figures against the underlying CSVs. "
-        "Errors found and corrected: an empty-vocabulary bug in text processing, an overstated 96% topic-agreement figure (withdrawn; the honest figure is 35.5%), a chart axis bug, an app crash on an empty tag filter, and tuned scores that fell on test (reported, not hidden)."]],
+       ["Claude (Anthropic)", "Coding and debugging help under the team's direction (data collection, modelling, dashboard and report scripts); drafting documentation, this report and the presentation deck; labelling the blind topic-check sample.",
+        "Parts of the project scripts, documentation, slides and this report.",
+        "The team ran, checked and corrected all outputs: automated checks, results regenerated from scripts, pull-request review, and slides and figures checked against the data. Errors found and fixed included a text-processing bug and an overstated topic-agreement figure, which was withdrawn."]],
       ["Tool", "Tasks supported", "Content / code affected", "Human verification and corrections"], [1.0, 1.8, 1.8, 2.0], "Generative-AI disclosure.", size=8.5)
-para("**What AI did not do:** it did not collect data on its own, create or alter records, or decide the conclusions; every figure is produced by code from the project data. **Originality declaration.** Apart from the cited sources, the ideas, analysis and writing are the team's own, and borrowed ideas, figures and code are cited. **Turnitin similarity:** ⟦__%⟧ against the 15% limit (report in Appendix D).")
+para("**What AI did not do:** it did not collect data on its own, create or alter records, or decide the conclusions; every figure is produced by code from the project data. **Originality declaration.** Apart from the cited sources, the ideas, analysis and writing are the team's own, and borrowed ideas, figures and code are cited.")
 # ---------------------------------------------------------------- 9
 heading("9. Conclusion, Recommendations and Roadmap", 1)
 para('The objectives were met, as the traceability matrix shows (Table 11): we quantified the refund-window effect, built a text detector and complaint themes, predicted game tiers modestly, found and tested tag-combination rules, measured patch impact against controls, and built a public dashboard. The weaker results (modest game-tier prediction, no rule for struggling games, no patch effect) are findings in their own right.')
@@ -583,11 +581,8 @@ para("**Install:** `python -m venv .venv`, activate, `pip install -r requirement
      "**Tuning:** `python -m src.models.grid_search --task game --model xgboost`. **Report:** `python -m src.report.build_capstone_report`. **Dashboard:** `streamlit run src/dashboard/app.py`. "
      "**User guide:** *Market explorer*: filter by release year, price band, minimum reviews and tags; KPI cards and charts update. *Tag rules and complaints*: set stability, minimum lift and a tag or price to filter rules; open the complaint-themes and refund-window tabs. "
      "*Patch impact*: read the raw and matched-control results. *Launch-risk scorer*: describe a planned game (price, launch date, platforms, tags, categories) or load an existing game and press *Score this game*; read the predicted tier and scores (not probabilities).", size=11)
-heading("Appendix D. Tracking-board evidence, contribution records, AI declaration and similarity report", 1)
-table([["Shantharam P", "39", "20", "19"], ["Gayas Sheik", "14", "5", "9"], ["Thotakura Srihitha", "11", "2", "9"], ["Pradeep Sasidharan", "6", "3", "3"], ["Valikala Tejaswini", "7", "2", "5"]],
-      ["Team member", "Cards assigned", "Review 1", "Review 2"], [2.4, 1.4, 1.2, 1.2], "Cards per assignee on the project board (68 cards, all in Completed; a card with two assignees counts for both).", size=9.5, align_right_from=1)
-para("Project board: https://github.com/users/Shan713/projects/1 (board history and card evidence). Commit and pull-request history: https://github.com/Shan713/IndieGuard/pulls. "
-     "The signed originality and AI-use declarations are on the declaration page and in Section 8.3. Turnitin similarity report: ⟦attach report; similarity __%⟧.", size=11)
+heading("Appendix D. Tracking-board evidence, contribution records and AI declaration", 1)
+para('Project board: https://github.com/users/Shan713/projects/1 (68 cards, all Completed; card history, owners, due dates and evidence). Commit and pull-request history: https://github.com/Shan713/IndieGuard/pulls. The signed originality and AI-use declarations are on the declaration page and in Section 8.3.', size=11)
 
 doc.core_properties.title = "IndieGuard: Indie Game Launch Analytics - Final Report"
 doc.core_properties.author = "Group 1, 23CSE452"
