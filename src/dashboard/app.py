@@ -229,6 +229,56 @@ def risk_scorer() -> None:
     if mode == "Load an existing game":
         actual = data.games().set_index("name").tier.get(name)
         st.caption(f"Recorded tier for this game: {actual if isinstance(actual, str) else 'not tiered (under 20 reviews)'}. Games in the training split were seen by the model.")
+    explain_prediction(game, res["tier"])
+
+
+def _price_item(p: float) -> str | None:
+    return None if p <= 0 else "<$5" if p < 5 else "$5-10" if p < 10 else None
+
+
+def explain_prediction(game: dict, tier: str) -> None:
+    """Review 2 feedback: say why a game looks strong or weak, and what would improve it."""
+    from src.dashboard.explain import explain, suggest
+    with st.spinner("Working out the reasons..."):
+        ex, sg = explain(game), suggest(game, tier)
+    st.subheader("Why the model thinks so")
+    st.caption("Each launch choice is compared with its obvious alternative (with or without achievements, a tag, controller support and so on) "
+               "and the game is re-scored: the bars show how much the choice changes the risk of Struggling.")
+    good, bad = ex[ex.effect > 0].head(6), ex[ex.effect < 0].sort_values("effect").head(6)
+    left, right = st.columns(2)
+    left.markdown("**Working in its favour** (lowers the risk)")
+    left.markdown("\n".join(f"- {r.factor.replace('$', '\\$')}" for r in good.itertuples()) or "- nothing stands out")
+    right.markdown("**Working against it** (raises the risk)")
+    right.markdown("\n".join(f"- {r.factor.replace('$', '\\$')}" for r in bad.itertuples()) or "- nothing stands out")
+    top = pd.concat([good, bad]).assign(direction=lambda d: d.effect.gt(0).map({True: "lowers the risk", False: "raises the risk"}),
+                                        points=lambda d: 100 * d.effect)
+    if len(top):
+        st.altair_chart(alt.Chart(top).mark_bar().encode(
+            x=alt.X("points:Q", title="change in the Struggling score, points (right = lowers the risk)"),
+            y=alt.Y("factor:N", sort="-x", title=None, axis=alt.Axis(labelOverlap=False, labelLimit=260)),
+            color=alt.Color("direction:N", scale=alt.Scale(domain=["lowers the risk", "raises the risk"], range=["#55A868", "#C44E52"]), legend=None),
+            tooltip=["factor", alt.Tooltip("points:Q", format="+.1f", title="points")]).properties(height=max(140, 32 * len(top))), width="stretch")
+
+    tags = {t.strip() for t in str(game.get("tags") or "").split(";") if t.strip()}
+    price = _price_item(float(game.get("price_usd") or 0))
+    have = {f"tag:{t}" for t in tags} | ({f"price:{price}"} if price else set())
+    rules = data.rules()
+    match = rules[rules.antecedents_str.apply(lambda s: set(s.split(" + ")) <= have)]
+    if len(match):
+        best = match.sort_values("lift", ascending=False).head(3)
+        st.markdown("**Tag rules this game matches** (from the association rules): " + "; ".join(
+            f"{r.antecedents_str.replace('tag:', '').replace('price:', 'price ')} → Strong in {r.confidence:.0%} of training games" for r in best.itertuples()))
+
+    st.subheader("What could make it better" if tier != "Strong" else "What could make it even stronger")
+    if sg.empty:
+        st.write("No single launch-time change moves the scores much for this game.")
+    else:
+        show = sg.assign(**{"Strong score": sg.strong.map("{:.0%}".format) + " (" + sg.strong_delta.map("{:+.0%}".format) + ")",
+                            "Struggling score": sg.struggling.map("{:.0%}".format) + " (" + sg.struggling_delta.map("{:+.0%}".format) + ")"})
+        st.dataframe(show[["area", "change", "Strong score", "Struggling score", "new_tier"]].rename(columns={"area": "Area", "change": "Change", "new_tier": "Tier after the change"}),
+                     hide_index=True, width="stretch")
+    st.caption("Reasons and suggestions change one input at a time and re-score the game with the same model; suggestions are ranked by the drop in the Struggling score "
+               "(for a game already predicted Strong, by the rise in the Strong score). Both are associations learned from 1,191 training games, not guaranteed effects. Add a tag only if it honestly describes the game: Steam tags come from players.")
 
 
 # ------------------------------------------------------------------ page 5
