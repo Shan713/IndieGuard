@@ -6,6 +6,29 @@ Predicting negative-review risk and identifying winning feature combinations on 
 
 **Project board:** <https://github.com/users/Shan713/projects/1> . Every task has one owner, a due date and the evidence that proves it is done.
 
+## Final project submission: Team 1
+
+**Course:** 23CSE452 Business Analytics · **Team number:** 1
+
+| Name | Register number |
+| --- | --- |
+| Thotakura Srihitha | CB.SC.U4CSE23450 |
+| Gayas Sheik | CB.SC.U4CSE23118 |
+| Shantharam P | CB.SC.U4CSE23146 |
+| Pradeep Sasidharan | CB.SC.U4CSE23232 |
+| Valikala Tejaswini | CB.SC.U4CSE23752 |
+
+| Deliverable | Where |
+| --- | --- |
+| Final report (PDF) | [`Final_Project_Report.pdf`](Final_Project_Report.pdf) |
+| Final presentation | [`Final_Project_Presentation.pptx`](Final_Project_Presentation.pptx) |
+| Interactive dashboard (live) | <https://indieguard.streamlit.app> (code: [`src/dashboard/`](src/dashboard), see [`dashboard/`](dashboard)) |
+| Project board | <https://github.com/users/Shan713/projects/1> |
+| Data (original sample, cleaned tables, features) | [`data/`](data): cleaned tables in `data/processed/`, samples in `data/sample/`; raw-data counts and hashes in [`docs/data_manifest.md`](docs/data_manifest.md) |
+| Notebooks (Units 1 to 3) | [`notebooks/`](notebooks): EDA (Unit 1), Review 1 models (Unit 2), text mining and association rules (Unit 3), patch impact |
+| Visualizations | [`figures/`](figures) (see [`visualizations/`](visualizations)) |
+| Dependencies | [`requirements.txt`](requirements.txt) |
+
 ## Where we are
 
 | Stage | State |
