@@ -155,7 +155,7 @@ docs/                  documentation: start with the list below       figures/, 
 
 ## Team and ownership
 
-M1 (Shantharam): data lead and board admin. M2 (Gayas): cleaning and features. M3 (Srihitha): EDA and dashboard. M4: modelling and association rules. M5: text mining and storytelling. The board is the source of truth for who owns what; M4 and M5 are not assigned yet.
+M1 (Shantharam): data lead and board admin. M2 (Gayas): cleaning and features. M3 (Srihitha): EDA and dashboard. M4(Pradeep): modelling and association rules. M5 (Tejaswini): text mining and storytelling. The board is the source of truth for who owns what.
 
 ## Known limitations (read before trusting a number)
 
