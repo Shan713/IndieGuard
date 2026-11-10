@@ -4,7 +4,7 @@ Predicting negative-review risk and identifying winning feature combinations on 
 
 **Business objective:** help a small indie studio or publisher decide which feature combinations to back, what to fix before the refund window closes, and when to patch.
 
-**Project board:** <https://github.com/users/Shan713/projects/1> (private: if you cannot open it, ask Shantharam to add you). Every task has one owner, a due date and the evidence that proves it is done.
+**Project board:** <https://github.com/users/Shan713/projects/1> . Every task has one owner, a due date and the evidence that proves it is done.
 
 ## Where we are
 
@@ -23,7 +23,6 @@ Predicting negative-review risk and identifying winning feature combinations on 
 | **Review 2: Text mining & topic modelling (#31–#33)** | **Done:** `notebooks/03_Text_Mining_and_Topic_Modelling.ipynb`, `docs/text_mining_and_evaluation.md` |
 | **Review 2: Combined business insights (#44)** | **Done:** `docs/combined_business_insights.md`, `slides/review2_presentation_guide.md` |
 | Review 2 (Other components) | Implemented: association rules, text mining, patch impact, launch-risk scorer, dashboard (`src/dashboard/app.py`), grid search for every model, final report and slides; dashboard deployed at https://indieguard.streamlit.app |
-| **Next** | **Rehearse the Review 2 presentation with timing (#47) and submit** |
 
 ## Getting started
 
